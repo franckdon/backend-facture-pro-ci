@@ -88,6 +88,11 @@ export type role = $Result.DefaultSelection<Prisma.$rolePayload>
  * 
  */
 export type utilisateur_admin = $Result.DefaultSelection<Prisma.$utilisateur_adminPayload>
+/**
+ * Model plan
+ * 
+ */
+export type plan = $Result.DefaultSelection<Prisma.$planPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -355,6 +360,16 @@ export class PrismaClient<
     * ```
     */
   get utilisateur_admin(): Prisma.utilisateur_adminDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.plan`: Exposes CRUD operations for the **plan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Plans
+    * const plans = await prisma.plan.findMany()
+    * ```
+    */
+  get plan(): Prisma.planDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -803,7 +818,8 @@ export namespace Prisma {
     configuration: 'configuration',
     statut: 'statut',
     role: 'role',
-    utilisateur_admin: 'utilisateur_admin'
+    utilisateur_admin: 'utilisateur_admin',
+    plan: 'plan'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -819,7 +835,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "societe" | "etablissement" | "point_vente" | "licence" | "utilisateur_client" | "mode_paiement" | "taux_imposition" | "type_facture" | "devise" | "type_facturation" | "sticker" | "configuration" | "statut" | "role" | "utilisateur_admin"
+      modelProps: "societe" | "etablissement" | "point_vente" | "licence" | "utilisateur_client" | "mode_paiement" | "taux_imposition" | "type_facture" | "devise" | "type_facturation" | "sticker" | "configuration" | "statut" | "role" | "utilisateur_admin" | "plan"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1813,6 +1829,72 @@ export namespace Prisma {
           }
         }
       }
+      plan: {
+        payload: Prisma.$planPayload<ExtArgs>
+        fields: Prisma.planFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.planFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.planFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          findFirst: {
+            args: Prisma.planFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.planFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          findMany: {
+            args: Prisma.planFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>[]
+          }
+          create: {
+            args: Prisma.planCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          createMany: {
+            args: Prisma.planCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.planDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          update: {
+            args: Prisma.planUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          deleteMany: {
+            args: Prisma.planDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.planUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.planUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$planPayload>
+          }
+          aggregate: {
+            args: Prisma.PlanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlan>
+          }
+          groupBy: {
+            args: Prisma.planGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.planCountArgs<ExtArgs>
+            result: $Utils.Optional<PlanCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1936,6 +2018,7 @@ export namespace Prisma {
     statut?: statutOmit
     role?: roleOmit
     utilisateur_admin?: utilisateur_adminOmit
+    plan?: planOmit
   }
 
   /* Types for Logging */
@@ -2177,6 +2260,37 @@ export namespace Prisma {
    */
   export type RoleCountOutputTypeCountUtilisateur_clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: utilisateur_clientWhereInput
+  }
+
+
+  /**
+   * Count Type PlanCountOutputType
+   */
+
+  export type PlanCountOutputType = {
+    licences: number
+  }
+
+  export type PlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    licences?: boolean | PlanCountOutputTypeCountLicencesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlanCountOutputType without action
+   */
+  export type PlanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlanCountOutputType
+     */
+    select?: PlanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlanCountOutputType without action
+   */
+  export type PlanCountOutputTypeCountLicencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: licenceWhereInput
   }
 
 
@@ -3515,7 +3629,6 @@ export namespace Prisma {
     societe_id: number | null
     code_etablissement: string | null
     libelle_etablissement: string | null
-    localite_etablissement: string | null
     cree_le: Date | null
     modifie_le: Date | null
   }
@@ -3526,7 +3639,6 @@ export namespace Prisma {
     societe_id: number | null
     code_etablissement: string | null
     libelle_etablissement: string | null
-    localite_etablissement: string | null
     cree_le: Date | null
     modifie_le: Date | null
   }
@@ -3537,7 +3649,6 @@ export namespace Prisma {
     societe_id: number
     code_etablissement: number
     libelle_etablissement: number
-    localite_etablissement: number
     cree_le: number
     modifie_le: number
     _all: number
@@ -3560,7 +3671,6 @@ export namespace Prisma {
     societe_id?: true
     code_etablissement?: true
     libelle_etablissement?: true
-    localite_etablissement?: true
     cree_le?: true
     modifie_le?: true
   }
@@ -3571,7 +3681,6 @@ export namespace Prisma {
     societe_id?: true
     code_etablissement?: true
     libelle_etablissement?: true
-    localite_etablissement?: true
     cree_le?: true
     modifie_le?: true
   }
@@ -3582,7 +3691,6 @@ export namespace Prisma {
     societe_id?: true
     code_etablissement?: true
     libelle_etablissement?: true
-    localite_etablissement?: true
     cree_le?: true
     modifie_le?: true
     _all?: true
@@ -3680,7 +3788,6 @@ export namespace Prisma {
     societe_id: number
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le: Date
     modifie_le: Date
     _count: EtablissementCountAggregateOutputType | null
@@ -3710,7 +3817,6 @@ export namespace Prisma {
     societe_id?: boolean
     code_etablissement?: boolean
     libelle_etablissement?: boolean
-    localite_etablissement?: boolean
     cree_le?: boolean
     modifie_le?: boolean
     societe?: boolean | societeDefaultArgs<ExtArgs>
@@ -3726,12 +3832,11 @@ export namespace Prisma {
     societe_id?: boolean
     code_etablissement?: boolean
     libelle_etablissement?: boolean
-    localite_etablissement?: boolean
     cree_le?: boolean
     modifie_le?: boolean
   }
 
-  export type etablissementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "code_etablissement" | "libelle_etablissement" | "localite_etablissement" | "cree_le" | "modifie_le", ExtArgs["result"]["etablissement"]>
+  export type etablissementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "code_etablissement" | "libelle_etablissement" | "cree_le" | "modifie_le", ExtArgs["result"]["etablissement"]>
   export type etablissementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     societe?: boolean | societeDefaultArgs<ExtArgs>
     point_vente?: boolean | etablissement$point_venteArgs<ExtArgs>
@@ -3750,7 +3855,6 @@ export namespace Prisma {
       societe_id: number
       code_etablissement: string
       libelle_etablissement: string
-      localite_etablissement: string
       cree_le: Date
       modifie_le: Date
     }, ExtArgs["result"]["etablissement"]>
@@ -4129,7 +4233,6 @@ export namespace Prisma {
     readonly societe_id: FieldRef<"etablissement", 'Int'>
     readonly code_etablissement: FieldRef<"etablissement", 'String'>
     readonly libelle_etablissement: FieldRef<"etablissement", 'String'>
-    readonly localite_etablissement: FieldRef<"etablissement", 'String'>
     readonly cree_le: FieldRef<"etablissement", 'DateTime'>
     readonly modifie_le: FieldRef<"etablissement", 'DateTime'>
   }
@@ -5499,12 +5602,14 @@ export namespace Prisma {
   export type LicenceAvgAggregateOutputType = {
     id: number | null
     societe_id: number | null
+    plan_id: number | null
     statut_id: number | null
   }
 
   export type LicenceSumAggregateOutputType = {
     id: number | null
     societe_id: number | null
+    plan_id: number | null
     statut_id: number | null
   }
 
@@ -5512,6 +5617,7 @@ export namespace Prisma {
     id: number | null
     uuid: string | null
     societe_id: number | null
+    plan_id: number | null
     cle: string | null
     date_expiration: Date | null
     statut_id: number | null
@@ -5521,6 +5627,7 @@ export namespace Prisma {
     id: number | null
     uuid: string | null
     societe_id: number | null
+    plan_id: number | null
     cle: string | null
     date_expiration: Date | null
     statut_id: number | null
@@ -5530,6 +5637,7 @@ export namespace Prisma {
     id: number
     uuid: number
     societe_id: number
+    plan_id: number
     cle: number
     date_expiration: number
     statut_id: number
@@ -5540,12 +5648,14 @@ export namespace Prisma {
   export type LicenceAvgAggregateInputType = {
     id?: true
     societe_id?: true
+    plan_id?: true
     statut_id?: true
   }
 
   export type LicenceSumAggregateInputType = {
     id?: true
     societe_id?: true
+    plan_id?: true
     statut_id?: true
   }
 
@@ -5553,6 +5663,7 @@ export namespace Prisma {
     id?: true
     uuid?: true
     societe_id?: true
+    plan_id?: true
     cle?: true
     date_expiration?: true
     statut_id?: true
@@ -5562,6 +5673,7 @@ export namespace Prisma {
     id?: true
     uuid?: true
     societe_id?: true
+    plan_id?: true
     cle?: true
     date_expiration?: true
     statut_id?: true
@@ -5571,6 +5683,7 @@ export namespace Prisma {
     id?: true
     uuid?: true
     societe_id?: true
+    plan_id?: true
     cle?: true
     date_expiration?: true
     statut_id?: true
@@ -5667,6 +5780,7 @@ export namespace Prisma {
     id: number
     uuid: string
     societe_id: number
+    plan_id: number | null
     cle: string
     date_expiration: Date | null
     statut_id: number | null
@@ -5695,10 +5809,12 @@ export namespace Prisma {
     id?: boolean
     uuid?: boolean
     societe_id?: boolean
+    plan_id?: boolean
     cle?: boolean
     date_expiration?: boolean
     statut_id?: boolean
     societe?: boolean | societeDefaultArgs<ExtArgs>
+    plan?: boolean | licence$planArgs<ExtArgs>
     statut?: boolean | licence$statutArgs<ExtArgs>
   }, ExtArgs["result"]["licence"]>
 
@@ -5708,14 +5824,16 @@ export namespace Prisma {
     id?: boolean
     uuid?: boolean
     societe_id?: boolean
+    plan_id?: boolean
     cle?: boolean
     date_expiration?: boolean
     statut_id?: boolean
   }
 
-  export type licenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "cle" | "date_expiration" | "statut_id", ExtArgs["result"]["licence"]>
+  export type licenceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "plan_id" | "cle" | "date_expiration" | "statut_id", ExtArgs["result"]["licence"]>
   export type licenceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     societe?: boolean | societeDefaultArgs<ExtArgs>
+    plan?: boolean | licence$planArgs<ExtArgs>
     statut?: boolean | licence$statutArgs<ExtArgs>
   }
 
@@ -5723,12 +5841,14 @@ export namespace Prisma {
     name: "licence"
     objects: {
       societe: Prisma.$societePayload<ExtArgs>
+      plan: Prisma.$planPayload<ExtArgs> | null
       statut: Prisma.$statutPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       uuid: string
       societe_id: number
+      plan_id: number | null
       cle: string
       date_expiration: Date | null
       statut_id: number | null
@@ -6073,6 +6193,7 @@ export namespace Prisma {
   export interface Prisma__licenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     societe<T extends societeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, societeDefaultArgs<ExtArgs>>): Prisma__societeClient<$Result.GetResult<Prisma.$societePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    plan<T extends licence$planArgs<ExtArgs> = {}>(args?: Subset<T, licence$planArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     statut<T extends licence$statutArgs<ExtArgs> = {}>(args?: Subset<T, licence$statutArgs<ExtArgs>>): Prisma__statutClient<$Result.GetResult<Prisma.$statutPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6106,6 +6227,7 @@ export namespace Prisma {
     readonly id: FieldRef<"licence", 'Int'>
     readonly uuid: FieldRef<"licence", 'String'>
     readonly societe_id: FieldRef<"licence", 'Int'>
+    readonly plan_id: FieldRef<"licence", 'Int'>
     readonly cle: FieldRef<"licence", 'String'>
     readonly date_expiration: FieldRef<"licence", 'DateTime'>
     readonly statut_id: FieldRef<"licence", 'Int'>
@@ -6449,6 +6571,25 @@ export namespace Prisma {
      * Limit how many licences to delete.
      */
     limit?: number
+  }
+
+  /**
+   * licence.plan
+   */
+  export type licence$planArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    where?: planWhereInput
   }
 
   /**
@@ -17160,6 +17301,1025 @@ export namespace Prisma {
 
 
   /**
+   * Model plan
+   */
+
+  export type AggregatePlan = {
+    _count: PlanCountAggregateOutputType | null
+    _avg: PlanAvgAggregateOutputType | null
+    _sum: PlanSumAggregateOutputType | null
+    _min: PlanMinAggregateOutputType | null
+    _max: PlanMaxAggregateOutputType | null
+  }
+
+  export type PlanAvgAggregateOutputType = {
+    id: number | null
+    prix_annuel: Decimal | null
+    limite_utilisateurs: number | null
+  }
+
+  export type PlanSumAggregateOutputType = {
+    id: number | null
+    prix_annuel: Decimal | null
+    limite_utilisateurs: number | null
+  }
+
+  export type PlanMinAggregateOutputType = {
+    id: number | null
+    uuid: string | null
+    libelle: string | null
+    code: string | null
+    prix_annuel: Decimal | null
+    limite_utilisateurs: number | null
+    description: string | null
+  }
+
+  export type PlanMaxAggregateOutputType = {
+    id: number | null
+    uuid: string | null
+    libelle: string | null
+    code: string | null
+    prix_annuel: Decimal | null
+    limite_utilisateurs: number | null
+    description: string | null
+  }
+
+  export type PlanCountAggregateOutputType = {
+    id: number
+    uuid: number
+    libelle: number
+    code: number
+    prix_annuel: number
+    limite_utilisateurs: number
+    description: number
+    _all: number
+  }
+
+
+  export type PlanAvgAggregateInputType = {
+    id?: true
+    prix_annuel?: true
+    limite_utilisateurs?: true
+  }
+
+  export type PlanSumAggregateInputType = {
+    id?: true
+    prix_annuel?: true
+    limite_utilisateurs?: true
+  }
+
+  export type PlanMinAggregateInputType = {
+    id?: true
+    uuid?: true
+    libelle?: true
+    code?: true
+    prix_annuel?: true
+    limite_utilisateurs?: true
+    description?: true
+  }
+
+  export type PlanMaxAggregateInputType = {
+    id?: true
+    uuid?: true
+    libelle?: true
+    code?: true
+    prix_annuel?: true
+    limite_utilisateurs?: true
+    description?: true
+  }
+
+  export type PlanCountAggregateInputType = {
+    id?: true
+    uuid?: true
+    libelle?: true
+    code?: true
+    prix_annuel?: true
+    limite_utilisateurs?: true
+    description?: true
+    _all?: true
+  }
+
+  export type PlanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which plan to aggregate.
+     */
+    where?: planWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of plans to fetch.
+     */
+    orderBy?: planOrderByWithRelationInput | planOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: planWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned plans
+    **/
+    _count?: true | PlanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlanAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlanSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlanMaxAggregateInputType
+  }
+
+  export type GetPlanAggregateType<T extends PlanAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlan[P]>
+      : GetScalarType<T[P], AggregatePlan[P]>
+  }
+
+
+
+
+  export type planGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: planWhereInput
+    orderBy?: planOrderByWithAggregationInput | planOrderByWithAggregationInput[]
+    by: PlanScalarFieldEnum[] | PlanScalarFieldEnum
+    having?: planScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlanCountAggregateInputType | true
+    _avg?: PlanAvgAggregateInputType
+    _sum?: PlanSumAggregateInputType
+    _min?: PlanMinAggregateInputType
+    _max?: PlanMaxAggregateInputType
+  }
+
+  export type PlanGroupByOutputType = {
+    id: number
+    uuid: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal
+    limite_utilisateurs: number
+    description: string | null
+    _count: PlanCountAggregateOutputType | null
+    _avg: PlanAvgAggregateOutputType | null
+    _sum: PlanSumAggregateOutputType | null
+    _min: PlanMinAggregateOutputType | null
+    _max: PlanMaxAggregateOutputType | null
+  }
+
+  type GetPlanGroupByPayload<T extends planGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlanGroupByOutputType[P]>
+            : GetScalarType<T[P], PlanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type planSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    uuid?: boolean
+    libelle?: boolean
+    code?: boolean
+    prix_annuel?: boolean
+    limite_utilisateurs?: boolean
+    description?: boolean
+    licences?: boolean | plan$licencesArgs<ExtArgs>
+    _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["plan"]>
+
+
+
+  export type planSelectScalar = {
+    id?: boolean
+    uuid?: boolean
+    libelle?: boolean
+    code?: boolean
+    prix_annuel?: boolean
+    limite_utilisateurs?: boolean
+    description?: boolean
+  }
+
+  export type planOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "libelle" | "code" | "prix_annuel" | "limite_utilisateurs" | "description", ExtArgs["result"]["plan"]>
+  export type planInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    licences?: boolean | plan$licencesArgs<ExtArgs>
+    _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $planPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "plan"
+    objects: {
+      licences: Prisma.$licencePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      uuid: string
+      libelle: string
+      code: string
+      prix_annuel: Prisma.Decimal
+      limite_utilisateurs: number
+      description: string | null
+    }, ExtArgs["result"]["plan"]>
+    composites: {}
+  }
+
+  type planGetPayload<S extends boolean | null | undefined | planDefaultArgs> = $Result.GetResult<Prisma.$planPayload, S>
+
+  type planCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<planFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlanCountAggregateInputType | true
+    }
+
+  export interface planDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['plan'], meta: { name: 'plan' } }
+    /**
+     * Find zero or one Plan that matches the filter.
+     * @param {planFindUniqueArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends planFindUniqueArgs>(args: SelectSubset<T, planFindUniqueArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Plan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {planFindUniqueOrThrowArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends planFindUniqueOrThrowArgs>(args: SelectSubset<T, planFindUniqueOrThrowArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Plan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planFindFirstArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends planFindFirstArgs>(args?: SelectSubset<T, planFindFirstArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Plan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planFindFirstOrThrowArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends planFindFirstOrThrowArgs>(args?: SelectSubset<T, planFindFirstOrThrowArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Plans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Plans
+     * const plans = await prisma.plan.findMany()
+     * 
+     * // Get first 10 Plans
+     * const plans = await prisma.plan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const planWithIdOnly = await prisma.plan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends planFindManyArgs>(args?: SelectSubset<T, planFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Plan.
+     * @param {planCreateArgs} args - Arguments to create a Plan.
+     * @example
+     * // Create one Plan
+     * const Plan = await prisma.plan.create({
+     *   data: {
+     *     // ... data to create a Plan
+     *   }
+     * })
+     * 
+     */
+    create<T extends planCreateArgs>(args: SelectSubset<T, planCreateArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Plans.
+     * @param {planCreateManyArgs} args - Arguments to create many Plans.
+     * @example
+     * // Create many Plans
+     * const plan = await prisma.plan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends planCreateManyArgs>(args?: SelectSubset<T, planCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Plan.
+     * @param {planDeleteArgs} args - Arguments to delete one Plan.
+     * @example
+     * // Delete one Plan
+     * const Plan = await prisma.plan.delete({
+     *   where: {
+     *     // ... filter to delete one Plan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends planDeleteArgs>(args: SelectSubset<T, planDeleteArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Plan.
+     * @param {planUpdateArgs} args - Arguments to update one Plan.
+     * @example
+     * // Update one Plan
+     * const plan = await prisma.plan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends planUpdateArgs>(args: SelectSubset<T, planUpdateArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Plans.
+     * @param {planDeleteManyArgs} args - Arguments to filter Plans to delete.
+     * @example
+     * // Delete a few Plans
+     * const { count } = await prisma.plan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends planDeleteManyArgs>(args?: SelectSubset<T, planDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Plans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Plans
+     * const plan = await prisma.plan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends planUpdateManyArgs>(args: SelectSubset<T, planUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Plan.
+     * @param {planUpsertArgs} args - Arguments to update or create a Plan.
+     * @example
+     * // Update or create a Plan
+     * const plan = await prisma.plan.upsert({
+     *   create: {
+     *     // ... data to create a Plan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Plan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends planUpsertArgs>(args: SelectSubset<T, planUpsertArgs<ExtArgs>>): Prisma__planClient<$Result.GetResult<Prisma.$planPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Plans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planCountArgs} args - Arguments to filter Plans to count.
+     * @example
+     * // Count the number of Plans
+     * const count = await prisma.plan.count({
+     *   where: {
+     *     // ... the filter for the Plans we want to count
+     *   }
+     * })
+    **/
+    count<T extends planCountArgs>(
+      args?: Subset<T, planCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Plan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlanAggregateArgs>(args: Subset<T, PlanAggregateArgs>): Prisma.PrismaPromise<GetPlanAggregateType<T>>
+
+    /**
+     * Group by Plan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {planGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends planGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: planGroupByArgs['orderBy'] }
+        : { orderBy?: planGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, planGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the plan model
+   */
+  readonly fields: planFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for plan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__planClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    licences<T extends plan$licencesArgs<ExtArgs> = {}>(args?: Subset<T, plan$licencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$licencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the plan model
+   */
+  interface planFieldRefs {
+    readonly id: FieldRef<"plan", 'Int'>
+    readonly uuid: FieldRef<"plan", 'String'>
+    readonly libelle: FieldRef<"plan", 'String'>
+    readonly code: FieldRef<"plan", 'String'>
+    readonly prix_annuel: FieldRef<"plan", 'Decimal'>
+    readonly limite_utilisateurs: FieldRef<"plan", 'Int'>
+    readonly description: FieldRef<"plan", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * plan findUnique
+   */
+  export type planFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter, which plan to fetch.
+     */
+    where: planWhereUniqueInput
+  }
+
+  /**
+   * plan findUniqueOrThrow
+   */
+  export type planFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter, which plan to fetch.
+     */
+    where: planWhereUniqueInput
+  }
+
+  /**
+   * plan findFirst
+   */
+  export type planFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter, which plan to fetch.
+     */
+    where?: planWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of plans to fetch.
+     */
+    orderBy?: planOrderByWithRelationInput | planOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for plans.
+     */
+    cursor?: planWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of plans.
+     */
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * plan findFirstOrThrow
+   */
+  export type planFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter, which plan to fetch.
+     */
+    where?: planWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of plans to fetch.
+     */
+    orderBy?: planOrderByWithRelationInput | planOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for plans.
+     */
+    cursor?: planWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of plans.
+     */
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * plan findMany
+   */
+  export type planFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter, which plans to fetch.
+     */
+    where?: planWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of plans to fetch.
+     */
+    orderBy?: planOrderByWithRelationInput | planOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing plans.
+     */
+    cursor?: planWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` plans.
+     */
+    skip?: number
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * plan create
+   */
+  export type planCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * The data needed to create a plan.
+     */
+    data: XOR<planCreateInput, planUncheckedCreateInput>
+  }
+
+  /**
+   * plan createMany
+   */
+  export type planCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many plans.
+     */
+    data: planCreateManyInput | planCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * plan update
+   */
+  export type planUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * The data needed to update a plan.
+     */
+    data: XOR<planUpdateInput, planUncheckedUpdateInput>
+    /**
+     * Choose, which plan to update.
+     */
+    where: planWhereUniqueInput
+  }
+
+  /**
+   * plan updateMany
+   */
+  export type planUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update plans.
+     */
+    data: XOR<planUpdateManyMutationInput, planUncheckedUpdateManyInput>
+    /**
+     * Filter which plans to update
+     */
+    where?: planWhereInput
+    /**
+     * Limit how many plans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * plan upsert
+   */
+  export type planUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * The filter to search for the plan to update in case it exists.
+     */
+    where: planWhereUniqueInput
+    /**
+     * In case the plan found by the `where` argument doesn't exist, create a new plan with this data.
+     */
+    create: XOR<planCreateInput, planUncheckedCreateInput>
+    /**
+     * In case the plan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<planUpdateInput, planUncheckedUpdateInput>
+  }
+
+  /**
+   * plan delete
+   */
+  export type planDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+    /**
+     * Filter which plan to delete.
+     */
+    where: planWhereUniqueInput
+  }
+
+  /**
+   * plan deleteMany
+   */
+  export type planDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which plans to delete
+     */
+    where?: planWhereInput
+    /**
+     * Limit how many plans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * plan.licences
+   */
+  export type plan$licencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the licence
+     */
+    select?: licenceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the licence
+     */
+    omit?: licenceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: licenceInclude<ExtArgs> | null
+    where?: licenceWhereInput
+    orderBy?: licenceOrderByWithRelationInput | licenceOrderByWithRelationInput[]
+    cursor?: licenceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LicenceScalarFieldEnum | LicenceScalarFieldEnum[]
+  }
+
+  /**
+   * plan without action
+   */
+  export type planDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the plan
+     */
+    select?: planSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the plan
+     */
+    omit?: planOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: planInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -17206,7 +18366,6 @@ export namespace Prisma {
     societe_id: 'societe_id',
     code_etablissement: 'code_etablissement',
     libelle_etablissement: 'libelle_etablissement',
-    localite_etablissement: 'localite_etablissement',
     cree_le: 'cree_le',
     modifie_le: 'modifie_le'
   };
@@ -17229,6 +18388,7 @@ export namespace Prisma {
     id: 'id',
     uuid: 'uuid',
     societe_id: 'societe_id',
+    plan_id: 'plan_id',
     cle: 'cle',
     date_expiration: 'date_expiration',
     statut_id: 'statut_id'
@@ -17373,6 +18533,19 @@ export namespace Prisma {
   export type Utilisateur_adminScalarFieldEnum = (typeof Utilisateur_adminScalarFieldEnum)[keyof typeof Utilisateur_adminScalarFieldEnum]
 
 
+  export const PlanScalarFieldEnum: {
+    id: 'id',
+    uuid: 'uuid',
+    libelle: 'libelle',
+    code: 'code',
+    prix_annuel: 'prix_annuel',
+    limite_utilisateurs: 'limite_utilisateurs',
+    description: 'description'
+  };
+
+  export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -17414,8 +18587,7 @@ export namespace Prisma {
   export const etablissementOrderByRelevanceFieldEnum: {
     uuid: 'uuid',
     code_etablissement: 'code_etablissement',
-    libelle_etablissement: 'libelle_etablissement',
-    localite_etablissement: 'localite_etablissement'
+    libelle_etablissement: 'libelle_etablissement'
   };
 
   export type etablissementOrderByRelevanceFieldEnum = (typeof etablissementOrderByRelevanceFieldEnum)[keyof typeof etablissementOrderByRelevanceFieldEnum]
@@ -17543,6 +18715,16 @@ export namespace Prisma {
   export type utilisateur_adminOrderByRelevanceFieldEnum = (typeof utilisateur_adminOrderByRelevanceFieldEnum)[keyof typeof utilisateur_adminOrderByRelevanceFieldEnum]
 
 
+  export const planOrderByRelevanceFieldEnum: {
+    uuid: 'uuid',
+    libelle: 'libelle',
+    code: 'code',
+    description: 'description'
+  };
+
+  export type planOrderByRelevanceFieldEnum = (typeof planOrderByRelevanceFieldEnum)[keyof typeof planOrderByRelevanceFieldEnum]
+
+
   /**
    * Field references
    */
@@ -17580,6 +18762,13 @@ export namespace Prisma {
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
     
   /**
    * Deep Input Types
@@ -17748,7 +18937,6 @@ export namespace Prisma {
     societe_id?: IntFilter<"etablissement"> | number
     code_etablissement?: StringFilter<"etablissement"> | string
     libelle_etablissement?: StringFilter<"etablissement"> | string
-    localite_etablissement?: StringFilter<"etablissement"> | string
     cree_le?: DateTimeFilter<"etablissement"> | Date | string
     modifie_le?: DateTimeFilter<"etablissement"> | Date | string
     societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
@@ -17761,7 +18949,6 @@ export namespace Prisma {
     societe_id?: SortOrder
     code_etablissement?: SortOrder
     libelle_etablissement?: SortOrder
-    localite_etablissement?: SortOrder
     cree_le?: SortOrder
     modifie_le?: SortOrder
     societe?: societeOrderByWithRelationInput
@@ -17779,7 +18966,6 @@ export namespace Prisma {
     societe_id?: IntFilter<"etablissement"> | number
     code_etablissement?: StringFilter<"etablissement"> | string
     libelle_etablissement?: StringFilter<"etablissement"> | string
-    localite_etablissement?: StringFilter<"etablissement"> | string
     cree_le?: DateTimeFilter<"etablissement"> | Date | string
     modifie_le?: DateTimeFilter<"etablissement"> | Date | string
     societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
@@ -17792,7 +18978,6 @@ export namespace Prisma {
     societe_id?: SortOrder
     code_etablissement?: SortOrder
     libelle_etablissement?: SortOrder
-    localite_etablissement?: SortOrder
     cree_le?: SortOrder
     modifie_le?: SortOrder
     _count?: etablissementCountOrderByAggregateInput
@@ -17811,7 +18996,6 @@ export namespace Prisma {
     societe_id?: IntWithAggregatesFilter<"etablissement"> | number
     code_etablissement?: StringWithAggregatesFilter<"etablissement"> | string
     libelle_etablissement?: StringWithAggregatesFilter<"etablissement"> | string
-    localite_etablissement?: StringWithAggregatesFilter<"etablissement"> | string
     cree_le?: DateTimeWithAggregatesFilter<"etablissement"> | Date | string
     modifie_le?: DateTimeWithAggregatesFilter<"etablissement"> | Date | string
   }
@@ -17881,10 +19065,12 @@ export namespace Prisma {
     id?: IntFilter<"licence"> | number
     uuid?: StringFilter<"licence"> | string
     societe_id?: IntFilter<"licence"> | number
+    plan_id?: IntNullableFilter<"licence"> | number | null
     cle?: StringFilter<"licence"> | string
     date_expiration?: DateTimeNullableFilter<"licence"> | Date | string | null
     statut_id?: IntNullableFilter<"licence"> | number | null
     societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
+    plan?: XOR<PlanNullableScalarRelationFilter, planWhereInput> | null
     statut?: XOR<StatutNullableScalarRelationFilter, statutWhereInput> | null
   }
 
@@ -17892,10 +19078,12 @@ export namespace Prisma {
     id?: SortOrder
     uuid?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrderInput | SortOrder
     cle?: SortOrder
     date_expiration?: SortOrderInput | SortOrder
     statut_id?: SortOrderInput | SortOrder
     societe?: societeOrderByWithRelationInput
+    plan?: planOrderByWithRelationInput
     statut?: statutOrderByWithRelationInput
     _relevance?: licenceOrderByRelevanceInput
   }
@@ -17908,9 +19096,11 @@ export namespace Prisma {
     OR?: licenceWhereInput[]
     NOT?: licenceWhereInput | licenceWhereInput[]
     societe_id?: IntFilter<"licence"> | number
+    plan_id?: IntNullableFilter<"licence"> | number | null
     date_expiration?: DateTimeNullableFilter<"licence"> | Date | string | null
     statut_id?: IntNullableFilter<"licence"> | number | null
     societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
+    plan?: XOR<PlanNullableScalarRelationFilter, planWhereInput> | null
     statut?: XOR<StatutNullableScalarRelationFilter, statutWhereInput> | null
   }, "id" | "uuid" | "cle">
 
@@ -17918,6 +19108,7 @@ export namespace Prisma {
     id?: SortOrder
     uuid?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrderInput | SortOrder
     cle?: SortOrder
     date_expiration?: SortOrderInput | SortOrder
     statut_id?: SortOrderInput | SortOrder
@@ -17935,6 +19126,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"licence"> | number
     uuid?: StringWithAggregatesFilter<"licence"> | string
     societe_id?: IntWithAggregatesFilter<"licence"> | number
+    plan_id?: IntNullableWithAggregatesFilter<"licence"> | number | null
     cle?: StringWithAggregatesFilter<"licence"> | string
     date_expiration?: DateTimeNullableWithAggregatesFilter<"licence"> | Date | string | null
     statut_id?: IntNullableWithAggregatesFilter<"licence"> | number | null
@@ -18647,6 +19839,74 @@ export namespace Prisma {
     verification_expiration?: DateTimeNullableWithAggregatesFilter<"utilisateur_admin"> | Date | string | null
   }
 
+  export type planWhereInput = {
+    AND?: planWhereInput | planWhereInput[]
+    OR?: planWhereInput[]
+    NOT?: planWhereInput | planWhereInput[]
+    id?: IntFilter<"plan"> | number
+    uuid?: StringFilter<"plan"> | string
+    libelle?: StringFilter<"plan"> | string
+    code?: StringFilter<"plan"> | string
+    prix_annuel?: DecimalFilter<"plan"> | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFilter<"plan"> | number
+    description?: StringNullableFilter<"plan"> | string | null
+    licences?: LicenceListRelationFilter
+  }
+
+  export type planOrderByWithRelationInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    libelle?: SortOrder
+    code?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+    description?: SortOrderInput | SortOrder
+    licences?: licenceOrderByRelationAggregateInput
+    _relevance?: planOrderByRelevanceInput
+  }
+
+  export type planWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    uuid?: string
+    code?: string
+    AND?: planWhereInput | planWhereInput[]
+    OR?: planWhereInput[]
+    NOT?: planWhereInput | planWhereInput[]
+    libelle?: StringFilter<"plan"> | string
+    prix_annuel?: DecimalFilter<"plan"> | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFilter<"plan"> | number
+    description?: StringNullableFilter<"plan"> | string | null
+    licences?: LicenceListRelationFilter
+  }, "id" | "uuid" | "code">
+
+  export type planOrderByWithAggregationInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    libelle?: SortOrder
+    code?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+    description?: SortOrderInput | SortOrder
+    _count?: planCountOrderByAggregateInput
+    _avg?: planAvgOrderByAggregateInput
+    _max?: planMaxOrderByAggregateInput
+    _min?: planMinOrderByAggregateInput
+    _sum?: planSumOrderByAggregateInput
+  }
+
+  export type planScalarWhereWithAggregatesInput = {
+    AND?: planScalarWhereWithAggregatesInput | planScalarWhereWithAggregatesInput[]
+    OR?: planScalarWhereWithAggregatesInput[]
+    NOT?: planScalarWhereWithAggregatesInput | planScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"plan"> | number
+    uuid?: StringWithAggregatesFilter<"plan"> | string
+    libelle?: StringWithAggregatesFilter<"plan"> | string
+    code?: StringWithAggregatesFilter<"plan"> | string
+    prix_annuel?: DecimalWithAggregatesFilter<"plan"> | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntWithAggregatesFilter<"plan"> | number
+    description?: StringNullableWithAggregatesFilter<"plan"> | string | null
+  }
+
   export type societeCreateInput = {
     uuid?: string
     code_societe?: string | null
@@ -18835,7 +20095,6 @@ export namespace Prisma {
     uuid?: string
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
     societe: societeCreateNestedOneWithoutEtablissementInput
@@ -18848,7 +20107,6 @@ export namespace Prisma {
     societe_id: number
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
     point_vente?: point_venteUncheckedCreateNestedManyWithoutEtablissementInput
@@ -18858,7 +20116,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
     societe?: societeUpdateOneRequiredWithoutEtablissementNestedInput
@@ -18871,7 +20128,6 @@ export namespace Prisma {
     societe_id?: IntFieldUpdateOperationsInput | number
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
     point_vente?: point_venteUncheckedUpdateManyWithoutEtablissementNestedInput
@@ -18883,7 +20139,6 @@ export namespace Prisma {
     societe_id: number
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
   }
@@ -18892,7 +20147,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18903,7 +20157,6 @@ export namespace Prisma {
     societe_id?: IntFieldUpdateOperationsInput | number
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18965,6 +20218,7 @@ export namespace Prisma {
     cle: string
     date_expiration?: Date | string | null
     societe: societeCreateNestedOneWithoutLicencesInput
+    plan?: planCreateNestedOneWithoutLicencesInput
     statut?: statutCreateNestedOneWithoutLicencesInput
   }
 
@@ -18972,6 +20226,7 @@ export namespace Prisma {
     id?: number
     uuid?: string
     societe_id: number
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
     statut_id?: number | null
@@ -18982,6 +20237,7 @@ export namespace Prisma {
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     societe?: societeUpdateOneRequiredWithoutLicencesNestedInput
+    plan?: planUpdateOneWithoutLicencesNestedInput
     statut?: statutUpdateOneWithoutLicencesNestedInput
   }
 
@@ -18989,6 +20245,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
     societe_id?: IntFieldUpdateOperationsInput | number
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     statut_id?: NullableIntFieldUpdateOperationsInput | number | null
@@ -18998,6 +20255,7 @@ export namespace Prisma {
     id?: number
     uuid?: string
     societe_id: number
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
     statut_id?: number | null
@@ -19013,6 +20271,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
     societe_id?: IntFieldUpdateOperationsInput | number
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     statut_id?: NullableIntFieldUpdateOperationsInput | number | null
@@ -19741,6 +21000,77 @@ export namespace Prisma {
     verification_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type planCreateInput = {
+    uuid?: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: number
+    description?: string | null
+    licences?: licenceCreateNestedManyWithoutPlanInput
+  }
+
+  export type planUncheckedCreateInput = {
+    id?: number
+    uuid?: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: number
+    description?: string | null
+    licences?: licenceUncheckedCreateNestedManyWithoutPlanInput
+  }
+
+  export type planUpdateInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    licences?: licenceUpdateManyWithoutPlanNestedInput
+  }
+
+  export type planUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    licences?: licenceUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type planCreateManyInput = {
+    id?: number
+    uuid?: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: number
+    description?: string | null
+  }
+
+  export type planUpdateManyMutationInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type planUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -20074,7 +21404,6 @@ export namespace Prisma {
     societe_id?: SortOrder
     code_etablissement?: SortOrder
     libelle_etablissement?: SortOrder
-    localite_etablissement?: SortOrder
     cree_le?: SortOrder
     modifie_le?: SortOrder
   }
@@ -20090,7 +21419,6 @@ export namespace Prisma {
     societe_id?: SortOrder
     code_etablissement?: SortOrder
     libelle_etablissement?: SortOrder
-    localite_etablissement?: SortOrder
     cree_le?: SortOrder
     modifie_le?: SortOrder
   }
@@ -20101,7 +21429,6 @@ export namespace Prisma {
     societe_id?: SortOrder
     code_etablissement?: SortOrder
     libelle_etablissement?: SortOrder
-    localite_etablissement?: SortOrder
     cree_le?: SortOrder
     modifie_le?: SortOrder
   }
@@ -20170,6 +21497,11 @@ export namespace Prisma {
     etablissement_id?: SortOrder
   }
 
+  export type PlanNullableScalarRelationFilter = {
+    is?: planWhereInput | null
+    isNot?: planWhereInput | null
+  }
+
   export type licenceOrderByRelevanceInput = {
     fields: licenceOrderByRelevanceFieldEnum | licenceOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -20180,6 +21512,7 @@ export namespace Prisma {
     id?: SortOrder
     uuid?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrder
     cle?: SortOrder
     date_expiration?: SortOrder
     statut_id?: SortOrder
@@ -20188,6 +21521,7 @@ export namespace Prisma {
   export type licenceAvgOrderByAggregateInput = {
     id?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrder
     statut_id?: SortOrder
   }
 
@@ -20195,6 +21529,7 @@ export namespace Prisma {
     id?: SortOrder
     uuid?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrder
     cle?: SortOrder
     date_expiration?: SortOrder
     statut_id?: SortOrder
@@ -20204,6 +21539,7 @@ export namespace Prisma {
     id?: SortOrder
     uuid?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrder
     cle?: SortOrder
     date_expiration?: SortOrder
     statut_id?: SortOrder
@@ -20212,6 +21548,7 @@ export namespace Prisma {
   export type licenceSumOrderByAggregateInput = {
     id?: SortOrder
     societe_id?: SortOrder
+    plan_id?: SortOrder
     statut_id?: SortOrder
   }
 
@@ -20804,6 +22141,81 @@ export namespace Prisma {
     tokenVersion?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type planOrderByRelevanceInput = {
+    fields: planOrderByRelevanceFieldEnum | planOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type planCountOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    libelle?: SortOrder
+    code?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+    description?: SortOrder
+  }
+
+  export type planAvgOrderByAggregateInput = {
+    id?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+  }
+
+  export type planMaxOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    libelle?: SortOrder
+    code?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+    description?: SortOrder
+  }
+
+  export type planMinOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    libelle?: SortOrder
+    code?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+    description?: SortOrder
+  }
+
+  export type planSumOrderByAggregateInput = {
+    id?: SortOrder
+    prix_annuel?: SortOrder
+    limite_utilisateurs?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type statutCreateNestedOneWithoutSocietesInput = {
     create?: XOR<statutCreateWithoutSocietesInput, statutUncheckedCreateWithoutSocietesInput>
     connectOrCreate?: statutCreateOrConnectWithoutSocietesInput
@@ -21128,6 +22540,12 @@ export namespace Prisma {
     connect?: societeWhereUniqueInput
   }
 
+  export type planCreateNestedOneWithoutLicencesInput = {
+    create?: XOR<planCreateWithoutLicencesInput, planUncheckedCreateWithoutLicencesInput>
+    connectOrCreate?: planCreateOrConnectWithoutLicencesInput
+    connect?: planWhereUniqueInput
+  }
+
   export type statutCreateNestedOneWithoutLicencesInput = {
     create?: XOR<statutCreateWithoutLicencesInput, statutUncheckedCreateWithoutLicencesInput>
     connectOrCreate?: statutCreateOrConnectWithoutLicencesInput
@@ -21140,6 +22558,16 @@ export namespace Prisma {
     upsert?: societeUpsertWithoutLicencesInput
     connect?: societeWhereUniqueInput
     update?: XOR<XOR<societeUpdateToOneWithWhereWithoutLicencesInput, societeUpdateWithoutLicencesInput>, societeUncheckedUpdateWithoutLicencesInput>
+  }
+
+  export type planUpdateOneWithoutLicencesNestedInput = {
+    create?: XOR<planCreateWithoutLicencesInput, planUncheckedCreateWithoutLicencesInput>
+    connectOrCreate?: planCreateOrConnectWithoutLicencesInput
+    upsert?: planUpsertWithoutLicencesInput
+    disconnect?: planWhereInput | boolean
+    delete?: planWhereInput | boolean
+    connect?: planWhereUniqueInput
+    update?: XOR<XOR<planUpdateToOneWithWhereWithoutLicencesInput, planUpdateWithoutLicencesInput>, planUncheckedUpdateWithoutLicencesInput>
   }
 
   export type statutUpdateOneWithoutLicencesNestedInput = {
@@ -21418,6 +22846,56 @@ export namespace Prisma {
     deleteMany?: utilisateur_clientScalarWhereInput | utilisateur_clientScalarWhereInput[]
   }
 
+  export type licenceCreateNestedManyWithoutPlanInput = {
+    create?: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput> | licenceCreateWithoutPlanInput[] | licenceUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: licenceCreateOrConnectWithoutPlanInput | licenceCreateOrConnectWithoutPlanInput[]
+    createMany?: licenceCreateManyPlanInputEnvelope
+    connect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+  }
+
+  export type licenceUncheckedCreateNestedManyWithoutPlanInput = {
+    create?: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput> | licenceCreateWithoutPlanInput[] | licenceUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: licenceCreateOrConnectWithoutPlanInput | licenceCreateOrConnectWithoutPlanInput[]
+    createMany?: licenceCreateManyPlanInputEnvelope
+    connect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type licenceUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput> | licenceCreateWithoutPlanInput[] | licenceUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: licenceCreateOrConnectWithoutPlanInput | licenceCreateOrConnectWithoutPlanInput[]
+    upsert?: licenceUpsertWithWhereUniqueWithoutPlanInput | licenceUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: licenceCreateManyPlanInputEnvelope
+    set?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    disconnect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    delete?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    connect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    update?: licenceUpdateWithWhereUniqueWithoutPlanInput | licenceUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: licenceUpdateManyWithWhereWithoutPlanInput | licenceUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: licenceScalarWhereInput | licenceScalarWhereInput[]
+  }
+
+  export type licenceUncheckedUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput> | licenceCreateWithoutPlanInput[] | licenceUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: licenceCreateOrConnectWithoutPlanInput | licenceCreateOrConnectWithoutPlanInput[]
+    upsert?: licenceUpsertWithWhereUniqueWithoutPlanInput | licenceUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: licenceCreateManyPlanInputEnvelope
+    set?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    disconnect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    delete?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    connect?: licenceWhereUniqueInput | licenceWhereUniqueInput[]
+    update?: licenceUpdateWithWhereUniqueWithoutPlanInput | licenceUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: licenceUpdateManyWithWhereWithoutPlanInput | licenceUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: licenceScalarWhereInput | licenceScalarWhereInput[]
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -21680,6 +23158,33 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type statutCreateWithoutSocietesInput = {
     uuid?: string
     code: string
@@ -21726,7 +23231,6 @@ export namespace Prisma {
     uuid?: string
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
     point_vente?: point_venteCreateNestedManyWithoutEtablissementInput
@@ -21737,7 +23241,6 @@ export namespace Prisma {
     uuid?: string
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
     point_vente?: point_venteUncheckedCreateNestedManyWithoutEtablissementInput
@@ -21803,12 +23306,14 @@ export namespace Prisma {
     uuid?: string
     cle: string
     date_expiration?: Date | string | null
+    plan?: planCreateNestedOneWithoutLicencesInput
     statut?: statutCreateNestedOneWithoutLicencesInput
   }
 
   export type licenceUncheckedCreateWithoutSocieteInput = {
     id?: number
     uuid?: string
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
     statut_id?: number | null
@@ -21926,7 +23431,6 @@ export namespace Prisma {
     societe_id?: IntFilter<"etablissement"> | number
     code_etablissement?: StringFilter<"etablissement"> | string
     libelle_etablissement?: StringFilter<"etablissement"> | string
-    localite_etablissement?: StringFilter<"etablissement"> | string
     cree_le?: DateTimeFilter<"etablissement"> | Date | string
     modifie_le?: DateTimeFilter<"etablissement"> | Date | string
   }
@@ -21992,6 +23496,7 @@ export namespace Prisma {
     id?: IntFilter<"licence"> | number
     uuid?: StringFilter<"licence"> | string
     societe_id?: IntFilter<"licence"> | number
+    plan_id?: IntNullableFilter<"licence"> | number | null
     cle?: StringFilter<"licence"> | string
     date_expiration?: DateTimeNullableFilter<"licence"> | Date | string | null
     statut_id?: IntNullableFilter<"licence"> | number | null
@@ -22204,7 +23709,6 @@ export namespace Prisma {
     uuid?: string
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
     societe: societeCreateNestedOneWithoutEtablissementInput
@@ -22216,7 +23720,6 @@ export namespace Prisma {
     societe_id: number
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
   }
@@ -22241,7 +23744,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
     societe?: societeUpdateOneRequiredWithoutEtablissementNestedInput
@@ -22253,7 +23755,6 @@ export namespace Prisma {
     societe_id?: IntFieldUpdateOperationsInput | number
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22316,6 +23817,30 @@ export namespace Prisma {
   export type societeCreateOrConnectWithoutLicencesInput = {
     where: societeWhereUniqueInput
     create: XOR<societeCreateWithoutLicencesInput, societeUncheckedCreateWithoutLicencesInput>
+  }
+
+  export type planCreateWithoutLicencesInput = {
+    uuid?: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: number
+    description?: string | null
+  }
+
+  export type planUncheckedCreateWithoutLicencesInput = {
+    id?: number
+    uuid?: string
+    libelle: string
+    code: string
+    prix_annuel: Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: number
+    description?: string | null
+  }
+
+  export type planCreateOrConnectWithoutLicencesInput = {
+    where: planWhereUniqueInput
+    create: XOR<planCreateWithoutLicencesInput, planUncheckedCreateWithoutLicencesInput>
   }
 
   export type statutCreateWithoutLicencesInput = {
@@ -22404,6 +23929,36 @@ export namespace Prisma {
     etablissement?: etablissementUncheckedUpdateManyWithoutSocieteNestedInput
     utilisateur_client?: utilisateur_clientUncheckedUpdateManyWithoutSocieteNestedInput
     stickers?: stickerUncheckedUpdateManyWithoutSocieteNestedInput
+  }
+
+  export type planUpsertWithoutLicencesInput = {
+    update: XOR<planUpdateWithoutLicencesInput, planUncheckedUpdateWithoutLicencesInput>
+    create: XOR<planCreateWithoutLicencesInput, planUncheckedCreateWithoutLicencesInput>
+    where?: planWhereInput
+  }
+
+  export type planUpdateToOneWithWhereWithoutLicencesInput = {
+    where?: planWhereInput
+    data: XOR<planUpdateWithoutLicencesInput, planUncheckedUpdateWithoutLicencesInput>
+  }
+
+  export type planUpdateWithoutLicencesInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type planUncheckedUpdateWithoutLicencesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    libelle?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    prix_annuel?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    limite_utilisateurs?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type statutUpsertWithoutLicencesInput = {
@@ -22976,12 +24531,14 @@ export namespace Prisma {
     cle: string
     date_expiration?: Date | string | null
     societe: societeCreateNestedOneWithoutLicencesInput
+    plan?: planCreateNestedOneWithoutLicencesInput
   }
 
   export type licenceUncheckedCreateWithoutStatutInput = {
     id?: number
     uuid?: string
     societe_id: number
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
   }
@@ -23179,12 +24736,54 @@ export namespace Prisma {
     data: XOR<utilisateur_clientUpdateManyMutationInput, utilisateur_clientUncheckedUpdateManyWithoutRoleInput>
   }
 
+  export type licenceCreateWithoutPlanInput = {
+    uuid?: string
+    cle: string
+    date_expiration?: Date | string | null
+    societe: societeCreateNestedOneWithoutLicencesInput
+    statut?: statutCreateNestedOneWithoutLicencesInput
+  }
+
+  export type licenceUncheckedCreateWithoutPlanInput = {
+    id?: number
+    uuid?: string
+    societe_id: number
+    cle: string
+    date_expiration?: Date | string | null
+    statut_id?: number | null
+  }
+
+  export type licenceCreateOrConnectWithoutPlanInput = {
+    where: licenceWhereUniqueInput
+    create: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput>
+  }
+
+  export type licenceCreateManyPlanInputEnvelope = {
+    data: licenceCreateManyPlanInput | licenceCreateManyPlanInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type licenceUpsertWithWhereUniqueWithoutPlanInput = {
+    where: licenceWhereUniqueInput
+    update: XOR<licenceUpdateWithoutPlanInput, licenceUncheckedUpdateWithoutPlanInput>
+    create: XOR<licenceCreateWithoutPlanInput, licenceUncheckedCreateWithoutPlanInput>
+  }
+
+  export type licenceUpdateWithWhereUniqueWithoutPlanInput = {
+    where: licenceWhereUniqueInput
+    data: XOR<licenceUpdateWithoutPlanInput, licenceUncheckedUpdateWithoutPlanInput>
+  }
+
+  export type licenceUpdateManyWithWhereWithoutPlanInput = {
+    where: licenceScalarWhereInput
+    data: XOR<licenceUpdateManyMutationInput, licenceUncheckedUpdateManyWithoutPlanInput>
+  }
+
   export type etablissementCreateManySocieteInput = {
     id?: number
     uuid?: string
     code_etablissement: string
     libelle_etablissement: string
-    localite_etablissement: string
     cree_le?: Date | string
     modifie_le?: Date | string
   }
@@ -23210,6 +24809,7 @@ export namespace Prisma {
   export type licenceCreateManySocieteInput = {
     id?: number
     uuid?: string
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
     statut_id?: number | null
@@ -23226,7 +24826,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
     point_vente?: point_venteUpdateManyWithoutEtablissementNestedInput
@@ -23237,7 +24836,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
     point_vente?: point_venteUncheckedUpdateManyWithoutEtablissementNestedInput
@@ -23248,7 +24846,6 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code_etablissement?: StringFieldUpdateOperationsInput | string
     libelle_etablissement?: StringFieldUpdateOperationsInput | string
-    localite_etablissement?: StringFieldUpdateOperationsInput | string
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23311,12 +24908,14 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plan?: planUpdateOneWithoutLicencesNestedInput
     statut?: statutUpdateOneWithoutLicencesNestedInput
   }
 
   export type licenceUncheckedUpdateWithoutSocieteInput = {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     statut_id?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23325,6 +24924,7 @@ export namespace Prisma {
   export type licenceUncheckedUpdateManyWithoutSocieteInput = {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     statut_id?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23404,6 +25004,7 @@ export namespace Prisma {
     id?: number
     uuid?: string
     societe_id: number
+    plan_id?: number | null
     cle: string
     date_expiration?: Date | string | null
   }
@@ -23509,12 +25110,14 @@ export namespace Prisma {
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     societe?: societeUpdateOneRequiredWithoutLicencesNestedInput
+    plan?: planUpdateOneWithoutLicencesNestedInput
   }
 
   export type licenceUncheckedUpdateWithoutStatutInput = {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
     societe_id?: IntFieldUpdateOperationsInput | number
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -23523,6 +25126,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     uuid?: StringFieldUpdateOperationsInput | string
     societe_id?: IntFieldUpdateOperationsInput | number
+    plan_id?: NullableIntFieldUpdateOperationsInput | number | null
     cle?: StringFieldUpdateOperationsInput | string
     date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -23651,6 +25255,41 @@ export namespace Prisma {
     tokenVersion?: IntFieldUpdateOperationsInput | number
     verification_token?: NullableStringFieldUpdateOperationsInput | string | null
     verification_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type licenceCreateManyPlanInput = {
+    id?: number
+    uuid?: string
+    societe_id: number
+    cle: string
+    date_expiration?: Date | string | null
+    statut_id?: number | null
+  }
+
+  export type licenceUpdateWithoutPlanInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    cle?: StringFieldUpdateOperationsInput | string
+    date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    societe?: societeUpdateOneRequiredWithoutLicencesNestedInput
+    statut?: statutUpdateOneWithoutLicencesNestedInput
+  }
+
+  export type licenceUncheckedUpdateWithoutPlanInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    societe_id?: IntFieldUpdateOperationsInput | number
+    cle?: StringFieldUpdateOperationsInput | string
+    date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statut_id?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type licenceUncheckedUpdateManyWithoutPlanInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    societe_id?: IntFieldUpdateOperationsInput | number
+    cle?: StringFieldUpdateOperationsInput | string
+    date_expiration?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statut_id?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
 

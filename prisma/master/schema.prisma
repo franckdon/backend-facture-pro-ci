@@ -140,7 +140,6 @@ model type_facturation {
   libelle_type_facturation String  @db.VarChar(50)
 }
 
-
 model sticker {
   id              Int       @id @default(autoincrement())
   uuid            String    @unique @default(uuid()) @db.Char(36)
@@ -200,9 +199,8 @@ model plan {
   uuid                String    @unique @default(uuid()) @db.Char(36)
   libelle             String    @db.VarChar(100)
   code                String    @unique @db.VarChar(50) 
-  prix_mensuel        Decimal   @db.Decimal(19, 4)
+  prix_annuel        Decimal   @db.Decimal(19, 4)
   limite_utilisateurs Int       @default(1)
-  limite_factures     Int       @default(100) 
   description         String?   @db.VarChar(255)
   
   licences            licence[] 

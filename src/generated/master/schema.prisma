@@ -40,14 +40,13 @@ model societe {
 }
 
 model etablissement {
-  id                     Int      @id @default(autoincrement())
-  uuid                   String   @unique @default(uuid()) @db.Char(36)
-  societe_id             Int
-  code_etablissement     String   @db.VarChar(50)
-  libelle_etablissement  String   @db.VarChar(150)
-  localite_etablissement String   @db.VarChar(150)
-  cree_le                DateTime @default(now())
-  modifie_le             DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  uuid                  String   @unique @default(uuid()) @db.Char(36)
+  societe_id            Int
+  code_etablissement    String   @db.VarChar(50)
+  libelle_etablissement String   @db.VarChar(150)
+  cree_le               DateTime @default(now())
+  modifie_le            DateTime @updatedAt
 
   societe     societe       @relation(fields: [societe_id], references: [id], onDelete: Cascade)
   point_vente point_vente[]
@@ -68,11 +67,13 @@ model licence {
   id              Int       @id @default(autoincrement())
   uuid            String    @unique @default(uuid()) @db.Char(36)
   societe_id      Int
+  plan_id         Int?
   cle             String    @unique @db.VarChar(255)
   date_expiration DateTime?
   statut_id       Int?
 
   societe societe @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+  plan    plan?   @relation(fields: [plan_id], references: [id])
   statut  statut? @relation(fields: [statut_id], references: [id])
 }
 
@@ -188,4 +189,16 @@ model utilisateur_admin {
   tokenVersion            Int       @default(1)
   verification_token      String?   @db.VarChar(255)
   verification_expiration DateTime?
+}
+
+model plan {
+  id                  Int     @id @default(autoincrement())
+  uuid                String  @unique @default(uuid()) @db.Char(36)
+  libelle             String  @db.VarChar(100)
+  code                String  @unique @db.VarChar(50)
+  prix_annuel         Decimal @db.Decimal(19, 4)
+  limite_utilisateurs Int     @default(1)
+  description         String? @db.VarChar(255)
+
+  licences licence[]
 }

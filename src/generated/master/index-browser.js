@@ -150,7 +150,6 @@ exports.Prisma.EtablissementScalarFieldEnum = {
   societe_id: 'societe_id',
   code_etablissement: 'code_etablissement',
   libelle_etablissement: 'libelle_etablissement',
-  localite_etablissement: 'localite_etablissement',
   cree_le: 'cree_le',
   modifie_le: 'modifie_le'
 };
@@ -167,6 +166,7 @@ exports.Prisma.LicenceScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
   societe_id: 'societe_id',
+  plan_id: 'plan_id',
   cle: 'cle',
   date_expiration: 'date_expiration',
   statut_id: 'statut_id'
@@ -275,6 +275,16 @@ exports.Prisma.Utilisateur_adminScalarFieldEnum = {
   verification_expiration: 'verification_expiration'
 };
 
+exports.Prisma.PlanScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  libelle: 'libelle',
+  code: 'code',
+  prix_annuel: 'prix_annuel',
+  limite_utilisateurs: 'limite_utilisateurs',
+  description: 'description'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -307,8 +317,7 @@ exports.Prisma.societeOrderByRelevanceFieldEnum = {
 exports.Prisma.etablissementOrderByRelevanceFieldEnum = {
   uuid: 'uuid',
   code_etablissement: 'code_etablissement',
-  libelle_etablissement: 'libelle_etablissement',
-  localite_etablissement: 'localite_etablissement'
+  libelle_etablissement: 'libelle_etablissement'
 };
 
 exports.Prisma.point_venteOrderByRelevanceFieldEnum = {
@@ -394,6 +403,13 @@ exports.Prisma.utilisateur_adminOrderByRelevanceFieldEnum = {
   verification_token: 'verification_token'
 };
 
+exports.Prisma.planOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  libelle: 'libelle',
+  code: 'code',
+  description: 'description'
+};
+
 
 exports.Prisma.ModelName = {
   societe: 'societe',
@@ -410,7 +426,8 @@ exports.Prisma.ModelName = {
   configuration: 'configuration',
   statut: 'statut',
   role: 'role',
-  utilisateur_admin: 'utilisateur_admin'
+  utilisateur_admin: 'utilisateur_admin',
+  plan: 'plan'
 };
 
 /**
