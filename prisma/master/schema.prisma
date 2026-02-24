@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/master"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+
+model societe {
+  id                     Int       @id @default(autoincrement())
+  uuid                   String    @unique @default(uuid()) @db.Char(36)
+  code_societe           String?   @unique @db.VarChar(100)
+  raison_sociale_societe String?   @db.VarChar(150)
+  ncc                    String?   @db.VarChar(50)
+  rccm                   String?   @db.VarChar(50)
+  regime_imposition      String?   @db.VarChar(45)
+  centre_impot           String?   @db.VarChar(100)
+  ref_bancaire           String?   @db.VarChar(100)
+  adresse                String?   @db.VarChar(200)
+  telephone              String?   @db.VarChar(14)
+  email                  String?   @db.VarChar(100)
+  cree_le                DateTime? @default(now())
+  modifie_le             DateTime? @updatedAt
+
+  bd_host  String? @db.VarChar(100)
+  bd_name  String? @db.VarChar(100)
+  bd_user  String? @db.VarChar(100)
+  bd_pass  String? @db.VarChar(255)
+  bd_port  Int?
+  logo_url String? @db.VarChar(100)
+
+  statut_id          Int?
+  statut             statut?              @relation(fields: [statut_id], references: [id])
+  configuration      configuration?
+  etablissement      etablissement[]
+  utilisateur_client utilisateur_client[]
+  licences           licence[]
+  stickers           sticker[]
+}
+
+model etablissement {
+  id                     Int      @id @default(autoincrement())
+  uuid                   String   @unique @default(uuid()) @db.Char(36)
+  societe_id             Int
+  code_etablissement     String   @db.VarChar(50)
+  libelle_etablissement  String   @db.VarChar(150)
+  cree_le                DateTime @default(now())
+  modifie_le             DateTime @updatedAt
+
+  societe     societe       @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+  point_vente point_vente[]
+
+  @@unique([societe_id, code_etablissement])
+}
+
+model point_vente {
+  id               Int           @id @default(autoincrement())
+  uuid             String        @unique @default(uuid()) @db.Char(36)
+  etablissement_id Int
+  libelle_pdv      String        @db.VarChar(150)
+  cree_le          DateTime      @default(now())
+  etablissement    etablissement @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+}
+
+
+model licence {
+  id              Int       @id @default(autoincrement())
+  uuid            String    @unique @default(uuid()) @db.Char(36)
+  societe_id      Int
+  plan_id         Int?      
+  cle             String    @unique @db.VarChar(255)
+  date_expiration DateTime?
+  statut_id       Int?      
+
+  societe         societe   @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+  plan            plan?     @relation(fields: [plan_id], references: [id])
+  statut          statut?   @relation(fields: [statut_id], references: [id])
+}
+
+model utilisateur_client {
+  id           BigInt    @id @default(autoincrement())
+  uuid         String    @unique @default(uuid()) @db.Char(36)
+  email        String    @db.VarChar(150)
+  login        String    @db.VarChar(150)
+  mot_de_passe String    @db.VarChar(255)
+  nom_complet  String    @db.VarChar(150)
+  statut_id    Int       @default(1)
+  societe_id   Int?
+  role_id      BigInt?
+  cree_le      DateTime  @default(now())
+  dernier_login        DateTime?
+  otp_secret           String?   @db.VarChar(255)
+  otp_expiration           DateTime?
+  tokenVersion         Int       @default(1)
+  verification_token   String?   @db.VarChar(255)
+  verification_expiration DateTime?
+
+  role    role?    @relation(fields: [role_id], references: [id])
+  societe societe? @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+  statut  statut   @relation(fields: [statut_id], references: [id])
+}
+
+
+model mode_paiement {
+  id                    BigInt  @id @default(autoincrement())
+  uuid                  String  @unique @default(uuid()) @db.Char(36)
+  code_mode_paiement    String  @db.VarChar(50)
+  libelle_mode_paiement String  @db.VarChar(100)
+}
+
+model taux_imposition {
+  id          BigInt  @id @default(autoincrement())
+  uuid        String  @unique @default(uuid()) @db.Char(36)
+  code        String  @db.VarChar(50)
+  pourcentage Float
+  description String  @db.VarChar(200)
+}
+
+model type_facture {
+  id                   BigInt  @id @default(autoincrement())
+  uuid                 String  @unique @default(uuid()) @db.Char(36)
+  code_type_facture    String  @db.VarChar(50)
+  libelle_type_facture String  @db.VarChar(50)
+}
+
+model devise {
+  id           BigInt  @id @default(autoincrement())
+  uuid         String  @unique @default(uuid()) @db.Char(36)
+  code_devise  String  @db.VarChar(50)
+  taux_devise  String  @db.VarChar(50)
+  description  String  @db.VarChar(150)
+}
+
+model type_facturation {
+  id                       BigInt  @id @default(autoincrement())
+  uuid                     String  @unique @default(uuid()) @db.Char(36)
+  code_type_facturaction   String  @db.VarChar(50)
+  libelle_type_facturation String  @db.VarChar(50)
+}
+
+
+model sticker {
+  id              Int       @id @default(autoincrement())
+  uuid            String    @unique @default(uuid()) @db.Char(36)
+  societe_id      Int       @unique
+  balance_sticker Int?
+  date_maj        DateTime? @updatedAt
+  societe         societe   @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+}
+
+model configuration {
+  id             Int     @id @default(autoincrement())
+  uuid           String  @unique @default(uuid()) @db.Char(36)
+  societe_id     Int     @unique
+  cle_api_fne    String? @db.VarChar(255)
+  cle_api_locale String? @db.VarChar(255)
+  production     Int     @default(0) @db.TinyInt
+
+  societe societe @relation(fields: [societe_id], references: [id], onDelete: Cascade)
+}
+
+model statut {
+  id                 Int                  @id @default(autoincrement())
+  uuid               String               @unique @default(uuid()) @db.Char(36)
+  code               String               @unique @db.VarChar(50)
+  description        String?              @db.VarChar(255)
+  societes           societe[]
+  licences           licence[]
+  utilisateur_client utilisateur_client[]
+}
+
+model role {
+  id                 BigInt               @id
+  uuid               String               @unique @default(uuid()) @db.Char(36)
+  code               String               @db.VarChar(50)
+  description        String?              @db.VarChar(255)
+  utilisateur_client utilisateur_client[]
+}
+
+model utilisateur_admin {
+  id           BigInt    @id @default(autoincrement())
+  uuid         String    @unique @default(uuid()) @db.Char(36)
+  email        String    @db.VarChar(150)
+  login        String    @db.VarChar(150)
+  mot_de_passe String    @db.VarChar(255)
+  nom_complet  String    @db.VarChar(150)
+  cree_le      DateTime  @default(now())
+  dernier_login        DateTime?
+  otp_secret           String?   @db.VarChar(255)
+  otp_expiration           DateTime?
+  tokenVersion         Int       @default(1)
+  verification_token   String?   @db.VarChar(255)
+  verification_expiration DateTime?
+}
+
+model plan {
+  id                  Int       @id @default(autoincrement())
+  uuid                String    @unique @default(uuid()) @db.Char(36)
+  libelle             String    @db.VarChar(100)
+  code                String    @unique @db.VarChar(50) 
+  prix_mensuel        Decimal   @db.Decimal(19, 4)
+  limite_utilisateurs Int       @default(1)
+  limite_factures     Int       @default(100) 
+  description         String?   @db.VarChar(255)
+  
+  licences            licence[] 
+}

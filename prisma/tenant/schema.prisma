@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/tenant"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model entete_facture {
+  id                 BigInt   @id @default(autoincrement())
+  uuid               String   @unique @default(uuid()) @db.Char(36)
+  numero_facture     String   @db.VarChar(100)
+  date_facture       DateTime @db.Date
+  
+  code_type_facture     String @db.VarChar(50)
+  code_type_facturation String @db.VarChar(50)
+  code_mode_paiement    String @db.VarChar(50)
+  code_devise           String @db.VarChar(50)
+
+  total_ht           Decimal  @db.Decimal(19, 4)
+  total_tva          Decimal  @db.Decimal(19, 4)
+  total_remise       Decimal  @db.Decimal(19, 4)
+  total_autre_taxe   Decimal  @db.Decimal(19, 4)
+  total_ttc          Decimal  @db.Decimal(19, 4)
+  
+  point_vente        String   @db.VarChar(150) 
+  etablissement      String   @db.VarChar(150)
+  
+  certifie           Int      @default(0) @db.TinyInt
+  retour_ncc         String?  @db.VarChar(200)
+  retour_id_facture  String?  @db.VarChar(200)
+  retour_token       String?  @db.VarChar(200)
+  numero_facture_origine        String?                     @db.VarChar(200)
+
+  id_tiers                      BigInt
+  id_information_complementaire BigInt?
+  
+  tiers                      tiers                      @relation(fields: [id_tiers], references: [id])
+  information_complementaire information_complementaire? @relation(fields: [id_information_complementaire], references: [id])
+  detail_facture             detail_facture[]
+  taxe_pieds                 taxe_pieds[]
+}
+
+model detail_facture {
+  id                  BigInt  @id @default(autoincrement())
+  uuid                String  @unique @default(uuid()) @db.Char(36)
+  id_entete_facture   BigInt
+  
+  code_taux_imposition String @db.VarChar(50) 
+
+  reference_article         String?         @db.VarChar(100)
+  designation_article       String?         @db.VarChar(250)
+  quantite                  Float
+  unite_vente               String          @db.VarChar(50)
+  prix                      Decimal         @db.Decimal(19, 4)
+  montant_ht                Decimal         @db.Decimal(19, 4)
+  remise                    Float
+  montant_ttc               Decimal         @db.Decimal(19, 4)
+  montant_taux_imposition   Decimal         @db.Decimal(19, 4)
+  retour_detail             String          @db.VarChar(150)
+  ligne_avoir               Int             @db.TinyInt
+  id_detail_origine_facture BigInt
+  montant_remise            Decimal         @db.Decimal(19, 4)
+
+  entete_facture entete_facture @relation(fields: [id_entete_facture], references: [id], onDelete: Cascade)
+  taxe_details   taxe_details[]
+}
+
+model taxe_details {
+  id                   BigInt         @id @default(autoincrement())
+  id_detail_facture    BigInt
+  libelle_taxe_details String?        @db.VarChar(50)
+  taux_taxe_details    Float
+  montant_taxe_details Decimal        @db.Decimal(19, 4)
+  detail_facture       detail_facture @relation(fields: [id_detail_facture], references: [id], onDelete: Cascade)
+}
+
+model taxe_pieds {
+  id                 BigInt         @id @default(autoincrement())
+  id_entete_facture  BigInt
+  libelle_taxe_pieds String?        @db.VarChar(50)
+  taux_taxe_pieds    Float
+  montant_taxe_pieds Decimal        @db.Decimal(19, 4)
+  entete_facture     entete_facture @relation(fields: [id_entete_facture], references: [id], onDelete: Cascade)
+}
+
+model tiers {
+  id                   BigInt           @id @default(autoincrement())
+  uuid                 String           @unique @default(uuid()) @db.Char(36)
+  code_tiers           String           @unique @db.VarChar(150)
+  raison_sociale_tiers String           @db.VarChar(150)
+  telephone_tiers      String?          @db.VarChar(150)
+  email_tiers          String?          @db.VarChar(150)
+  entete_facture       entete_facture[]
+}
+
+model information_complementaire {
+  id             BigInt           @id @default(autoincrement())
+  uuid           String           @unique @default(uuid()) @db.Char(36)
+  pied_de_page   String?          @db.VarChar(255)
+  nom_commercial     String?          @db.VarChar(150)
+  autre_mention      String?          @db.Text
+  plus_d_information String?          @db.Text
+  entete_facture entete_facture[]
+}
