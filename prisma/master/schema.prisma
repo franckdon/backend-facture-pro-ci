@@ -205,3 +205,14 @@ model plan {
   
   licences            licence[] 
 }
+
+model faq {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @default(uuid()) @db.Char(36)
+  question   String   @db.Text
+  reponse    String   @db.Text
+  ordre      Int      @default(0)
+  est_actif  Boolean  @default(true)
+  cree_le    DateTime @default(now())
+  modifie_le DateTime @updatedAt
+}

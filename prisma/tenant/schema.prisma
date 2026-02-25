@@ -31,6 +31,7 @@ model entete_facture {
   retour_ncc         String?  @db.VarChar(200)
   retour_id_facture  String?  @db.VarChar(200)
   retour_token       String?  @db.VarChar(200)
+  retour_reference   String?  @db.VarChar(200)
   numero_facture_origine        String?                     @db.VarChar(200)
 
   id_tiers                      BigInt
@@ -90,6 +91,7 @@ model tiers {
   uuid                 String           @unique @default(uuid()) @db.Char(36)
   code_tiers           String           @unique @db.VarChar(150)
   raison_sociale_tiers String           @db.VarChar(150)
+  ncc_tiers            String           @db.VarChar(150)
   telephone_tiers      String?          @db.VarChar(150)
   email_tiers          String?          @db.VarChar(150)
   entete_facture       entete_facture[]
@@ -103,4 +105,27 @@ model information_complementaire {
   autre_mention      String?          @db.Text
   plus_d_information String?          @db.Text
   entete_facture entete_facture[]
+}
+
+model type_produit {
+  id          BigInt    @id @default(autoincrement())
+  uuid        String    @unique @default(uuid()) @db.Char(36)
+  code        String    @unique @db.VarChar(50) 
+  libelle     String    @db.VarChar(100)        
+  produits    produit[]
+}
+
+model produit {
+  id              BigInt        @id @default(autoincrement())
+  uuid            String        @unique @default(uuid()) @db.Char(36)
+  reference       String        @db.VarChar(150)
+  designation     String        @db.VarChar(150)
+  prix_base       Decimal       @db.Decimal(19, 4) @default(0.0000)
+  description     String?       @db.VarChar(255)
+  
+  type_produit_id BigInt
+  type_produit    type_produit  @relation(fields: [type_produit_id], references: [id])
+
+  cree_le         DateTime      @default(now())
+  modifie_le      DateTime      @updatedAt
 }

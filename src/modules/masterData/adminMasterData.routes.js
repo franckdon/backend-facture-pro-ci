@@ -1,7 +1,7 @@
 const express = require("express");
 const masterDataRouter = express.Router();
 const controller = require("./masterData.controller");
-const { verifyAdminToken, verifyClientToken } = require("../../../middlewares/auth");
+const { verifyAdminToken, verifyClientToken } = require("../../middlewares/auth");
 
 masterDataRouter.post("/setup-master-data", verifyAdminToken, controller.setupMasterData);
 masterDataRouter.get("/tax-rates", verifyClientToken, controller.getAllTaxRates);
@@ -12,17 +12,14 @@ masterDataRouter.get("/billing-types", verifyClientToken, controller.getAllBilli
 masterDataRouter.post("/create-tax-rate", verifyAdminToken, controller.createTaxRate);
 masterDataRouter.post("/create-payment-mode", verifyAdminToken, controller.createPaymentMode);
 masterDataRouter.post("/create-currency", verifyAdminToken, controller.createCurrency);
-masterDataRouter.post("/create-invoice-type", verifyAdminToken, controller.createInvoiceType);
 masterDataRouter.post("/create-billing-type", verifyAdminToken, controller.createBillingType);
 masterDataRouter.put("/update-tax-rate/:uuid", verifyAdminToken, controller.updateTaxRate);
 masterDataRouter.put("/update-payment-mode/:uuid", verifyAdminToken, controller.updatePaymentMode);
 masterDataRouter.put("/update-currency/:uuid", verifyAdminToken, controller.updateCurrency);
-masterDataRouter.put("/update-invoice-type/:uuid", verifyAdminToken, controller.updateInvoiceType);
 masterDataRouter.put("/update-billing-type/:uuid", verifyAdminToken, controller.updateBillingType);
 masterDataRouter.delete("/delete-tax-rate/:uuid", verifyAdminToken, controller.deleteTaxRate);
 masterDataRouter.delete("/delete-payment-mode/:uuid", verifyAdminToken, controller.deletePaymentMode);
 masterDataRouter.delete("/delete-currency/:uuid", verifyAdminToken, controller.deleteCurrency);
-masterDataRouter.delete("/delete-invoice-type/:uuid", verifyAdminToken, controller.deleteInvoiceType);
 masterDataRouter.delete("/delete-billing-type/:uuid", verifyAdminToken, controller.deleteBillingType);
 
 

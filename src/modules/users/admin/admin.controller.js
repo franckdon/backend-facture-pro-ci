@@ -41,76 +41,96 @@ exports.getAdminInfo = async (req, res) => {
 };
 
 exports.createUser = async (req, res) => {
-  const {
-    email,
-    login,
-    mot_de_passe,
-    nom_complet,
-    telephone,
-    role_id,
-    statut_id,
-    societe_uuid,
-  } = req.body;
-
-  if (!email || !login || !mot_de_passe || !role_id || !statut_id) {
-    return res.status(400).json({
-      message:
-        "Champs requis manquants: email, login, mot_de_passe, role_id, statut_id.",
-    });
-  }
-
   try {
-    let internal_societe_id = null;
+    const {
+      email,
+      login,
+      mot_de_passe,
+      nom_complet,
+      telephone,
+      role_id,
+      statut_id,
+      societe_uuid, 
+    } = req.body;
 
-    if (societe_uuid) {
-      const societe = await prisma.societe.findUnique({
-        where: { uuid: societe_uuid },
-        select: { id: true },
+    if (!email || !login || !mot_de_passe || !role_id || !societe_uuid) {
+      return res.status(400).json({ message: "Champs requis manquants." });
+    }
+
+    const societe = await prisma.societe.findUnique({
+      where: { uuid: societe_uuid },
+      include: {
+        licence: {
+          where: { statut: { code: "ACTIF" } },
+          include: { plan: true },
+        },
+        _count: {
+          select: { utilisateur_client: true }, 
+        },
+      },
+    });
+
+    if (!societe) {
+      return res.status(404).json({ message: "Société introuvable." });
+    }
+
+    const licenceActive = societe.licence[0];
+
+    if (!licenceActive) {
+      return res.status(403).json({ 
+        message: "Action impossible : la société n'a aucune licence active." 
       });
+    }
 
-      if (societe) {
-        internal_societe_id = societe.id;
-      } else {
-        console.warn("Société introuvable pour l'UUID:", societe_uuid);
-      }
+    const limiteAtteinte = societe._count.utilisateur_client >= licenceActive.plan.limite_utilisateurs;
+
+    if (limiteAtteinte) {
+      return res.status(403).json({
+        message: `Limite d'utilisateurs atteinte. Votre plan "${licenceActive.plan.libelle}" est limité à ${licenceActive.plan.limite_utilisateurs} utilisateur(s).`,
+      });
     }
 
     const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
 
     const newUser = await prisma.utilisateur_client.create({
       data: {
-        email,
-        login,
+        email: email.toLowerCase().trim(),
+        login: login.trim(),
         mot_de_passe: hashedPassword,
-        nom_complet: nom_complet || null,
+        nom_complet: nom_complet || "",
         telephone: telephone || null,
+        statut_id: statut_id ? Number(statut_id) : 1,
         role_id: BigInt(role_id),
-        statut_id: Number(statut_id),
-        societe_id: internal_societe_id,
-        cree_le: new Date(),
+        societe_id: societe.id,
         tokenVersion: 1,
       },
+      include: {
+        role: true,
+        statut: true
+      }
     });
+
     return res.status(201).json({
+      success: true,
       message: "Utilisateur créé avec succès.",
-      user: {
+      data: serializeBigInt({
         uuid: newUser.uuid,
         login: newUser.login,
         email: newUser.email,
-      },
+        role: newUser.role?.libelle,
+      }),
     });
-  } catch (e) {
-    console.error("Erreur createUser MySQL:", e);
 
-    if (e.code === "P2002") {
-      return res.status(409).json({
-        message: "L'email ou le login existe déjà.",
-      });
+  } catch (error) {
+    console.error("Erreur createUser:", error);
+    
+    if (error.code === "P2002") {
+      return res.status(409).json({ message: "Le login ou l'email est déjà utilisé." });
     }
 
-    return res.status(500).json({
-      message: "Erreur serveur lors de la création.",
-      error: e.message,
+    return res.status(500).json({ 
+      message: "Erreur serveur lors de la création de l'utilisateur.",
+      details: error.message 
     });
   }
 };

@@ -140,6 +140,7 @@ exports.Prisma.Entete_factureScalarFieldEnum = {
   retour_ncc: 'retour_ncc',
   retour_id_facture: 'retour_id_facture',
   retour_token: 'retour_token',
+  retour_reference: 'retour_reference',
   numero_facture_origine: 'numero_facture_origine',
   id_tiers: 'id_tiers',
   id_information_complementaire: 'id_information_complementaire'
@@ -186,6 +187,7 @@ exports.Prisma.TiersScalarFieldEnum = {
   uuid: 'uuid',
   code_tiers: 'code_tiers',
   raison_sociale_tiers: 'raison_sociale_tiers',
+  ncc_tiers: 'ncc_tiers',
   telephone_tiers: 'telephone_tiers',
   email_tiers: 'email_tiers'
 };
@@ -197,6 +199,25 @@ exports.Prisma.Information_complementaireScalarFieldEnum = {
   nom_commercial: 'nom_commercial',
   autre_mention: 'autre_mention',
   plus_d_information: 'plus_d_information'
+};
+
+exports.Prisma.Type_produitScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code: 'code',
+  libelle: 'libelle'
+};
+
+exports.Prisma.ProduitScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  reference: 'reference',
+  designation: 'designation',
+  prix_base: 'prix_base',
+  description: 'description',
+  type_produit_id: 'type_produit_id',
+  cree_le: 'cree_le',
+  modifie_le: 'modifie_le'
 };
 
 exports.Prisma.SortOrder = {
@@ -221,6 +242,7 @@ exports.Prisma.entete_factureOrderByRelevanceFieldEnum = {
   retour_ncc: 'retour_ncc',
   retour_id_facture: 'retour_id_facture',
   retour_token: 'retour_token',
+  retour_reference: 'retour_reference',
   numero_facture_origine: 'numero_facture_origine'
 };
 
@@ -245,6 +267,7 @@ exports.Prisma.tiersOrderByRelevanceFieldEnum = {
   uuid: 'uuid',
   code_tiers: 'code_tiers',
   raison_sociale_tiers: 'raison_sociale_tiers',
+  ncc_tiers: 'ncc_tiers',
   telephone_tiers: 'telephone_tiers',
   email_tiers: 'email_tiers'
 };
@@ -257,6 +280,19 @@ exports.Prisma.information_complementaireOrderByRelevanceFieldEnum = {
   plus_d_information: 'plus_d_information'
 };
 
+exports.Prisma.type_produitOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code: 'code',
+  libelle: 'libelle'
+};
+
+exports.Prisma.produitOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  reference: 'reference',
+  designation: 'designation',
+  description: 'description'
+};
+
 
 exports.Prisma.ModelName = {
   entete_facture: 'entete_facture',
@@ -264,7 +300,9 @@ exports.Prisma.ModelName = {
   taxe_details: 'taxe_details',
   taxe_pieds: 'taxe_pieds',
   tiers: 'tiers',
-  information_complementaire: 'information_complementaire'
+  information_complementaire: 'information_complementaire',
+  type_produit: 'type_produit',
+  produit: 'produit'
 };
 
 /**

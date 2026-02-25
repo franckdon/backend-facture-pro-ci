@@ -5,34 +5,25 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const { development } = env.port;
 
+const apiRoutes = require("./src/routes/index"); 
+
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
+app.use(cors({
     origin: ["http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
-  })
-);
+}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-  }),
-);
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-} else {
-  app.use(morgan("combined"));
+    app.use(morgan("dev"));
 }
 
-
-
+app.use("/api", apiRoutes);
 
 app.listen(development, () => {
-  console.log(
-    `Serveur démarré sur le port ${development} en mode développement`,
-  );
+    console.log(`Serveur démarré sur le port ${development}`);
 });

@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Facture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d1117;
+      --accent: #1a56db;
+      --accent-light: #e8f0fe;
+      --gold: #c9a84c;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --surface: #f9fafb;
+      --white: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
+
+    .page {
+      width: 794px;
+      background: var(--white);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page::before {
+      content: '';
+      display: block;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent) 60%, var(--gold) 100%);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      padding: 28px 36px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 22pt;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 2px;
+      line-height: 1;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .brand-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 16px;
+      font-size: 7.5pt;
+      color: var(--muted);
+    }
+
+    .brand-meta span { display: flex; gap: 4px; }
+    .brand-meta strong { color: var(--ink); font-weight: 600; }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .logos-container {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo-item img {
+      max-height: 50px;
+      max-width: 90px;
+      object-fit: contain;
+    }
+
+    .invoice-badge {
+      background: var(--accent);
+      color: white;
+      padding: 6px 16px 5px;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .invoice-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: right;
+      letter-spacing: 0.5px;
+    }
+
+    .qr-code-header img {
+      width: 80px;
+      height: 80px;
+      border: 1.5px solid var(--accent);
+      padding: 3px;
+      background: white;
+    }
+
+    /* ── INFO STRIP ── */
+    .info-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-box {
+      padding: 16px 36px;
+    }
+
+    .info-box:first-child {
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .info-box h3 {
+      font-size: 6.5pt;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    .info-row {
+      display: flex;
+      gap: 6px;
+      font-size: 8pt;
+      margin-bottom: 3px;
+      align-items: baseline;
+    }
+
+    .info-row .lbl {
+      color: var(--muted);
+      min-width: 105px;
+      font-size: 7.5pt;
+      font-weight: 500;
+    }
+
+    .info-row .val {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .client-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 8px 0;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { padding: 0 36px; margin-top: 20px; }
+
+    table.items {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8pt;
+    }
+
+    table.items thead tr {
+      background: var(--ink);
+      color: white;
+    }
+
+    table.items th {
+      padding: 8px 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      font-size: 7pt;
+      text-transform: uppercase;
+    }
+
+    table.items tbody tr:nth-child(even) { background: var(--surface); }
+
+    table.items td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .right { text-align: right; }
+    .center { text-align: center; }
+
+    /* ── BOTTOM ── */
+    .bottom-section {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+      padding: 20px 36px 24px;
+      align-items: start;
+    }
+
+    .tax-block h4 {
+      font-size: 6.5pt;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    table.tax-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5pt;
+    }
+
+    table.tax-table th {
+      background: var(--surface);
+      padding: 5px 8px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-size: 7pt;
+    }
+
+    table.tax-table td {
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+    }
+
+    .totals-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .t-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 14px;
+      font-size: 8pt;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .t-row .t-val {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .t-row.subtotal {
+      background: white;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .t-row.grand {
+      background: var(--accent);
+      color: white;
+      font-size: 9.5pt;
+      font-weight: 800;
+      padding: 10px 14px;
+      border-bottom: none;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .t-row.grand .t-val { color: white; }
+
+    .devise-section {
+      font-size: 7pt;
+      color: var(--muted);
+      text-align: center;
+      padding: 6px;
+      background: white;
+      border-top: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--ink);
+    }
+
+    .footer-text {
+      font-size: 7.5pt;
+      color: rgba(255,255,255,0.55);
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .footer-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10pt;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .gold-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin: 0 4px;
+      vertical-align: middle;
+    }
+
+    .error {
+      font-size: 7pt;
+      color: #dc2626;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .page { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <h1>{{SOC_NAME}}</h1>
+      <div class="brand-meta">
+        <span><strong>NCC :</strong> {{NCC}}</span>
+        <span><strong>RCCM :</strong> {{RCCM}}</span>
+        <span><strong>Régime :</strong> {{REGIME_IMPOSITION}}</span>
+        <span><strong>Centre des impôts :</strong> {{CENTRE_IMPOTS}}</span>
+        <span><strong>Références bancaires :</strong> {{REF_BANCAIRE}}</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="logos-container">
+        <div class="logo-item">{{COMPANY_LOGO}}</div>
+        <div class="logo-item">{{DGI_LOGO}}</div>
+      </div>
+      <div class="invoice-badge">{{TYPE_FACTURE}}</div>
+      <div class="invoice-num">Nº {{FACTURE_NUM}}</div>
+      <div class="qr-code-header">{{QR_CODE_HEADER}}</div>
+    </div>
+  </header>
+
+  <!-- INFO STRIP -->
+  <div class="info-strip">
+    <div class="info-box">
+      <h3>Émetteur</h3>
+      <div class="info-row"><span class="lbl">Établissement :</span><span class="val">{{ETABLISSEMENT}}</span></div>
+      <div class="info-row"><span class="lbl">Adresse :</span><span class="val">{{SOC_ADRESSE}}</span></div>
+      <div class="info-row"><span class="lbl">Téléphone :</span><span class="val">{{SOC_TEL}}</span></div>
+      <div class="info-row"><span class="lbl">Email :</span><span class="val">{{SOC_EMAIL}}</span></div>
+      <div class="info-row"><span class="lbl">Point de Vente :</span><span class="val">{{POINT_VENTE}}</span></div>
+      <div class="info-row"><span class="lbl">Vendeur :</span><span class="val">{{VENDEUR}}</span></div>
+      <hr class="divider">
+      <div class="info-row"><span class="lbl">Date et heure :</span><span class="val">{{DATE}}</span></div>
+      <div class="info-row"><span class="lbl">Paiement :</span><span class="val">{{MODE_PAIEMENT}}</span></div>
+    </div>
+    <div class="info-box">
+      <h3>Client</h3>
+      <div class="client-name">{{CLIENT_NOM}}</div>
+      <div class="info-row"><span class="lbl">Adresse :</span><span class="val">{{CLIENT_ADRESSE}}</span></div>
+      <div class="info-row"><span class="lbl">NCC :</span><span class="val">{{CLIENT_NCC}}</span></div>
+      <hr class="divider">
+      <div class="info-row"><span class="lbl">Mention :</span><span class="val" style="font-style:italic;color:var(--muted)">{{AUTRE_MENTION}}</span></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table class="items">
+      <thead>
+        <tr>
+          <th>Réf</th>
+          <th>Désignation</th>
+          <th class="right">P.U HT</th>
+          <th class="center">Qté</th>
+          <th class="center">Unité</th>
+          <th class="center">Taxes (%)</th>
+          <th class="center">Rem. (%)</th>
+          <th class="right">Montant HT</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ITEM_ROWS}}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom-section">
+    <div class="tax-block">
+      <h4>Résumé de la Facture</h4>
+      <table class="tax-table">
+        <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Sous-total HT</th>
+            <th>Taux (%)</th>
+            <th class="right">Total Taxes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{TAX_SUMMARY_ROWS}}
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="totals-card">
+        <div class="t-row"><span>Total HT</span><span class="t-val">{{TOTAL_HT}}</span></div>
+        <div class="t-row"><span>Remise</span><span class="t-val">{{REMISE}}</span></div>
+        <div class="t-row subtotal"><span>Total HT après remise</span><span class="t-val">{{HT_REMISE}}</span></div>
+        <div class="t-row"><span>TVA</span><span class="t-val">{{TOTAL_TVA}}</span></div>
+        <div class="t-row"><span>Total TTC</span><span class="t-val">{{TOTAL_TTC}}</span></div>
+        <div class="t-row"><span>Autres taxes</span><span class="t-val">{{AUTRES_TAXES}}</span></div>
+        <div class="t-row grand"><span>Total à payer</span><span class="t-val">{{TOTAL_A_PAYER}}</span></div>
+        <div class="devise-section">{{DEVISE_SECTION}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-text">{{FOOTER_ADRESSE}}</div>
+    <div class="footer-brand">{{SOC_NAME}}</div>
+  </footer>
+
+</div>
+</body>
+</html>

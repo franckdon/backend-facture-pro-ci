@@ -1,8 +1,7 @@
 const bcrypt = require("bcrypt");
 const { signAccessToken, signRefreshToken } = require("../../../helpers/token");
-const { randomCode } = require("../../../helpers/otp");
+const { randomCode, verifyCode } = require("../../../helpers/otp");
 const { makeToken, hashToken } = require("../../../helpers/token");
-const { verifyCode } = require("../../helpers/otp");
 const { sendMail } = require("../../../helpers/mailer");
 const prisma = require("../../../libs/master")
 const env = require("../../../configs/env");

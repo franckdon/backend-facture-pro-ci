@@ -1,4 +1,4 @@
-const prisma = require('../../../libs/master');
+const prisma = require('../../libs/master');
 
 exports.getAllStatuses = async (req, res) => {
   try {

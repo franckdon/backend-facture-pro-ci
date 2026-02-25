@@ -1,10 +1,9 @@
 const express = require("express");
 const planRouter = express.Router();
 const controller = require("./plan.controller");
-const { verifyAdminToken, verifyClientToken } = require("../../../middlewares/auth");
+const { verifyAdminToken } = require("../../middlewares/auth");
 
-planRouter.get("/plans", verifyClientToken, controller.getAllPlans);
-
+planRouter.get("/", verifyAdminToken, controller.getAllPlans);
 planRouter.post("/setup-plans", verifyAdminToken, controller.setupDefaultPlans);
 planRouter.post("/create-plan", verifyAdminToken, controller.createPlan);
 planRouter.put("/update-plan/:uuid", verifyAdminToken, controller.updatePlan);

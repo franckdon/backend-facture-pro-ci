@@ -1,4 +1,4 @@
-const prismaMaster = require("../libs/prisma");
+const prismaMaster = require("../libs/master");
 const { verifyToken } = require("../helpers/token");
 
 exports.verifyAdminToken = async (req, res, next) => {

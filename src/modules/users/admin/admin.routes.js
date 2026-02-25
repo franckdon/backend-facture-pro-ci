@@ -4,8 +4,8 @@ const controller = require("./admin.controller");
 const { verifyAdminToken } = require("../../../middlewares/auth");
 
 adminRouter.get("/admin-info", verifyAdminToken, controller.getAdminInfo);
-adminRouter.post("/create-user", verifyAdminToken, controller.createUser);
-adminRouter.put("/update-user/:uuid", verifyAdminToken, controller.updateUser);
-adminRouter.delete("/delete-user/:uuid", verifyAdminToken, controller.deleteUser);
+adminRouter.post("/admin/create-user", verifyAdminToken, controller.createUser);
+adminRouter.put("/admin/update-user/:uuid", verifyAdminToken, controller.updateUser);
+adminRouter.delete("/admin/delete-user/:uuid", verifyAdminToken, controller.deleteUser);
 
 module.exports = adminRouter;

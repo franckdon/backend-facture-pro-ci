@@ -1,6 +1,6 @@
 const express = require('express')
 const authClientRouter = express.Router()
-const controller = require('.authClient.controller')
+const controller = require('./authClient.controller')
 
 
 authClientRouter.post("/client/login", controller.loginClient)

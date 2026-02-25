@@ -93,6 +93,11 @@ export type utilisateur_admin = $Result.DefaultSelection<Prisma.$utilisateur_adm
  * 
  */
 export type plan = $Result.DefaultSelection<Prisma.$planPayload>
+/**
+ * Model faq
+ * 
+ */
+export type faq = $Result.DefaultSelection<Prisma.$faqPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -370,6 +375,16 @@ export class PrismaClient<
     * ```
     */
   get plan(): Prisma.planDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.faq`: Exposes CRUD operations for the **faq** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Faqs
+    * const faqs = await prisma.faq.findMany()
+    * ```
+    */
+  get faq(): Prisma.faqDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -819,7 +834,8 @@ export namespace Prisma {
     statut: 'statut',
     role: 'role',
     utilisateur_admin: 'utilisateur_admin',
-    plan: 'plan'
+    plan: 'plan',
+    faq: 'faq'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -835,7 +851,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "societe" | "etablissement" | "point_vente" | "licence" | "utilisateur_client" | "mode_paiement" | "taux_imposition" | "type_facture" | "devise" | "type_facturation" | "sticker" | "configuration" | "statut" | "role" | "utilisateur_admin" | "plan"
+      modelProps: "societe" | "etablissement" | "point_vente" | "licence" | "utilisateur_client" | "mode_paiement" | "taux_imposition" | "type_facture" | "devise" | "type_facturation" | "sticker" | "configuration" | "statut" | "role" | "utilisateur_admin" | "plan" | "faq"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1895,6 +1911,72 @@ export namespace Prisma {
           }
         }
       }
+      faq: {
+        payload: Prisma.$faqPayload<ExtArgs>
+        fields: Prisma.faqFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.faqFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.faqFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          findFirst: {
+            args: Prisma.faqFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.faqFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          findMany: {
+            args: Prisma.faqFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>[]
+          }
+          create: {
+            args: Prisma.faqCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          createMany: {
+            args: Prisma.faqCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.faqDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          update: {
+            args: Prisma.faqUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          deleteMany: {
+            args: Prisma.faqDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.faqUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.faqUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$faqPayload>
+          }
+          aggregate: {
+            args: Prisma.FaqAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFaq>
+          }
+          groupBy: {
+            args: Prisma.faqGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FaqGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.faqCountArgs<ExtArgs>
+            result: $Utils.Optional<FaqCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2019,6 +2101,7 @@ export namespace Prisma {
     role?: roleOmit
     utilisateur_admin?: utilisateur_adminOmit
     plan?: planOmit
+    faq?: faqOmit
   }
 
   /* Types for Logging */
@@ -18320,6 +18403,959 @@ export namespace Prisma {
 
 
   /**
+   * Model faq
+   */
+
+  export type AggregateFaq = {
+    _count: FaqCountAggregateOutputType | null
+    _avg: FaqAvgAggregateOutputType | null
+    _sum: FaqSumAggregateOutputType | null
+    _min: FaqMinAggregateOutputType | null
+    _max: FaqMaxAggregateOutputType | null
+  }
+
+  export type FaqAvgAggregateOutputType = {
+    id: number | null
+    ordre: number | null
+  }
+
+  export type FaqSumAggregateOutputType = {
+    id: number | null
+    ordre: number | null
+  }
+
+  export type FaqMinAggregateOutputType = {
+    id: number | null
+    uuid: string | null
+    question: string | null
+    reponse: string | null
+    ordre: number | null
+    est_actif: boolean | null
+    cree_le: Date | null
+    modifie_le: Date | null
+  }
+
+  export type FaqMaxAggregateOutputType = {
+    id: number | null
+    uuid: string | null
+    question: string | null
+    reponse: string | null
+    ordre: number | null
+    est_actif: boolean | null
+    cree_le: Date | null
+    modifie_le: Date | null
+  }
+
+  export type FaqCountAggregateOutputType = {
+    id: number
+    uuid: number
+    question: number
+    reponse: number
+    ordre: number
+    est_actif: number
+    cree_le: number
+    modifie_le: number
+    _all: number
+  }
+
+
+  export type FaqAvgAggregateInputType = {
+    id?: true
+    ordre?: true
+  }
+
+  export type FaqSumAggregateInputType = {
+    id?: true
+    ordre?: true
+  }
+
+  export type FaqMinAggregateInputType = {
+    id?: true
+    uuid?: true
+    question?: true
+    reponse?: true
+    ordre?: true
+    est_actif?: true
+    cree_le?: true
+    modifie_le?: true
+  }
+
+  export type FaqMaxAggregateInputType = {
+    id?: true
+    uuid?: true
+    question?: true
+    reponse?: true
+    ordre?: true
+    est_actif?: true
+    cree_le?: true
+    modifie_le?: true
+  }
+
+  export type FaqCountAggregateInputType = {
+    id?: true
+    uuid?: true
+    question?: true
+    reponse?: true
+    ordre?: true
+    est_actif?: true
+    cree_le?: true
+    modifie_le?: true
+    _all?: true
+  }
+
+  export type FaqAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which faq to aggregate.
+     */
+    where?: faqWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of faqs to fetch.
+     */
+    orderBy?: faqOrderByWithRelationInput | faqOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: faqWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` faqs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` faqs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned faqs
+    **/
+    _count?: true | FaqCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FaqAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FaqSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FaqMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FaqMaxAggregateInputType
+  }
+
+  export type GetFaqAggregateType<T extends FaqAggregateArgs> = {
+        [P in keyof T & keyof AggregateFaq]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFaq[P]>
+      : GetScalarType<T[P], AggregateFaq[P]>
+  }
+
+
+
+
+  export type faqGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: faqWhereInput
+    orderBy?: faqOrderByWithAggregationInput | faqOrderByWithAggregationInput[]
+    by: FaqScalarFieldEnum[] | FaqScalarFieldEnum
+    having?: faqScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FaqCountAggregateInputType | true
+    _avg?: FaqAvgAggregateInputType
+    _sum?: FaqSumAggregateInputType
+    _min?: FaqMinAggregateInputType
+    _max?: FaqMaxAggregateInputType
+  }
+
+  export type FaqGroupByOutputType = {
+    id: number
+    uuid: string
+    question: string
+    reponse: string
+    ordre: number
+    est_actif: boolean
+    cree_le: Date
+    modifie_le: Date
+    _count: FaqCountAggregateOutputType | null
+    _avg: FaqAvgAggregateOutputType | null
+    _sum: FaqSumAggregateOutputType | null
+    _min: FaqMinAggregateOutputType | null
+    _max: FaqMaxAggregateOutputType | null
+  }
+
+  type GetFaqGroupByPayload<T extends faqGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FaqGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FaqGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FaqGroupByOutputType[P]>
+            : GetScalarType<T[P], FaqGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type faqSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    uuid?: boolean
+    question?: boolean
+    reponse?: boolean
+    ordre?: boolean
+    est_actif?: boolean
+    cree_le?: boolean
+    modifie_le?: boolean
+  }, ExtArgs["result"]["faq"]>
+
+
+
+  export type faqSelectScalar = {
+    id?: boolean
+    uuid?: boolean
+    question?: boolean
+    reponse?: boolean
+    ordre?: boolean
+    est_actif?: boolean
+    cree_le?: boolean
+    modifie_le?: boolean
+  }
+
+  export type faqOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "question" | "reponse" | "ordre" | "est_actif" | "cree_le" | "modifie_le", ExtArgs["result"]["faq"]>
+
+  export type $faqPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "faq"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      uuid: string
+      question: string
+      reponse: string
+      ordre: number
+      est_actif: boolean
+      cree_le: Date
+      modifie_le: Date
+    }, ExtArgs["result"]["faq"]>
+    composites: {}
+  }
+
+  type faqGetPayload<S extends boolean | null | undefined | faqDefaultArgs> = $Result.GetResult<Prisma.$faqPayload, S>
+
+  type faqCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<faqFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FaqCountAggregateInputType | true
+    }
+
+  export interface faqDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['faq'], meta: { name: 'faq' } }
+    /**
+     * Find zero or one Faq that matches the filter.
+     * @param {faqFindUniqueArgs} args - Arguments to find a Faq
+     * @example
+     * // Get one Faq
+     * const faq = await prisma.faq.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends faqFindUniqueArgs>(args: SelectSubset<T, faqFindUniqueArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Faq that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {faqFindUniqueOrThrowArgs} args - Arguments to find a Faq
+     * @example
+     * // Get one Faq
+     * const faq = await prisma.faq.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends faqFindUniqueOrThrowArgs>(args: SelectSubset<T, faqFindUniqueOrThrowArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Faq that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqFindFirstArgs} args - Arguments to find a Faq
+     * @example
+     * // Get one Faq
+     * const faq = await prisma.faq.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends faqFindFirstArgs>(args?: SelectSubset<T, faqFindFirstArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Faq that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqFindFirstOrThrowArgs} args - Arguments to find a Faq
+     * @example
+     * // Get one Faq
+     * const faq = await prisma.faq.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends faqFindFirstOrThrowArgs>(args?: SelectSubset<T, faqFindFirstOrThrowArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Faqs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Faqs
+     * const faqs = await prisma.faq.findMany()
+     * 
+     * // Get first 10 Faqs
+     * const faqs = await prisma.faq.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const faqWithIdOnly = await prisma.faq.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends faqFindManyArgs>(args?: SelectSubset<T, faqFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Faq.
+     * @param {faqCreateArgs} args - Arguments to create a Faq.
+     * @example
+     * // Create one Faq
+     * const Faq = await prisma.faq.create({
+     *   data: {
+     *     // ... data to create a Faq
+     *   }
+     * })
+     * 
+     */
+    create<T extends faqCreateArgs>(args: SelectSubset<T, faqCreateArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Faqs.
+     * @param {faqCreateManyArgs} args - Arguments to create many Faqs.
+     * @example
+     * // Create many Faqs
+     * const faq = await prisma.faq.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends faqCreateManyArgs>(args?: SelectSubset<T, faqCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Faq.
+     * @param {faqDeleteArgs} args - Arguments to delete one Faq.
+     * @example
+     * // Delete one Faq
+     * const Faq = await prisma.faq.delete({
+     *   where: {
+     *     // ... filter to delete one Faq
+     *   }
+     * })
+     * 
+     */
+    delete<T extends faqDeleteArgs>(args: SelectSubset<T, faqDeleteArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Faq.
+     * @param {faqUpdateArgs} args - Arguments to update one Faq.
+     * @example
+     * // Update one Faq
+     * const faq = await prisma.faq.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends faqUpdateArgs>(args: SelectSubset<T, faqUpdateArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Faqs.
+     * @param {faqDeleteManyArgs} args - Arguments to filter Faqs to delete.
+     * @example
+     * // Delete a few Faqs
+     * const { count } = await prisma.faq.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends faqDeleteManyArgs>(args?: SelectSubset<T, faqDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Faqs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Faqs
+     * const faq = await prisma.faq.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends faqUpdateManyArgs>(args: SelectSubset<T, faqUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Faq.
+     * @param {faqUpsertArgs} args - Arguments to update or create a Faq.
+     * @example
+     * // Update or create a Faq
+     * const faq = await prisma.faq.upsert({
+     *   create: {
+     *     // ... data to create a Faq
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Faq we want to update
+     *   }
+     * })
+     */
+    upsert<T extends faqUpsertArgs>(args: SelectSubset<T, faqUpsertArgs<ExtArgs>>): Prisma__faqClient<$Result.GetResult<Prisma.$faqPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Faqs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqCountArgs} args - Arguments to filter Faqs to count.
+     * @example
+     * // Count the number of Faqs
+     * const count = await prisma.faq.count({
+     *   where: {
+     *     // ... the filter for the Faqs we want to count
+     *   }
+     * })
+    **/
+    count<T extends faqCountArgs>(
+      args?: Subset<T, faqCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FaqCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Faq.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FaqAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FaqAggregateArgs>(args: Subset<T, FaqAggregateArgs>): Prisma.PrismaPromise<GetFaqAggregateType<T>>
+
+    /**
+     * Group by Faq.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {faqGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends faqGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: faqGroupByArgs['orderBy'] }
+        : { orderBy?: faqGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, faqGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFaqGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the faq model
+   */
+  readonly fields: faqFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for faq.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__faqClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the faq model
+   */
+  interface faqFieldRefs {
+    readonly id: FieldRef<"faq", 'Int'>
+    readonly uuid: FieldRef<"faq", 'String'>
+    readonly question: FieldRef<"faq", 'String'>
+    readonly reponse: FieldRef<"faq", 'String'>
+    readonly ordre: FieldRef<"faq", 'Int'>
+    readonly est_actif: FieldRef<"faq", 'Boolean'>
+    readonly cree_le: FieldRef<"faq", 'DateTime'>
+    readonly modifie_le: FieldRef<"faq", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * faq findUnique
+   */
+  export type faqFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter, which faq to fetch.
+     */
+    where: faqWhereUniqueInput
+  }
+
+  /**
+   * faq findUniqueOrThrow
+   */
+  export type faqFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter, which faq to fetch.
+     */
+    where: faqWhereUniqueInput
+  }
+
+  /**
+   * faq findFirst
+   */
+  export type faqFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter, which faq to fetch.
+     */
+    where?: faqWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of faqs to fetch.
+     */
+    orderBy?: faqOrderByWithRelationInput | faqOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for faqs.
+     */
+    cursor?: faqWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` faqs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` faqs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of faqs.
+     */
+    distinct?: FaqScalarFieldEnum | FaqScalarFieldEnum[]
+  }
+
+  /**
+   * faq findFirstOrThrow
+   */
+  export type faqFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter, which faq to fetch.
+     */
+    where?: faqWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of faqs to fetch.
+     */
+    orderBy?: faqOrderByWithRelationInput | faqOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for faqs.
+     */
+    cursor?: faqWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` faqs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` faqs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of faqs.
+     */
+    distinct?: FaqScalarFieldEnum | FaqScalarFieldEnum[]
+  }
+
+  /**
+   * faq findMany
+   */
+  export type faqFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter, which faqs to fetch.
+     */
+    where?: faqWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of faqs to fetch.
+     */
+    orderBy?: faqOrderByWithRelationInput | faqOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing faqs.
+     */
+    cursor?: faqWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` faqs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` faqs.
+     */
+    skip?: number
+    distinct?: FaqScalarFieldEnum | FaqScalarFieldEnum[]
+  }
+
+  /**
+   * faq create
+   */
+  export type faqCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * The data needed to create a faq.
+     */
+    data: XOR<faqCreateInput, faqUncheckedCreateInput>
+  }
+
+  /**
+   * faq createMany
+   */
+  export type faqCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many faqs.
+     */
+    data: faqCreateManyInput | faqCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * faq update
+   */
+  export type faqUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * The data needed to update a faq.
+     */
+    data: XOR<faqUpdateInput, faqUncheckedUpdateInput>
+    /**
+     * Choose, which faq to update.
+     */
+    where: faqWhereUniqueInput
+  }
+
+  /**
+   * faq updateMany
+   */
+  export type faqUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update faqs.
+     */
+    data: XOR<faqUpdateManyMutationInput, faqUncheckedUpdateManyInput>
+    /**
+     * Filter which faqs to update
+     */
+    where?: faqWhereInput
+    /**
+     * Limit how many faqs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * faq upsert
+   */
+  export type faqUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * The filter to search for the faq to update in case it exists.
+     */
+    where: faqWhereUniqueInput
+    /**
+     * In case the faq found by the `where` argument doesn't exist, create a new faq with this data.
+     */
+    create: XOR<faqCreateInput, faqUncheckedCreateInput>
+    /**
+     * In case the faq was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<faqUpdateInput, faqUncheckedUpdateInput>
+  }
+
+  /**
+   * faq delete
+   */
+  export type faqDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+    /**
+     * Filter which faq to delete.
+     */
+    where: faqWhereUniqueInput
+  }
+
+  /**
+   * faq deleteMany
+   */
+  export type faqDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which faqs to delete
+     */
+    where?: faqWhereInput
+    /**
+     * Limit how many faqs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * faq without action
+   */
+  export type faqDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the faq
+     */
+    select?: faqSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the faq
+     */
+    omit?: faqOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -18546,6 +19582,20 @@ export namespace Prisma {
   export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
 
 
+  export const FaqScalarFieldEnum: {
+    id: 'id',
+    uuid: 'uuid',
+    question: 'question',
+    reponse: 'reponse',
+    ordre: 'ordre',
+    est_actif: 'est_actif',
+    cree_le: 'cree_le',
+    modifie_le: 'modifie_le'
+  };
+
+  export type FaqScalarFieldEnum = (typeof FaqScalarFieldEnum)[keyof typeof FaqScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -18725,6 +19775,15 @@ export namespace Prisma {
   export type planOrderByRelevanceFieldEnum = (typeof planOrderByRelevanceFieldEnum)[keyof typeof planOrderByRelevanceFieldEnum]
 
 
+  export const faqOrderByRelevanceFieldEnum: {
+    uuid: 'uuid',
+    question: 'question',
+    reponse: 'reponse'
+  };
+
+  export type faqOrderByRelevanceFieldEnum = (typeof faqOrderByRelevanceFieldEnum)[keyof typeof faqOrderByRelevanceFieldEnum]
+
+
   /**
    * Field references
    */
@@ -18769,6 +19828,13 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
   /**
    * Deep Input Types
@@ -19905,6 +20971,76 @@ export namespace Prisma {
     prix_annuel?: DecimalWithAggregatesFilter<"plan"> | Decimal | DecimalJsLike | number | string
     limite_utilisateurs?: IntWithAggregatesFilter<"plan"> | number
     description?: StringNullableWithAggregatesFilter<"plan"> | string | null
+  }
+
+  export type faqWhereInput = {
+    AND?: faqWhereInput | faqWhereInput[]
+    OR?: faqWhereInput[]
+    NOT?: faqWhereInput | faqWhereInput[]
+    id?: IntFilter<"faq"> | number
+    uuid?: StringFilter<"faq"> | string
+    question?: StringFilter<"faq"> | string
+    reponse?: StringFilter<"faq"> | string
+    ordre?: IntFilter<"faq"> | number
+    est_actif?: BoolFilter<"faq"> | boolean
+    cree_le?: DateTimeFilter<"faq"> | Date | string
+    modifie_le?: DateTimeFilter<"faq"> | Date | string
+  }
+
+  export type faqOrderByWithRelationInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    question?: SortOrder
+    reponse?: SortOrder
+    ordre?: SortOrder
+    est_actif?: SortOrder
+    cree_le?: SortOrder
+    modifie_le?: SortOrder
+    _relevance?: faqOrderByRelevanceInput
+  }
+
+  export type faqWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    uuid?: string
+    AND?: faqWhereInput | faqWhereInput[]
+    OR?: faqWhereInput[]
+    NOT?: faqWhereInput | faqWhereInput[]
+    question?: StringFilter<"faq"> | string
+    reponse?: StringFilter<"faq"> | string
+    ordre?: IntFilter<"faq"> | number
+    est_actif?: BoolFilter<"faq"> | boolean
+    cree_le?: DateTimeFilter<"faq"> | Date | string
+    modifie_le?: DateTimeFilter<"faq"> | Date | string
+  }, "id" | "uuid">
+
+  export type faqOrderByWithAggregationInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    question?: SortOrder
+    reponse?: SortOrder
+    ordre?: SortOrder
+    est_actif?: SortOrder
+    cree_le?: SortOrder
+    modifie_le?: SortOrder
+    _count?: faqCountOrderByAggregateInput
+    _avg?: faqAvgOrderByAggregateInput
+    _max?: faqMaxOrderByAggregateInput
+    _min?: faqMinOrderByAggregateInput
+    _sum?: faqSumOrderByAggregateInput
+  }
+
+  export type faqScalarWhereWithAggregatesInput = {
+    AND?: faqScalarWhereWithAggregatesInput | faqScalarWhereWithAggregatesInput[]
+    OR?: faqScalarWhereWithAggregatesInput[]
+    NOT?: faqScalarWhereWithAggregatesInput | faqScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"faq"> | number
+    uuid?: StringWithAggregatesFilter<"faq"> | string
+    question?: StringWithAggregatesFilter<"faq"> | string
+    reponse?: StringWithAggregatesFilter<"faq"> | string
+    ordre?: IntWithAggregatesFilter<"faq"> | number
+    est_actif?: BoolWithAggregatesFilter<"faq"> | boolean
+    cree_le?: DateTimeWithAggregatesFilter<"faq"> | Date | string
+    modifie_le?: DateTimeWithAggregatesFilter<"faq"> | Date | string
   }
 
   export type societeCreateInput = {
@@ -21071,6 +22207,80 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type faqCreateInput = {
+    uuid?: string
+    question: string
+    reponse: string
+    ordre?: number
+    est_actif?: boolean
+    cree_le?: Date | string
+    modifie_le?: Date | string
+  }
+
+  export type faqUncheckedCreateInput = {
+    id?: number
+    uuid?: string
+    question: string
+    reponse: string
+    ordre?: number
+    est_actif?: boolean
+    cree_le?: Date | string
+    modifie_le?: Date | string
+  }
+
+  export type faqUpdateInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    reponse?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
+    est_actif?: BoolFieldUpdateOperationsInput | boolean
+    cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type faqUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    reponse?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
+    est_actif?: BoolFieldUpdateOperationsInput | boolean
+    cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type faqCreateManyInput = {
+    id?: number
+    uuid?: string
+    question: string
+    reponse: string
+    ordre?: number
+    est_actif?: boolean
+    cree_le?: Date | string
+    modifie_le?: Date | string
+  }
+
+  export type faqUpdateManyMutationInput = {
+    uuid?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    reponse?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
+    est_actif?: BoolFieldUpdateOperationsInput | boolean
+    cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type faqUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    uuid?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    reponse?: StringFieldUpdateOperationsInput | string
+    ordre?: IntFieldUpdateOperationsInput | number
+    est_actif?: BoolFieldUpdateOperationsInput | boolean
+    cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -22216,6 +23426,68 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type faqOrderByRelevanceInput = {
+    fields: faqOrderByRelevanceFieldEnum | faqOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type faqCountOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    question?: SortOrder
+    reponse?: SortOrder
+    ordre?: SortOrder
+    est_actif?: SortOrder
+    cree_le?: SortOrder
+    modifie_le?: SortOrder
+  }
+
+  export type faqAvgOrderByAggregateInput = {
+    id?: SortOrder
+    ordre?: SortOrder
+  }
+
+  export type faqMaxOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    question?: SortOrder
+    reponse?: SortOrder
+    ordre?: SortOrder
+    est_actif?: SortOrder
+    cree_le?: SortOrder
+    modifie_le?: SortOrder
+  }
+
+  export type faqMinOrderByAggregateInput = {
+    id?: SortOrder
+    uuid?: SortOrder
+    question?: SortOrder
+    reponse?: SortOrder
+    ordre?: SortOrder
+    est_actif?: SortOrder
+    cree_le?: SortOrder
+    modifie_le?: SortOrder
+  }
+
+  export type faqSumOrderByAggregateInput = {
+    id?: SortOrder
+    ordre?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type statutCreateNestedOneWithoutSocietesInput = {
     create?: XOR<statutCreateWithoutSocietesInput, statutUncheckedCreateWithoutSocietesInput>
     connectOrCreate?: statutCreateOrConnectWithoutSocietesInput
@@ -22896,6 +24168,10 @@ export namespace Prisma {
     deleteMany?: licenceScalarWhereInput | licenceScalarWhereInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -23183,6 +24459,19 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type statutCreateWithoutSocietesInput = {

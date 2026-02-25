@@ -285,6 +285,17 @@ exports.Prisma.PlanScalarFieldEnum = {
   description: 'description'
 };
 
+exports.Prisma.FaqScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  question: 'question',
+  reponse: 'reponse',
+  ordre: 'ordre',
+  est_actif: 'est_actif',
+  cree_le: 'cree_le',
+  modifie_le: 'modifie_le'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -410,6 +421,12 @@ exports.Prisma.planOrderByRelevanceFieldEnum = {
   description: 'description'
 };
 
+exports.Prisma.faqOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  question: 'question',
+  reponse: 'reponse'
+};
+
 
 exports.Prisma.ModelName = {
   societe: 'societe',
@@ -427,7 +444,8 @@ exports.Prisma.ModelName = {
   statut: 'statut',
   role: 'role',
   utilisateur_admin: 'utilisateur_admin',
-  plan: 'plan'
+  plan: 'plan',
+  faq: 'faq'
 };
 
 /**

@@ -4,7 +4,7 @@ const {
 } = require("../../configs/db/db.service");
 const { generateLicenseToken } = require("../../helpers/params");
 const { SCHEMA_SOCIETE_SQL } = require("../../helpers/script");
-const prisma = require('../../../libs/master');
+const prisma = require('../../libs/master');
 const crypto = require("crypto");
 
 const generateApiToken = () => {
