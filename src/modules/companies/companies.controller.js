@@ -19,7 +19,7 @@ exports.createCompany = async (req, res) => {
     adresse,
     telephone,
     email,
-    token_fne,
+    cle_api_fne,
     plan_id,
   } = req.body;
 
@@ -83,7 +83,7 @@ exports.createCompany = async (req, res) => {
       await tx.configuration.create({
         data: {
           societe_id: newSociete.id,
-          cle_api_fne: token_fne || null,
+          cle_api_fne: cle_api_fne || null,
           cle_api_locale: generateApiToken(),
           production: 0,
         },
@@ -220,7 +220,7 @@ exports.deleteCompany = async (req, res) => {
 };
 
 exports.updateCompanyStatusProduction = async (req, res) => {
-  const { in_production, token_fne, societe_uuid } = req.body;
+  const { in_production, cle_api_fne, societe_uuid } = req.body;
 
   try {
     if (!societe_uuid) {
@@ -241,7 +241,7 @@ exports.updateCompanyStatusProduction = async (req, res) => {
       updateData.production = in_production ? 1 : 0;
     }
     if (token_fne !== undefined) {
-      updateData.cle_api_fne = token_fne; 
+      updateData.cle_api_fne = cle_api_fne; 
     }
 
     if (Object.keys(updateData).length === 0) {

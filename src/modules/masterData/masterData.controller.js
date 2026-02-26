@@ -185,17 +185,24 @@ exports.getAllTaxRates = async (req, res) => {
   }
 };
 
-// Modifier un taux via UUID
 exports.updateTaxRate = async (req, res) => {
   const { uuid } = req.params;
+  const { code, pourcentage, description } = req.body; // On récupère les bonnes clés
   try {
     const result = await prisma.taux_imposition.update({
       where: { uuid },
-      data: req.body,
+      data: {
+        code,
+        pourcentage: pourcentage ? parseFloat(pourcentage) : undefined,
+        description,
+      },
     });
-    res.status(200).json(serialize(result));
+    res.status(200).json({ success: true, data: serialize(result) });
   } catch (e) {
-    res.status(404).json({ message: "Taux non trouvé" });
+    res.status(404).json({
+      success: false,
+      message: "Taux non trouvé ou erreur de mise à jour",
+    });
   }
 };
 
@@ -235,10 +242,15 @@ exports.getAllPaymentModes = async (req, res) => {
 
 exports.updatePaymentMode = async (req, res) => {
   const { uuid } = req.params;
+  const { code_mode_paiement, libelle_mode_paiement } = req.body; // On récupère les bonnes clés
+
   try {
     const result = await prisma.mode_paiement.update({
       where: { uuid },
-      data: req.body,
+      data: {
+        code_mode_paiement,
+        libelle_mode_paiement,
+      },
     });
     res.status(200).json(serialize(result));
   } catch (e) {
@@ -279,10 +291,15 @@ exports.getAllCurrencies = async (req, res) => {
 
 exports.updateCurrency = async (req, res) => {
   const { uuid } = req.params;
+  const { code_devise, taux_devise, description } = req.body;
   try {
     const result = await prisma.devise.update({
       where: { uuid },
-      data: req.body,
+      data: {
+        code_devise,
+        taux_devise,
+        description,
+      },
     });
     res.status(200).json(serialize(result));
   } catch (e) {
@@ -301,8 +318,11 @@ exports.deleteCurrency = async (req, res) => {
 };
 
 exports.createBillingType = async (req, res) => {
+  const { code_type_facturaction, libelle_type_facturation } = req.body;
   try {
-    const result = await prisma.type_facturation.create({ data: req.body });
+    const result = await prisma.type_facturation.create({
+      data: { code_type_facturaction, libelle_type_facturation },
+    });
     res.status(201).json(serialize(result));
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -345,6 +365,46 @@ exports.getAllInvoiceTypes = async (req, res) => {
   try {
     const types = await prisma.type_facture.findMany();
     res.status(200).json(serialize(types));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+exports.createInvoiceType = async (req, res) => {
+  const { code_type_facture, libelle_type_facture } = req.body;
+  try {
+    const result = await prisma.type_facture.create({
+      data: { code_type_facture, libelle_type_facture },
+    });
+    res.status(201).json(serialize(result));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+exports.updateInvoiceType = async (req, res) => {
+  const { uuid } = req.params;
+  const { code_type_facture, libelle_type_facture } = req.body;
+
+  try {
+    const result = await prisma.type_facture.update({
+      where: { uuid },
+      data: {
+        code_type_facture,
+        libelle_type_facture,
+      },
+    });
+    res.status(200).json(serialize(result));
+  } catch (e) {
+    res.status(404).json({ message: "Type introuvable" });
+  }
+};
+
+exports.deleteInvoiceType = async (req, res) => {
+  const { uuid } = req.params;
+  try {
+    await prisma.type_facture.delete({ where: { uuid } });
+    res.status(200).json({ message: "Tye facture supprimée" });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

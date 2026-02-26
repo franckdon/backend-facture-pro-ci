@@ -10,7 +10,7 @@ authAdminRouter.post("/register", controller.registerAdminStep1)
 authAdminRouter.post("/confirm-register", controller.registerAdminStep2)
 
 authAdminRouter.post(
-    "/admin/impersonate-client", 
+    "/impersonate-client", 
     verifyAdminToken,
     controller.impersonateClient
 );

@@ -13,14 +13,20 @@ masterDataRouter.post("/create-tax-rate", verifyAdminToken, controller.createTax
 masterDataRouter.post("/create-payment-mode", verifyAdminToken, controller.createPaymentMode);
 masterDataRouter.post("/create-currency", verifyAdminToken, controller.createCurrency);
 masterDataRouter.post("/create-billing-type", verifyAdminToken, controller.createBillingType);
+masterDataRouter.post("/create-invoice-type", verifyAdminToken, controller.createInvoiceType);
+
 masterDataRouter.put("/update-tax-rate/:uuid", verifyAdminToken, controller.updateTaxRate);
 masterDataRouter.put("/update-payment-mode/:uuid", verifyAdminToken, controller.updatePaymentMode);
 masterDataRouter.put("/update-currency/:uuid", verifyAdminToken, controller.updateCurrency);
 masterDataRouter.put("/update-billing-type/:uuid", verifyAdminToken, controller.updateBillingType);
+masterDataRouter.put("/update-invoice-type/:uuid", verifyAdminToken, controller.updateInvoiceType);
+
 masterDataRouter.delete("/delete-tax-rate/:uuid", verifyAdminToken, controller.deleteTaxRate);
 masterDataRouter.delete("/delete-payment-mode/:uuid", verifyAdminToken, controller.deletePaymentMode);
 masterDataRouter.delete("/delete-currency/:uuid", verifyAdminToken, controller.deleteCurrency);
 masterDataRouter.delete("/delete-billing-type/:uuid", verifyAdminToken, controller.deleteBillingType);
+masterDataRouter.delete("/delete-invoice-type/:uuid", verifyAdminToken, controller.deleteInvoiceType);
+
 
 
 

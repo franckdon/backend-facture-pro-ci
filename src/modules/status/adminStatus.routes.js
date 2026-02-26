@@ -4,6 +4,6 @@ const controller = require("./status.controller");
 const { verifyAdminToken } = require("../../middlewares/auth");
 
 statutRouter.get("/", verifyAdminToken, controller.getAllStatuses);
-statutRouter.post("/setup-statuts", verifyAdminToken, controller.setupDefaultStatuses);
+statutRouter.post("/setup-statuses", verifyAdminToken, controller.setupDefaultStatuses);
 
 module.exports = statutRouter;
