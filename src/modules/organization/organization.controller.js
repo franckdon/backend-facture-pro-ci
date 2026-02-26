@@ -46,7 +46,7 @@ exports.createEstablishment = async (req, res) => {
   }
 };
 
-exports.createPointDeVente = async (req, res) => {
+exports.createPointOfSale = async (req, res) => {
   try {
     const { societe_uuid } = req.user; 
     const { etablissement_uuid, libelle_pdv } = req.body;
@@ -116,7 +116,7 @@ exports.deleteEstablishment = async (req, res) => {
   }
 };
 
-exports.deletePointDeVente = async (req, res) => {
+exports.deletePointOfSale = async (req, res) => {
   try {
     const { uuid } = req.params;
     const { societe_uuid } = req.user;
@@ -169,7 +169,7 @@ exports.updateEstablishment = async (req, res) => {
   }
 };
 
-exports.updatePointDeVente = async (req, res) => {
+exports.updatePointOfSale = async (req, res) => {
   try {
     const { uuid } = req.params;
     const { societe_uuid } = req.user;

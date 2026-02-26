@@ -3,8 +3,8 @@ const authClientRouter = express.Router()
 const controller = require('./authClient.controller')
 
 
-authClientRouter.post("/client/login", controller.loginClient)
-authClientRouter.post("/client/password/forgot-password", controller.forgotPasswordClient)
-authClientRouter.post("/client/password/reset-password", controller.resetPasswordClient)
+authClientRouter.post("/login", controller.loginClient)
+authClientRouter.post("/password/forgot-password", controller.forgotPasswordClient)
+authClientRouter.post("/password/reset-password", controller.resetPasswordClient)
 
 module.exports = authClientRouter

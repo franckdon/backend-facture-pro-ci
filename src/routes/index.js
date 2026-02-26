@@ -21,6 +21,7 @@ clientRouter.use("/dgi", require("../modules/dgi/dgi.routes"));
 clientRouter.use("/export", require("../modules/export/export.routes"));
 clientRouter.use("/import", require("../modules/import/import.routes"));
 clientRouter.use("/data", require("../modules/data/client/clientData.routes"));
+clientRouter.use("/master-data", require("../modules/masterData/clientMasterData.routes"));
 clientRouter.use("/organization", require("../modules/organization/organization.routes"));
 clientRouter.use("/plans",require("../modules/plan/clientPlan.routes"))
 clientRouter.use("/products",require("../modules/products/clientProducts.routes"))
