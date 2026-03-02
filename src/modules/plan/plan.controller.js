@@ -29,21 +29,21 @@ exports.setupDefaultPlans = async (req, res) => {
     {
       code: "BASIC",
       libelle: "Plan Basique",
-      prix_mensuel: 550000,
+      prix_annuel: 550000,
       limite_utilisateurs: 2,
       description: "Idéal pour les auto-entrepreneurs et petites boutiques."
     },
     {
       code: "PREMIUM",
       libelle: "Plan Premium",
-      prix_mensuel: 850000,
+      prix_annuel: 850000,
       limite_utilisateurs: 3,
       description: "Pour les PME en pleine croissance avec plusieurs points de vente."
     },
     {
       code: "ENTERPRISE",
       libelle: "Plan Entreprise",
-      prix_mensuel: 1500000,
+      prix_annuel: 1500000,
       limite_utilisateurs: 5,
       description: "Solution complète pour les grandes entreprises avec gros volumes."
     }

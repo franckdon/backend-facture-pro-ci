@@ -2,9 +2,9 @@ const {
   executeAdminCommand,
   executeClientCommand,
 } = require("../../configs/db/db.service");
-const { generateLicenseToken } = require("../../helpers/params");
-const { SCHEMA_SOCIETE_SQL } = require("../../helpers/script");
-const prisma = require('../../libs/master');
+const { generateLicenseToken, slugify } = require("../../helpers/params");
+const { SCHEMA_TENANT_SQL } = require("../../helpers/script");
+const prisma = require("../../libs/master");
 const crypto = require("crypto");
 
 const generateApiToken = () => {
@@ -46,8 +46,9 @@ exports.createCompany = async (req, res) => {
     const db_user = `u_${slug}_${uniqueSuffix}`;
     const db_pass = crypto.randomBytes(12).toString("hex");
 
-    await executeAdminCommand(`CREATE DATABASE \`${db_name}\` ...`);
-    await executeClientCommand(db_name, SCHEMA_SOCIETE_SQL);
+    await executeAdminCommand(`CREATE DATABASE IF NOT EXISTS \`${db_name}\`;`);
+    console.log("DEBUG SCHEMA:", SCHEMA_TENANT_SQL);
+    await executeClientCommand(db_name, SCHEMA_TENANT_SQL);
 
     const result = await prisma.$transaction(async (tx) => {
       const newSociete = await tx.societe.create({
@@ -60,9 +61,9 @@ exports.createCompany = async (req, res) => {
           telephone,
           email,
           bd_host: process.env.DB_HOST || "localhost",
-          db_name,
-          db_user,
-          db_pass,
+          bd_name: db_name, 
+          bd_user: db_user, 
+          bd_pass: db_pass, 
           bd_port: 3306,
           statut_id: 1,
         },
@@ -224,7 +225,9 @@ exports.updateCompanyStatusProduction = async (req, res) => {
 
   try {
     if (!societe_uuid) {
-      return res.status(400).json({ message: "L'UUID de la société est requis." });
+      return res
+        .status(400)
+        .json({ message: "L'UUID de la société est requis." });
     }
 
     const societe = await prisma.societe.findUnique({
@@ -241,11 +244,13 @@ exports.updateCompanyStatusProduction = async (req, res) => {
       updateData.production = in_production ? 1 : 0;
     }
     if (token_fne !== undefined) {
-      updateData.cle_api_fne = cle_api_fne; 
+      updateData.cle_api_fne = cle_api_fne;
     }
 
     if (Object.keys(updateData).length === 0) {
-      return res.status(400).json({ message: "Aucune donnée à mettre à jour." });
+      return res
+        .status(400)
+        .json({ message: "Aucune donnée à mettre à jour." });
     }
 
     const config = await prisma.configuration.upsert({
@@ -254,14 +259,14 @@ exports.updateCompanyStatusProduction = async (req, res) => {
       create: {
         societe_id: societe.id,
         ...updateData,
-        cle_api_locale: crypto.randomBytes(24).toString("hex"), 
+        cle_api_locale: crypto.randomBytes(24).toString("hex"),
       },
     });
 
     const safeConfig = JSON.parse(
       JSON.stringify(config, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      )
+        typeof value === "bigint" ? value.toString() : value,
+      ),
     );
 
     return res.status(200).json({
@@ -270,50 +275,57 @@ exports.updateCompanyStatusProduction = async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur updateStatusProduction:", error);
-    return res.status(500).json({ message: "Erreur serveur.", details: error.message });
+    return res
+      .status(500)
+      .json({ message: "Erreur serveur.", details: error.message });
   }
 };
 
 exports.updateCompanyStatus = async (req, res) => {
-  const { societe_uuid, code_statut } = req.body; 
+  const { societe_uuid, code_statut } = req.body;
 
   if (!societe_uuid || !code_statut) {
-    return res.status(400).json({ message: "UUID de société et code statut requis." });
+    return res
+      .status(400)
+      .json({ message: "UUID de société et code statut requis." });
   }
 
   try {
     const targetStatus = await prisma.statut.findUnique({
-      where: { code: code_statut.toUpperCase() }
+      where: { code: code_statut.toUpperCase() },
     });
 
     if (!targetStatus) {
-      return res.status(404).json({ message: "Le statut spécifié est invalide." });
+      return res
+        .status(404)
+        .json({ message: "Le statut spécifié est invalide." });
     }
 
     const updatedSociete = await prisma.societe.update({
       where: { uuid: societe_uuid },
-      data: { 
+      data: {
         statut_id: targetStatus.id,
-        modifie_le: new Date()
+        modifie_le: new Date(),
       },
       select: {
         uuid: true,
         raison_sociale_societe: true,
-        statut: { select: { code: true, description: true } }
-      }
+        statut: { select: { code: true, description: true } },
+      },
     });
 
     return res.status(200).json({
       success: true,
       message: `La société est désormais : ${code_statut}`,
-      data: updatedSociete
+      data: updatedSociete,
     });
-
   } catch (error) {
     console.error("Erreur updateCompanyStatus:", error);
     if (error.code === "P2025") {
       return res.status(404).json({ message: "Société introuvable." });
     }
-    return res.status(500).json({ message: "Erreur serveur lors du changement de statut." });
+    return res
+      .status(500)
+      .json({ message: "Erreur serveur lors du changement de statut." });
   }
 };
