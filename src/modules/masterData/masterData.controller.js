@@ -170,7 +170,7 @@ exports.createTaxRate = async (req, res) => {
   } catch (e) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la création", error: e.message });
+      .json({ message: "Erreur lors de la création du taux d'imposition", error: e.message });
   }
 };
 

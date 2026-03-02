@@ -38,10 +38,6 @@ exports.loginAdmin = async (req, res) => {
       return res.status(401).json({ message: "Identifiants invalides." });
     }
 
-    if (user.statut_id !== 1) {
-      return res.status(401).json({ message: "Compte admin inactif." });
-    }
-
     const isMatch = await bcrypt.compare(password, user.mot_de_passe);
     if (!isMatch) {
       return res.status(401).json({ message: "Mot de passe incorrect. Veuillez réessayer." });
@@ -250,7 +246,6 @@ exports.registerAdminStep1 = async (req, res) => {
         login: login,
         mot_de_passe: hashedPassword,
         nom_complet: fullname,
-        statut_id: 1, 
         cree_le: new Date(),
         tokenVersion: 1,
         verification_token: verificationTokenHash,
@@ -258,7 +253,7 @@ exports.registerAdminStep1 = async (req, res) => {
       },
     });
 
-    const verificationURL = `${url}/admin/CLzTLrPXQducRqbyg1HT8jxPUVG9jewxlEwaJMaTMvzJlA2dvS4Y4bql4u6H0O8o/confirm-register?token=${verificationTokenBrut}&identifier=${newAdmin.uuid}`;
+    const verificationURL = `${url}/admin/confirmation-inscription?token=${verificationTokenBrut}&identifier=${newAdmin.uuid}`;
 
     await sendMail({
       to: email,
@@ -301,7 +296,7 @@ exports.registerAdminStep2 = async (req, res) => {
       where: {
         uuid: identifier,
         verification_token: tokenHash,
-        verification_expires: {
+        verification_expiration: {
           gt: new Date(),
         },
       },
@@ -316,9 +311,8 @@ exports.registerAdminStep2 = async (req, res) => {
     await prisma.utilisateur_admin.update({
       where: { id: admin.id }, 
       data: {
-        statut_id: 1,
         verification_token: null,
-        verification_expires: null,
+        verification_expiration: null,
       },
     });
 

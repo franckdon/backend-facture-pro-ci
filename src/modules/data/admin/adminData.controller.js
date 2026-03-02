@@ -33,7 +33,7 @@ exports.getCompaniesFullData = async (req, res) => {
       include: {
         configuration: true,
         statut: true,
-        licence: true,
+        licences: true,
         utilisateur_client: {
           select: {
             uuid: true,
@@ -51,9 +51,10 @@ exports.getCompaniesFullData = async (req, res) => {
         typeof value === "bigint" ? value.toString() : value,
       ),
     );
+
     return res.status(200).json({
       success: true,
-      message: `Liste complète des clients FNE récupérée.`,
+      message: `Liste complète des clients récupérée.`,
       data: safeData,
     });
   } catch (e) {

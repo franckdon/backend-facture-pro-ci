@@ -1,7 +1,7 @@
 const express = require("express");
 const masterDataRouter = express.Router();
 const controller = require("./masterData.controller");
-const { verifyClientToken } = require("../../../middlewares/auth");
+const { verifyClientToken } = require("../../middlewares/auth");
 
 masterDataRouter.get("/tax-rates", verifyClientToken, controller.getAllTaxRates);
 masterDataRouter.get("/payment-modes", verifyClientToken, controller.getAllPaymentModes);

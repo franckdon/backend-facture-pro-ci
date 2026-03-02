@@ -20780,13 +20780,13 @@ export namespace Prisma {
   export type roleWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code?: string
     AND?: roleWhereInput | roleWhereInput[]
     OR?: roleWhereInput[]
     NOT?: roleWhereInput | roleWhereInput[]
-    code?: StringFilter<"role"> | string
     description?: StringNullableFilter<"role"> | string | null
     utilisateur_client?: Utilisateur_clientListRelationFilter
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code">
 
   export type roleOrderByWithAggregationInput = {
     id?: SortOrder
@@ -21972,7 +21972,7 @@ export namespace Prisma {
   }
 
   export type roleCreateInput = {
-    id: bigint | number
+    id?: bigint | number
     uuid?: string
     code: string
     description?: string | null
@@ -21980,7 +21980,7 @@ export namespace Prisma {
   }
 
   export type roleUncheckedCreateInput = {
-    id: bigint | number
+    id?: bigint | number
     uuid?: string
     code: string
     description?: string | null
@@ -22004,7 +22004,7 @@ export namespace Prisma {
   }
 
   export type roleCreateManyInput = {
-    id: bigint | number
+    id?: bigint | number
     uuid?: string
     code: string
     description?: string | null
@@ -25279,14 +25279,14 @@ export namespace Prisma {
   }
 
   export type roleCreateWithoutUtilisateur_clientInput = {
-    id: bigint | number
+    id?: bigint | number
     uuid?: string
     code: string
     description?: string | null
   }
 
   export type roleUncheckedCreateWithoutUtilisateur_clientInput = {
-    id: bigint | number
+    id?: bigint | number
     uuid?: string
     code: string
     description?: string | null
