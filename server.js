@@ -31,6 +31,14 @@ cron.schedule('0 0 * * *', () => {
 
 app.use("/api", apiRoutes);
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "API Facture-Pro-CI fonctionne correctement",
+    timestamp: new Date()
+  });
+});
+
 app.listen(development, () => {
     console.log(`Serveur démarré sur le port ${development}`);
 });
