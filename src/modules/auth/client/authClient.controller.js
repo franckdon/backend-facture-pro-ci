@@ -21,9 +21,7 @@ exports.loginClient = async (req, res) => {
   const { login, password } = req.body;
 
   if (!login || !password) {
-    return res
-      .status(400)
-      .json({ message: "Le login et le mot de passe sont requis." });
+    return res.status(400).json({ message: "Le login et le mot de passe sont requis." });
   }
 
   try {
@@ -43,9 +41,7 @@ exports.loginClient = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.mot_de_passe);
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({ message: "Mot de passe incorrect, veuillez réessayer." });
+      return res.status(401).json({ message: "Mot de passe incorrect, veuillez réessayer." });
     }
 
     if (!user.societe_id) {
@@ -61,10 +57,10 @@ exports.loginClient = async (req, res) => {
         role: true,
         societe: {
           include: {
-            licence: {
+            licences: {           // ✅ corrigé : "licence" → "licences"
               include: {
-                plan: true, 
-                statut: true, 
+                plan: true,
+                statut: true,
               },
               where: {
                 date_expiration: { gt: new Date() },
@@ -76,34 +72,31 @@ exports.loginClient = async (req, res) => {
     });
 
     const societeInfo = userData.societe;
-    
 
-    const licenceValide = societeInfo?.licences.find(l => 
-      l.statut?.code === 'ACTIF' && 
+    const licenceValide = societeInfo?.licences.find(l =>
+      l.statut?.code === 'ACTIF' &&
       (l.date_expiration === null || new Date(l.date_expiration) > new Date())
     );
 
     if (!licenceValide) {
-      return res.status(403).json({ 
-        message: "Votre licence est expirée ou inactive. Veuillez régulariser votre abonnement." 
+      return res.status(403).json({
+        message: "Votre licence est expirée ou inactive. Veuillez régulariser votre abonnement.",
       });
     }
 
     const currentPlan = licenceValide.plan;
     const roleName = userData.role?.code || "Utilisateur";
 
-
     const userForToken = {
       uuid: userData.uuid,
       email: userData.email,
       role: roleName,
       societe_uuid: societeInfo?.uuid,
-      db_name: societeInfo?.bd_name,
+      societe_id: societeInfo?.id,  // ✅ ajouté — remplace db_name, sert de filtre tenant
       plan: {
         code: currentPlan?.code,
-        limite_factures: currentPlan?.limite_factures,
-        limite_utilisateurs: currentPlan?.limite_utilisateurs
-      }
+        limite_utilisateurs: currentPlan?.limite_utilisateurs,
+      },
     };
 
     const token = signAccessToken(userForToken);
@@ -145,13 +138,12 @@ exports.forgotPasswordClient = async (req, res) => {
   try {
     const user = await prisma.utilisateur_client.findUnique({
       where: { email: email },
-      select: { id: true },
+      select: { id: true, uuid: true }, // ✅ ajout uuid — utile pour le lien de reset
     });
 
     if (!user) {
       return res.status(200).json({
-        message:
-          "Si cet email existe, un lien de réinitialisation a été envoyé.",
+        message: "Si cet email existe, un lien de réinitialisation a été envoyé.",
       });
     }
 
@@ -164,12 +156,12 @@ exports.forgotPasswordClient = async (req, res) => {
     await prisma.utilisateur_client.update({
       where: { id: user.id },
       data: {
-        reset_token: resetTokenHash,
-        reset_expiration: resetExpires,
+        verification_token: resetTokenHash,      // ✅ corrigé : reset_token → verification_token
+        verification_expiration: resetExpires,   // ✅ corrigé : reset_expiration → verification_expiration
       },
     });
 
-    const resetURL = `${url}/client/reset-password?token=${resetTokenBrut}&email=${encodeURIComponent(email)}&admin=false`;
+    const resetURL = `${url}/client/reset-password?token=${resetTokenBrut}&identifier=${user.uuid}`; // ✅ uuid au lieu d'email en clair dans l'URL
 
     await sendMail({
       to: email,
@@ -182,8 +174,7 @@ exports.forgotPasswordClient = async (req, res) => {
     });
 
     return res.status(200).json({
-      message:
-        "Un lien de réinitialisation a été envoyé à votre adresse e-mail.",
+      message: "Un lien de réinitialisation a été envoyé à votre adresse e-mail.",
     });
   } catch (e) {
     console.error("Erreur forgotPassword MySQL:", e);
@@ -192,16 +183,14 @@ exports.forgotPasswordClient = async (req, res) => {
 };
 
 exports.resetPasswordClient = async (req, res) => {
-  const { token, email, newPassword } = req.body;
+  const { token, identifier, newPassword } = req.body; // ✅ email → identifier (cohérent avec forgotPassword)
 
-  if (!token || !email || !newPassword) {
+  if (!token || !identifier || !newPassword) {
     return res.status(400).json({ message: "Données manquantes." });
   }
 
   if (newPassword.length < 8) {
-    return res
-      .status(400)
-      .json({ message: "Le mot de passe doit faire au moins 8 caractères." });
+    return res.status(400).json({ message: "Le mot de passe doit faire au moins 8 caractères." });
   }
 
   const tokenHash = hashToken(token);
@@ -209,16 +198,15 @@ exports.resetPasswordClient = async (req, res) => {
   try {
     const user = await prisma.utilisateur_client.findFirst({
       where: {
-        email: email,
-        reset_token: tokenHash,
-        reset_expiration: { gt: new Date() },
+        uuid: identifier,                        // ✅ recherche par uuid au lieu d'email
+        verification_token: tokenHash,           // ✅ corrigé : reset_token → verification_token
+        verification_expiration: { gt: new Date() }, // ✅ corrigé : reset_expiration → verification_expiration
       },
     });
 
     if (!user) {
       return res.status(400).json({
-        message:
-          "L'email ou le lien de réinitialisation est invalide ou expiré.",
+        message: "Le lien de réinitialisation est invalide ou expiré.",
       });
     }
 
@@ -227,12 +215,12 @@ exports.resetPasswordClient = async (req, res) => {
       parseInt(process.env.BCRYPT_COST) || 12,
     );
 
-    await prisma.utilisateurs_globaux.update({
+    await prisma.utilisateur_client.update({  // ✅ corrigé : utilisateurs_globaux → utilisateur_client
       where: { id: user.id },
       data: {
         mot_de_passe: newHashedPassword,
-        reset_token: null,
-        reset_expiration: null,
+        verification_token: null,           // ✅ corrigé
+        verification_expiration: null,      // ✅ corrigé
         tokenVersion: { increment: 1 },
       },
     });

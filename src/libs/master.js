@@ -1,6 +1,6 @@
 require('dotenv')
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
-const { PrismaClient: MasterClient } = require('../generated/master');
+const { PrismaClient: MasterClient } = require('../generated');
 
 const adapter = new PrismaMariaDb({
   host: process.env.DB_HOST_ADMIN,

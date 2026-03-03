@@ -1,5 +1,4 @@
-const masterPrisma = require("../../libs/master");
-const { getTenantClient } = require("../../libs/tenant");
+const prisma = require("../../libs/master"); // ✅ client unique
 const { v4: uuidv4 } = require("uuid");
 
 const formatAmount = (amount, deviseCode) => {
@@ -7,9 +6,22 @@ const formatAmount = (amount, deviseCode) => {
   return deviseCode === "XOF" ? Math.round(value) : parseFloat(value.toFixed(4));
 };
 
-const formatAmountDisplay = (amount, deviseCode) => {
-  const value = parseFloat(amount) || 0;
-  return deviseCode === "XOF" ? Math.round(value).toString() : value.toFixed(4);
+const serialize = (obj) =>
+  JSON.parse(JSON.stringify(obj, (key, value) =>
+    typeof value === "bigint" ? value.toString() : value
+  ));
+
+// Helper partagé : authentifier la société via sa clé API locale
+const authenticateSociete = async (code_societe, apiKeyClient) => {
+  const societe = await prisma.societe.findUnique({
+    where: { code_societe },
+    include: { configuration: true },
+  });
+  if (!societe) return { error: "Société non identifiée.", status: 404 };
+  const storedApiKey = societe.configuration?.cle_api_locale;
+  if (!storedApiKey || apiKeyClient !== storedApiKey)
+    return { error: "Accès non autorisé : Clé API locale invalide.", status: 401 };
+  return { societe };
 };
 
 exports.upsertTiers = async (req, res) => {
@@ -18,30 +30,21 @@ exports.upsertTiers = async (req, res) => {
 
   try {
     if (!code_societe || !tiersData?.code_tiers) {
-      return res
-        .status(400)
-        .json({ error: "Données manquantes (code_societe ou code_tiers)." });
+      return res.status(400).json({ error: "Données manquantes (code_societe ou code_tiers)." });
     }
 
-    const societe = await masterPrisma.societe.findUnique({
-      where: { code_societe },
-      include: { configuration: true },
-    });
+    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+    const { societe } = auth;
 
-    if (!societe)
-      return res.status(404).json({ error: "Société non identifiée." });
-
-    const storedApiKey = societe.configuration?.cle_api_locale;
-    if (!storedApiKey || apiKeyClient !== storedApiKey) {
-      return res
-        .status(401)
-        .json({ error: "Accès non autorisé : Clé API locale invalide." });
-    }
-
-    const tenantPrisma = getTenantClient(societe);
-
-    const tiers = await tenantPrisma.tiers.upsert({
-      where: { code_tiers: tiersData.code_tiers },
+    // ✅ upsert sur [societe_id, code_tiers] — contrainte unique du schéma fusionné
+    const tiers = await prisma.tiers.upsert({
+      where: {
+        societe_id_code_tiers: { // ✅ nom de la contrainte @@unique générée par Prisma
+          societe_id: societe.id,
+          code_tiers: tiersData.code_tiers,
+        },
+      },
       update: {
         ncc_tiers: tiersData.ncc_tiers || "",
         raison_sociale_tiers: tiersData.raison_sociale_tiers || "CLIENT DIVERS",
@@ -50,6 +53,7 @@ exports.upsertTiers = async (req, res) => {
       },
       create: {
         uuid: uuidv4(),
+        societe_id: societe.id, // 🔑
         code_tiers: tiersData.code_tiers,
         ncc_tiers: tiersData.ncc_tiers || "",
         raison_sociale_tiers: tiersData.raison_sociale_tiers || "CLIENT DIVERS",
@@ -65,10 +69,7 @@ exports.upsertTiers = async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur Upsert Tiers:", error);
-    return res.status(500).json({
-      error: "Erreur lors de la synchronisation du tiers.",
-      message: error.message,
-    });
+    return res.status(500).json({ error: "Erreur lors de la synchronisation du tiers.", message: error.message });
   }
 };
 
@@ -77,19 +78,9 @@ exports.storeFullInvoice = async (req, res) => {
   const { code_societe, invoiceData } = req.body;
 
   try {
-    const societe = await masterPrisma.societe.findUnique({
-      where: { code_societe },
-      include: { configuration: true },
-    });
-    if (!societe)
-      return res.status(404).json({ error: "Société non identifiée." });
-
-    const storedApiKey = societe.configuration?.cle_api_locale;
-    if (!storedApiKey || apiKeyClient !== storedApiKey) {
-      return res.status(401).json({ error: "Accès non autorisé." });
-    }
-
-    const tenantPrisma = getTenantClient(societe);
+    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+    const { societe } = auth;
 
     const deviseCode = invoiceData.code_devise || "XOF";
 
@@ -115,13 +106,8 @@ exports.storeFullInvoice = async (req, res) => {
     const processedItems = itemsCalculated.map((item) => {
       const taxCode = item.taxes[0] || "TVA_18";
       const tauxTVA = parseFloat(taxCode.split("_")[1]) || 18;
-
-      const baseHTLigne =
-        (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
-      const tvaLigneArrondie = formatAmount(
-        baseHTLigne * (tauxTVA / 100),
-        deviseCode,
-      );
+      const baseHTLigne = (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
+      const tvaLigneArrondie = formatAmount(baseHTLigne * (tauxTVA / 100), deviseCode);
 
       const taxesLigne = (item.customTaxes || []).map((ct) => ({
         libelle_taxe_details: ct.name,
@@ -132,10 +118,7 @@ exports.storeFullInvoice = async (req, res) => {
         ),
       }));
 
-      const totalTaxesLigneSomme = taxesLigne.reduce(
-        (acc, t) => acc + t.montant_taxe_details,
-        0,
-      );
+      const totalTaxesLigneSomme = taxesLigne.reduce((acc, t) => acc + t.montant_taxe_details, 0);
 
       return {
         ...item,
@@ -143,36 +126,24 @@ exports.storeFullInvoice = async (req, res) => {
         baseHTLigne: formatAmount(baseHTLigne, deviseCode),
         tvaLigne: tvaLigneArrondie,
         taxesLigne,
-        ttcLigne:
-          formatAmount(baseHTLigne, deviseCode) +
-          tvaLigneArrondie +
-          totalTaxesLigneSomme,
+        ttcLigne: formatAmount(baseHTLigne, deviseCode) + tvaLigneArrondie + totalTaxesLigneSomme,
       };
     });
 
-    const totalTVAFinal = processedItems.reduce(
-      (acc, item) => acc + item.tvaLigne,
-      0,
-    );
+    const totalTVAFinal = processedItems.reduce((acc, item) => acc + item.tvaLigne, 0);
     const totalAutresTaxesFinal =
       processedItems.reduce(
-        (acc, i) =>
-          acc + i.taxesLigne.reduce((s, t) => s + t.montant_taxe_details, 0),
-        0,
+        (acc, i) => acc + i.taxesLigne.reduce((s, t) => s + t.montant_taxe_details, 0), 0,
       ) +
       (invoiceData.taxesPieds || []).reduce(
-        (acc, tp) =>
-          acc +
-          formatAmount(
-            (netHTGlobal + totalTVAFinal) * (parseFloat(tp.taux) / 100),
-            deviseCode,
-          ),
-        0,
+        (acc, tp) => acc + formatAmount((netHTGlobal + totalTVAFinal) * (parseFloat(tp.taux) / 100), deviseCode), 0,
       );
 
-    const result = await tenantPrisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
+      // ✅ societe_id ajouté sur information_complementaire
       const info = await tx.information_complementaire.create({
         data: {
+          societe_id: societe.id, // 🔑
           nom_commercial: invoiceData.clientCompanyName || "",
           autre_mention: invoiceData.commercialMessage || "",
           pied_de_page: invoiceData.footer || "",
@@ -181,29 +152,22 @@ exports.storeFullInvoice = async (req, res) => {
 
       return await tx.entete_facture.create({
         data: {
+          societe_id: societe.id, // 🔑
           numero_facture: invoiceData.numero_facture || `FAC-${Date.now()}`,
           date_facture: new Date(),
           code_type_facture: invoiceData.code_type_facture || "VENTE",
-          code_type_facturation:
-            invoiceData.code_type_facturation || "STANDARD",
+          code_type_facturation: invoiceData.code_type_facturation || "STANDARD",
           code_mode_paiement: invoiceData.code_mode_paiement || "ESPECE",
           code_devise: deviseCode,
-
           id_tiers: BigInt(invoiceData.id_tiers || 1),
           id_information_complementaire: info.id,
-
           total_ht: formatAmount(totalHTBrut, deviseCode),
           total_tva: totalTVAFinal,
           total_remise: formatAmount(totalRemiseGlobale, deviseCode),
           total_autre_taxe: totalAutresTaxesFinal,
-          total_ttc:
-            formatAmount(netHTGlobal, deviseCode) +
-            totalTVAFinal +
-            totalAutresTaxesFinal,
-
+          total_ttc: formatAmount(netHTGlobal, deviseCode) + totalTVAFinal + totalAutresTaxesFinal,
           point_vente: invoiceData.pointOfSale || "Caisse 1",
           etablissement: invoiceData.establishment || "Siège",
-
           detail_facture: {
             create: processedItems.map((item) => ({
               reference_article: item.reference,
@@ -239,7 +203,7 @@ exports.storeFullInvoice = async (req, res) => {
 
     res.status(201).json({ success: true, uuid: result.uuid });
   } catch (error) {
-    console.error("ERREUR:", error);
+    console.error("ERREUR storeFullInvoice:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -249,22 +213,15 @@ exports.storeRefundInvoice = async (req, res) => {
   const { code_societe, invoiceData } = req.body;
 
   try {
-    const societe = await masterPrisma.societe.findUnique({
-      where: { code_societe },
-      include: { configuration: true },
-    });
-    if (!societe)
-      return res.status(404).json({ error: "Société non identifiée." });
+    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+    const { societe } = auth;
 
-    const storedApiKey = societe.configuration?.cle_api_locale;
-    if (!storedApiKey || apiKeyClient !== storedApiKey) {
-      return res.status(401).json({ error: "Accès non autorisé." });
-    }
-
-    const tenantPrisma = getTenantClient(societe);
-
-    const factureOrigine = await tenantPrisma.entete_facture.findFirst({
-      where: { numero_facture: invoiceData.numero_facture_origine },
+    const factureOrigine = await prisma.entete_facture.findFirst({
+      where: {
+        numero_facture: invoiceData.numero_facture_origine,
+        societe_id: societe.id, // 🔑
+      },
       include: {
         detail_facture: { include: { taxe_details: true } },
         information_complementaire: true,
@@ -276,21 +233,17 @@ exports.storeRefundInvoice = async (req, res) => {
       return res.status(400).json({ error: "Facture d'origine introuvable." });
 
     const deviseCode = factureOrigine.code_devise || "XOF";
-
     const remisePiedsPctOrigine = 0;
 
     let totalHTBrut = 0;
     let totalTVAAvoir = 0;
     let totalRemiseLignes = 0;
-    let totalTTCAvoir = 0;
 
     const processedItems = invoiceData.items.map((itemAvoir) => {
       const ligneOrigine = factureOrigine.detail_facture.find(
         (ld) => ld.reference_article === itemAvoir.reference_article,
       );
-
-      if (!ligneOrigine)
-        throw new Error(`Ligne ${itemAvoir.reference_article} absente.`);
+      if (!ligneOrigine) throw new Error(`Ligne ${itemAvoir.reference_article} absente.`);
 
       const qteRetournee = parseFloat(itemAvoir.quantite);
       const qteInitiale = parseFloat(ligneOrigine.quantite);
@@ -308,16 +261,11 @@ exports.storeRefundInvoice = async (req, res) => {
       const taxesLigneAvoir = (ligneOrigine.taxe_details || []).map((taxe) => ({
         libelle_taxe_details: taxe.libelle_taxe_details,
         taux_taxe_details: parseFloat(taxe.taux_taxe_details),
-        montant_taxe_details: formatAmount(
-          parseFloat(taxe.montant_taxe_details) * ratio,
-          deviseCode,
-        ),
+        montant_taxe_details: formatAmount(parseFloat(taxe.montant_taxe_details) * ratio, deviseCode),
       }));
 
       const ttcLigneBrut =
-        htNetLigne +
-        tvaLigne +
-        taxesLigneAvoir.reduce((acc, t) => acc + t.montant_taxe_details, 0);
+        htNetLigne + tvaLigne + taxesLigneAvoir.reduce((acc, t) => acc + t.montant_taxe_details, 0);
 
       return {
         ...itemAvoir,
@@ -331,38 +279,29 @@ exports.storeRefundInvoice = async (req, res) => {
       };
     });
 
-    const totalRemiseAvoir =
-      totalRemiseLignes +
-      (totalHTBrut - totalRemiseLignes) * (remisePiedsPctOrigine / 100);
+    const totalRemiseAvoir = totalRemiseLignes + (totalHTBrut - totalRemiseLignes) * (remisePiedsPctOrigine / 100);
     const totalHTNetAvoir = totalHTBrut - totalRemiseAvoir;
     const totalTTCBrutAvoir = totalHTNetAvoir + totalTVAAvoir;
 
     const taxesPiedsAvoir = (factureOrigine.taxe_pieds || []).map((tp) => ({
       libelle_taxe_pieds: tp.libelle_taxe_pieds,
       taux_taxe_pieds: parseFloat(tp.taux_taxe_pieds),
-      montant_taxe_pieds: formatAmount(
-        totalTTCBrutAvoir * (parseFloat(tp.taux_taxe_pieds) / 100),
-        deviseCode,
-      ),
+      montant_taxe_pieds: formatAmount(totalTTCBrutAvoir * (parseFloat(tp.taux_taxe_pieds) / 100), deviseCode),
     }));
 
     const totalAutreTaxeAvoir =
-      processedItems.reduce(
-        (acc, i) =>
-          acc + i.taxes.reduce((s, t) => s + t.montant_taxe_details, 0),
-        0,
-      ) + taxesPiedsAvoir.reduce((acc, t) => acc + t.montant_taxe_pieds, 0);
+      processedItems.reduce((acc, i) => acc + i.taxes.reduce((s, t) => s + t.montant_taxe_details, 0), 0) +
+      taxesPiedsAvoir.reduce((acc, t) => acc + t.montant_taxe_pieds, 0);
 
-    const result = await tenantPrisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       let infoId = null;
       if (factureOrigine.information_complementaire) {
         const newInfo = await tx.information_complementaire.create({
           data: {
-            nom_commercial:
-              factureOrigine.information_complementaire.nom_commercial,
+            societe_id: societe.id, // 🔑
+            nom_commercial: factureOrigine.information_complementaire.nom_commercial,
             autre_mention: "AVOIR SUR " + factureOrigine.numero_facture,
-            pied_de_page:
-              factureOrigine.information_complementaire.pied_de_page,
+            pied_de_page: factureOrigine.information_complementaire.pied_de_page,
           },
         });
         infoId = newInfo.id;
@@ -370,6 +309,7 @@ exports.storeRefundInvoice = async (req, res) => {
 
       return await tx.entete_facture.create({
         data: {
+          societe_id: societe.id, // 🔑
           numero_facture: invoiceData.numero_facture,
           date_facture: new Date(),
           numero_facture_origine: factureOrigine.numero_facture,
@@ -385,10 +325,7 @@ exports.storeRefundInvoice = async (req, res) => {
           total_tva: formatAmount(totalTVAAvoir, deviseCode),
           total_remise: formatAmount(totalRemiseAvoir, deviseCode),
           total_autre_taxe: formatAmount(totalAutreTaxeAvoir, deviseCode),
-          total_ttc: formatAmount(
-            totalTTCBrutAvoir + totalAutreTaxeAvoir,
-            deviseCode,
-          ),
+          total_ttc: formatAmount(totalTTCBrutAvoir + totalAutreTaxeAvoir, deviseCode),
           certifie: 0,
           detail_facture: {
             create: processedItems.map((item) => ({
@@ -420,113 +357,43 @@ exports.storeRefundInvoice = async (req, res) => {
   }
 };
 
+// ✅ deleteInvoice — bug de double définition corrigé, fonction unique et propre
 exports.deleteInvoice = async (req, res) => {
   const apiKeyClient = req.headers["x-api-key"] || req.body.cle_api_locale;
-
   const { code_societe, numero_facture } = req.body;
 
   try {
-    const societe = await masterPrisma.societe.findUnique({
-      where: { code_societe },
-      include: { configuration: true },
-    });
-    if (!societe)
-      return res.status(404).json({ error: "Société non identifiée." });
-    const storedApiKey = societe.configuration?.cle_api_locale;
+    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+    const { societe } = auth;
 
-    if (!storedApiKey || apiKeyClient !== storedApiKey) {
-      return res.status(401).json({
-        error: "Accès non autorisé : Clé API locale invalide ou manquante.",
-      });
-    }
-
-    const tenantPrisma = getTenantClient(societe);
-
-    const facture = await tenantPrisma.entete_facture.findFirst({
-      where: { numero_facture: numero_facture },
-      select: {
-        id: true,
-        certifie: true,
-        id_information_complementaire: true,
+    const facture = await prisma.entete_facture.findFirst({
+      where: {
+        numero_facture,
+        societe_id: societe.id, // 🔑
       },
+      select: { id: true, certifie: true, id_information_complementaire: true },
     });
 
-    if (!facture) {
-      return res.status(404).json({ error: "Facture introuvable." });
-    }
+    if (!facture) return res.status(404).json({ error: "Facture introuvable." });
 
     if (facture.certifie === 1) {
       return res.status(403).json({
-        error:
-          "ACTION REFUSÉE : Cette facture est déjà certifiée par la DGI. Vous devez émettre une facture d'avoir pour l'annuler.",
+        error: "ACTION REFUSÉE : Cette facture est déjà certifiée par la DGI. Vous devez émettre une facture d'avoir pour l'annuler.",
       });
     }
 
-    exports.deleteInvoice = async (req, res) => {
-      const apiKeyClient = req.headers["x-api-key"] || req.body.cle_api_locale;
+    // ✅ Le onDelete: Cascade sur detail_facture et taxe_pieds supprime automatiquement
+    //    les lignes et taxes — seule information_complementaire nécessite une suppression manuelle
+    await prisma.$transaction(async (tx) => {
+      await tx.entete_facture.delete({ where: { id: facture.id } });
 
-      const { code_societe, numero_facture } = req.body;
-
-      try {
-        const societe = await masterPrisma.societe.findUnique({
-          where: { code_societe },
-          include: { configuration: true },
+      if (facture.id_information_complementaire) {
+        await tx.information_complementaire.delete({
+          where: { id: facture.id_information_complementaire },
         });
-        if (!societe)
-          return res.status(404).json({ error: "Société non identifiée." });
-        const storedApiKey = societe.configuration?.cle_api_locale;
-
-        if (!storedApiKey || apiKeyClient !== storedApiKey) {
-          return res.status(401).json({
-            error: "Accès non autorisé : Clé API locale invalide ou manquante.",
-          });
-        }
-
-        const tenantPrisma = getTenantClient(societe);
-
-        const facture = await tenantPrisma.entete_facture.findFirst({
-          where: { numero_facture: numero_facture },
-          select: {
-            id: true,
-            certifie: true,
-            id_information_complementaire: true,
-          },
-        });
-
-        if (!facture) {
-          return res.status(404).json({ error: "Facture introuvable." });
-        }
-
-        if (facture.certifie === 1) {
-          return res.status(403).json({
-            error:
-              "ACTION REFUSÉE : Cette facture est déjà certifiée par la DGI. Vous devez émettre une facture d'avoir pour l'annuler.",
-          });
-        }
-
-        await tenantPrisma.$transaction(async (tx) => {
-          await tx.entete_facture.delete({
-            where: { id: facture.id },
-          });
-
-          if (facture.id_information_complementaire) {
-            await tx.information_complementaire.delete({
-              where: { id: facture.id_information_complementaire },
-            });
-          }
-        });
-
-        return res.status(200).json({
-          success: true,
-          message: `La facture ${numero_facture} et ses dépendances ont été supprimées avec succès.`,
-        });
-      } catch (error) {
-        console.error("Erreur Suppression:", error);
-        res
-          .status(500)
-          .json({ error: "Erreur lors de la suppression de la facture." });
       }
-    };
+    });
 
     return res.status(200).json({
       success: true,
@@ -534,9 +401,7 @@ exports.deleteInvoice = async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur Suppression:", error);
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la suppression de la facture." });
+    res.status(500).json({ error: "Erreur lors de la suppression de la facture." });
   }
 };
 
@@ -545,35 +410,27 @@ exports.getCertifiedInvoices = async (req, res) => {
   const { code_societe } = req.query;
 
   try {
-    // 1. Authentification via le Master
-    const societe = await masterPrisma.societe.findUnique({
-      where: { code_societe },
-      include: { configuration: true },
-    });
+    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+    const { societe } = auth;
 
-    if (!societe || societe.configuration?.cle_api_locale !== apiKeyClient) {
-      return res.status(401).json({ error: "Authentification Master échouée." });
-    }
-
-    // 2. Connexion au Tenant spécifique
-    const tenantPrisma = getTenantClient(societe);
-
-    // 3. Récupération avec les relations mises à jour
-    const factures = await tenantPrisma.entete_facture.findMany({
-      where: { certifie: 1 },
+    const factures = await prisma.entete_facture.findMany({
+      where: {
+        certifie: 1,
+        societe_id: societe.id, // 🔑
+      },
       include: {
         tiers: true,
         information_complementaire: true,
         detail_facture: {
           include: { taxe_details: true },
-          orderBy: { id: "asc" }
+          orderBy: { id: "asc" },
         },
         taxe_pieds: true,
       },
       orderBy: { date_facture: "desc" },
     });
 
-    // 4. Calcul des statistiques rapides
     const stats = {
       total_factures: factures.length,
       somme_ttc: factures.reduce((acc, f) => acc + Number(f.total_ttc), 0).toFixed(4),
@@ -582,9 +439,8 @@ exports.getCertifiedInvoices = async (req, res) => {
     return res.status(200).json(serialize({
       success: true,
       statistiques: stats,
-      factures: factures // Les codes (devise, type, etc.) sont déjà dans l'objet
+      factures,
     }));
-
   } catch (error) {
     res.status(500).json({ error: "Erreur serveur", details: error.message });
   }

@@ -1,49 +1,44 @@
-const { getTenantClient } = require("../../../libs/tenant");
-const prismaMaster = require("../../../libs/master");
+const prisma = require("../../../libs/master"); // ✅ client unique
+
+// helper BigInt déjà utilisé dans ce fichier
+const serializeBigInt = (obj) =>
+  JSON.parse(JSON.stringify(obj, (key, value) =>
+    typeof value === "bigint" ? value.toString() : value
+  ));
 
 exports.getAllClientsFNEData = async (req, res) => {
   try {
-    const { uuid: userUuid, societe_uuid } = req.user;
+    const { uuid: userUuid, societe_uuid, societe_id } = req.user; // ✅ societe_id extrait du token
 
-    if (!societe_uuid) {
+    if (!societe_uuid || !societe_id) {
       return res.status(403).json({ message: "Accès refusé : aucune société rattachée." });
     }
 
-    // 1. Récupération des données Master
-    const [societeConfig, stickerInfo] = await Promise.all([
-      prismaMaster.societe.findUnique({
-        where: { uuid: societe_uuid },
-        include: {
-          configuration: true,
-          etablissement: {
-            include: { point_vente: true },
+    // ✅ Une seule requête sur le client unique — plus de split master/tenant
+    const [societeConfig, stickerInfo, certifiees, nonCertifiees, ventes, avoirs, achats] =
+      await Promise.all([
+        prisma.societe.findUnique({
+          where: { uuid: societe_uuid },
+          include: {
+            configuration: true,
+            etablissement: { include: { point_vente: true } },
+            utilisateur_client: { include: { role: true, statut: true } },
           },
-          utilisateur_client: {
-            include: { role: true, statut: true },
-          },
-        },
-      }),
-      prismaMaster.sticker.findFirst({ 
-        where: { societe_id: societe_uuid }, 
-        orderBy: { date_maj: "desc" } 
-      }),
-    ]);
+        }),
+        prisma.sticker.findFirst({
+          where: { societe_id: societe_id }, // ✅ corrigé : était societe_uuid (mauvais type)
+          orderBy: { date_maj: "desc" },
+        }),
+        // ✅ Toutes les stats factures filtrées par societe_id
+        prisma.entete_facture.count({ where: { societe_id, certifie: 1 } }),
+        prisma.entete_facture.count({ where: { societe_id, certifie: 0 } }),
+        // ✅ type_facture n'est plus une relation — c'est un code string dans le schéma fusionné
+        prisma.entete_facture.count({ where: { societe_id, code_type_facture: "VENTE" } }),
+        prisma.entete_facture.count({ where: { societe_id, code_type_facture: "AVOIR" } }),
+        prisma.entete_facture.count({ where: { societe_id, code_type_facture: "ACHAT" } }),
+      ]);
 
     if (!societeConfig) return res.status(404).json({ message: "Société introuvable." });
-
-    const tenantPrisma = getTenantClient({
-      bd_name: societeConfig.bd_name,
-      bd_user: societeConfig.bd_user,
-      bd_pass: societeConfig.bd_pass,
-    });
-
-    const [certifiees, nonCertifiees, ventes, avoirs, achats] = await Promise.all([
-      tenantPrisma.entete_facture.count({ where: { certifie: 1 } }),
-      tenantPrisma.entete_facture.count({ where: { certifie: 0 } }),
-      tenantPrisma.entete_facture.count({ where: { type_facture: { code_type_facture: "VENTE" } } }),
-      tenantPrisma.entete_facture.count({ where: { type_facture: { code_type_facture: "AVOIR" } } }),
-      tenantPrisma.entete_facture.count({ where: { type_facture: { code_type_facture: "ACHAT" } } }),
-    ]);
 
     return res.status(200).json({
       success: true,
@@ -53,9 +48,9 @@ exports.getAllClientsFNEData = async (req, res) => {
         )?.nom_complet,
 
         societe_info: {
-          id: societeConfig.id.toString(), // BigInt to String
+          id: societeConfig.id.toString(),
           uuid: societeConfig.uuid,
-          nom: societeConfig.raison_sociale_societe, // Nom correct du champ
+          nom: societeConfig.raison_sociale_societe,
           ncc: societeConfig.ncc,
           rccm: societeConfig.rccm,
           adresse: societeConfig.adresse,
@@ -80,7 +75,7 @@ exports.getAllClientsFNEData = async (req, res) => {
           login: u.login,
           nom: u.nom_complet,
           email: u.email,
-          role: u.role?.code || "N/A", 
+          role: u.role?.code || "N/A",
           statut: u.statut?.code || "ACTIF",
         })),
 
@@ -102,55 +97,35 @@ exports.getAllClientsFNEData = async (req, res) => {
 
 exports.getAllInvoicesData = async (req, res) => {
   try {
-    const { societe_uuid } = req.user;
+    const { societe_id } = req.user; // ✅ societe_id au lieu de societe_uuid
 
-    if (!societe_uuid) {
+    if (!societe_id) {
       return res.status(403).json({ message: "Accès refusé : session incomplète." });
     }
 
-    const societeConfig = await prismaMaster.societe.findUnique({
-      where: { uuid: societe_uuid },
-      select: { bd_name: true, bd_user: true, bd_pass: true },
-    });
-
-    if (!societeConfig?.bd_name) {
-      return res.status(404).json({ message: "Configuration DB introuvable." });
-    }
-
-    const tenantPrisma = getTenantClient({
-      bd_name: societeConfig.bd_name,
-      bd_user: societeConfig.bd_user,
-      bd_pass: societeConfig.bd_pass,
-    });
-
-    const invoices = await tenantPrisma.entete_facture.findMany({
+    // ✅ Plus de lookup societe pour récupérer bd_name — on filtre directement
+    const invoices = await prisma.entete_facture.findMany({
+      where: { societe_id }, // 🔑 filtre tenant
       include: {
-        tiers: { select: { raison_sociale_tiers: true, ncc_tiers: true } }, 
-        type_facture: true,
-        type_facturation: true,
-        mode_paiement: true,
-        devise: true,
-        _count: {
-          select: { detail_facture: true }
-        }
+        tiers: { select: { raison_sociale_tiers: true, ncc_tiers: true } },
+        detail_facture: false, // on utilise _count uniquement
+        _count: { select: { detail_facture: true } },
       },
       orderBy: { date_facture: "desc" },
     });
 
+    // ✅ type_facture, type_facturation, mode_paiement, devise sont des codes string
+    //    dans le schéma fusionné — plus de relations à inclure
     const formattedInvoices = invoices.map((invoice) => ({
       ...invoice,
       nb_lignes: invoice._count?.detail_facture || 0,
-      is_certified: invoice.certifie === 1
+      is_certified: invoice.certifie === 1,
     }));
 
     return res.status(200).json({
       success: true,
       count: formattedInvoices.length,
-      data: JSON.parse(
-        JSON.stringify(formattedInvoices, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
-        )
-      ),
+      data: serializeBigInt(formattedInvoices),
     });
   } catch (error) {
     console.error("Erreur getAllInvoicesData:", error);
@@ -171,20 +146,11 @@ exports.getCompanyClientFullData = async (req, res) => {
       });
     }
 
-    const societeInfo = await prismaMaster.societe.findUnique({
+    const societeInfo = await prisma.societe.findUnique({
       where: { uuid: societe_uuid },
       include: {
-        utilisateur_client: {
-          include: {
-            role: true,
-            statut: true,
-          },
-        },
-        etablissement: {
-          include: {
-            point_vente: true,
-          },
-        },
+        utilisateur_client: { include: { role: true, statut: true } },
+        etablissement: { include: { point_vente: true } },
         configuration: true,
       },
     });
@@ -197,7 +163,7 @@ exports.getCompanyClientFullData = async (req, res) => {
       details: {
         uuid: societeInfo.uuid,
         code: societeInfo.code_societe,
-        libelle: societeInfo.raison_sociale_societe || societeInfo.libelle_societe, 
+        libelle: societeInfo.raison_sociale_societe, // ✅ libelle_societe n'existe pas dans le schéma
         ncc: societeInfo.ncc,
         rccm: societeInfo.rccm,
         coordonnees: {

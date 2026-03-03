@@ -1,5 +1,4 @@
-const masterPrisma = require("../../libs/master");
-const { getTenantClient } = require("../../libs/tenant");
+const prisma = require("../../libs/master"); // ✅ client unique
 const { v4: uuidv4 } = require("uuid");
 const XLSX = require("xlsx");
 const path = require("path");
@@ -7,25 +6,20 @@ const fs = require("fs");
 
 const formatAmount = (amount, deviseCode) => {
   const value = parseFloat(amount);
-  if (deviseCode === "XOF") {
-    return Math.round(value);
-  }
-  return parseFloat(value.toFixed(4));
+  return deviseCode === "XOF" ? Math.round(value) : parseFloat(value.toFixed(4));
 };
 
-
 exports.importInvoicesFromExcel = async (req, res) => {
-  const { code_societe } = req.user;
+  const { code_societe, societe_id } = req.user; // ✅ societe_id extrait du token
 
   try {
-    const societe = await masterPrisma.societe.findFirst({
+    const societe = await prisma.societe.findFirst({
       where: { code_societe },
       include: { configuration: true },
     });
 
-    if (!societe) {
-      return res.status(404).json({ error: "Société non identifiée." });
-    }
+    if (!societe) return res.status(404).json({ error: "Société non identifiée." });
+
     if (!req.file) {
       return res.status(400).json({
         error: "Aucun fichier Excel fourni. Utilisez le champ 'file' pour l'upload.",
@@ -38,59 +32,28 @@ exports.importInvoicesFromExcel = async (req, res) => {
 
     if (!isSingleSheet && !isMultiSheet) {
       return res.status(400).json({
-        error:
-          "Fichier Excel invalide. Utilisez le modèle officiel (onglet 'Import Factures' ou les 4 onglets séparés).",
+        error: "Fichier Excel invalide. Utilisez le modèle officiel (onglet 'Import Factures' ou les 4 onglets séparés).",
       });
     }
 
     let entetes, lignes, infos, taxes;
 
     const ENTETE_HEADERS = [
-      "numero_facture",
-      "date_facture",
-      "code_type_facture",
-      "code_type_facturation",
-      "code_mode_paiement",
-      "code_tiers",
-      "raison_sociale_tiers",
-      "ncc_tiers",
-      "telephone_tiers",
-      "email_tiers",
-      "code_devise",
-      "point_vente",
-      "remise_pieds_global",
-      "numero_facture_origine",
+      "numero_facture", "date_facture", "code_type_facture", "code_type_facturation",
+      "code_mode_paiement", "code_tiers", "raison_sociale_tiers", "ncc_tiers",
+      "telephone_tiers", "email_tiers", "code_devise", "point_vente",
+      "remise_pieds_global", "numero_facture_origine",
     ];
-
     const LIGNES_HEADERS = [
-      "numero_facture",
-      "reference",
-      "description",
-      "quantite",
-      "unit_measure",
-      "amount",
-      "discount",
-      "taxes",
-      "customTax_name",
-      "customTax_rate",
+      "numero_facture", "reference", "description", "quantite", "unit_measure",
+      "amount", "discount", "taxes", "customTax_name", "customTax_rate",
     ];
-
-    const INFOS_HEADERS = [
-      "numero_facture",
-      "clientCompanyName",
-      "commercialMessage",
-      "footer",
-    ];
-
+    const INFOS_HEADERS = ["numero_facture", "clientCompanyName", "commercialMessage", "footer"];
     const TAXES_HEADERS = ["numero_facture", "libelle", "taux"];
 
     if (isSingleSheet) {
       const sheet = workbook.Sheets["Import Factures"];
-      const raw = XLSX.utils.sheet_to_json(sheet, {
-        header: 1,
-        defval: "",
-        blankrows: true,
-      });
+      const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", blankrows: true });
 
       const MARKERS = { entete: "01", lignes: "02", infos: "03", taxes: "04" };
       const blockRows = {};
@@ -118,9 +81,7 @@ exports.importInvoicesFromExcel = async (req, res) => {
           const row = raw[i];
           if (!row) continue;
           const obj = {};
-          headers.forEach((h, hi) => {
-            obj[h] = row[colStart + hi] ?? "";
-          });
+          headers.forEach((h, hi) => { obj[h] = row[colStart + hi] ?? ""; });
           const hasData = headers.some((h) => String(obj[h]).trim() !== "");
           if (hasData) rows.push(obj);
         }
@@ -143,22 +104,16 @@ exports.importInvoicesFromExcel = async (req, res) => {
 
       entetes = XLSX.utils.sheet_to_json(sheetEntete, { range: 6, header: ENTETE_HEADERS, defval: "" });
       lignes = XLSX.utils.sheet_to_json(sheetLignes, { range: 7, header: LIGNES_HEADERS, defval: "" });
-      infos = sheetInfos
-        ? XLSX.utils.sheet_to_json(sheetInfos, { range: 6, header: INFOS_HEADERS, defval: "" })
-        : [];
-      taxes = sheetTaxes
-        ? XLSX.utils.sheet_to_json(sheetTaxes, { range: 7, header: TAXES_HEADERS, defval: "" })
-        : [];
+      infos = sheetInfos ? XLSX.utils.sheet_to_json(sheetInfos, { range: 6, header: INFOS_HEADERS, defval: "" }) : [];
+      taxes = sheetTaxes ? XLSX.utils.sheet_to_json(sheetTaxes, { range: 7, header: TAXES_HEADERS, defval: "" }) : [];
     }
 
     if (entetes.length === 0) {
       return res.status(400).json({ error: "Aucune facture trouvée dans le fichier Excel." });
     }
 
-    const tenantPrisma = getTenantClient(societe);
-
-    // FIX: tauxImpositionMap reste dans le master (model partagé)
-    const tauxImpositionMap = await masterPrisma.taux_imposition.findMany();
+    // ✅ taux_imposition est une table master partagée — pas de societe_id nécessaire
+    const tauxImpositionMap = await prisma.taux_imposition.findMany();
 
     const results = { success: [], errors: [], total: entetes.length };
 
@@ -182,15 +137,18 @@ exports.importInvoicesFromExcel = async (req, res) => {
           continue;
         }
 
-        // Recherche ou création du tiers
-        let tiersExistant = await tenantPrisma.tiers.findUnique({
-          where: { code_tiers: codeTiers },
+        // ✅ Recherche du tiers par [societe_id, code_tiers] — contrainte unique du schéma fusionné
+        let tiersExistant = await prisma.tiers.findUnique({
+          where: {
+            societe_id_code_tiers: { societe_id: societe.id, code_tiers: codeTiers },
+          },
         });
         const tiersCree = !tiersExistant;
         if (!tiersExistant) {
-          tiersExistant = await tenantPrisma.tiers.create({
+          tiersExistant = await prisma.tiers.create({
             data: {
               uuid: uuidv4(),
+              societe_id: societe.id, // 🔑
               code_tiers: codeTiers,
               ncc_tiers: entete.ncc_tiers || "",
               raison_sociale_tiers: entete.raison_sociale_tiers || codeTiers,
@@ -200,14 +158,11 @@ exports.importInvoicesFromExcel = async (req, res) => {
           });
         }
 
-        // FIX: Lookup devise par code_devise (string), pas par id
+        // ✅ devise est une table master partagée — pas de societe_id
         const codeDevise = String(entete.code_devise || "XOF").trim();
-        const devise = await tenantPrisma.devise.findFirst({
-          where: { code_devise: codeDevise },
-        });
+        const devise = await prisma.devise.findFirst({ where: { code_devise: codeDevise } });
         const deviseCode = devise?.code_devise || "XOF";
 
-        // Codes facture depuis l'Excel (string) — correspond au schéma tenant
         const codeTypeFacture = String(entete.code_type_facture || "").trim();
         const codeTypeFacturation = String(entete.code_type_facturation || "").trim();
         const codeModePaiement = String(entete.code_mode_paiement || "").trim();
@@ -232,10 +187,7 @@ exports.importInvoicesFromExcel = async (req, res) => {
             customTaxes: [],
           };
           if (ligne.customTax_name && ligne.customTax_rate) {
-            item.customTaxes.push({
-              name: ligne.customTax_name,
-              rate: parseFloat(ligne.customTax_rate),
-            });
+            item.customTaxes.push({ name: ligne.customTax_name, rate: parseFloat(ligne.customTax_rate) });
           }
           return item;
         });
@@ -247,7 +199,6 @@ exports.importInvoicesFromExcel = async (req, res) => {
 
         const remisePiedsPct = parseFloat(entete.remise_pieds_global || 0);
 
-        // ── Calculs ──────────────────────────────────────────────────────────
         let totalHTBrut = 0;
         let totalRemiseLignes = 0;
 
@@ -273,16 +224,13 @@ exports.importInvoicesFromExcel = async (req, res) => {
         const processedItems = itemsCalculated.map((item) => {
           const tauxEntry = tauxImpositionMap.find((t) => item.taxes.includes(t.code));
           const tauxTVA = tauxEntry?.pourcentage || 18;
-          // FIX: utiliser code string au lieu de BigInt id
           const codeTauxImposition = tauxEntry?.code || "TVA";
 
-          const baseHTLigne =
-            (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
+          const baseHTLigne = (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
           const tvaLigne = baseHTLigne * (tauxTVA / 100);
           totalTVAGlobal += tvaLigne;
           const baseTTCpourTaxe = baseHTLigne + tvaLigne;
 
-          // FIX: taxe_details n'a pas de champ uuid — on l'enlève
           const taxesLigne = (item.customTaxes || []).map((ct) => {
             const mt = baseTTCpourTaxe * (parseFloat(ct.rate) / 100);
             totalTaxesSpecifiquesLignes += mt;
@@ -308,7 +256,6 @@ exports.importInvoicesFromExcel = async (req, res) => {
 
         const totalTTCBrut = netHTGlobal + totalTVAGlobal;
 
-        // FIX: taxe_pieds n'a pas de champ uuid — on l'enlève
         let totalTaxesPied = 0;
         const taxesPiedsFormatted = taxesPiedsInput.map((tp) => {
           const mt = totalTTCBrut * (parseFloat(tp.taux) / 100);
@@ -323,11 +270,12 @@ exports.importInvoicesFromExcel = async (req, res) => {
         const totalAutresTaxes = totalTaxesSpecifiquesLignes + totalTaxesPied;
         const netAPayer = totalTTCBrut + totalAutresTaxes;
 
-        // ── Persistance ───────────────────────────────────────────────────────
-        const result = await tenantPrisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx) => {
+          // ✅ societe_id ajouté sur information_complementaire
           const info = await tx.information_complementaire.create({
             data: {
               uuid: uuidv4(),
+              societe_id: societe.id, // 🔑
               nom_commercial: infoComp.clientCompanyName || "",
               autre_mention: infoComp.commercialMessage || "",
               pied_de_page: infoComp.footer || "",
@@ -337,38 +285,31 @@ exports.importInvoicesFromExcel = async (req, res) => {
           return await tx.entete_facture.create({
             data: {
               uuid: uuidv4(),
+              societe_id: societe.id, // 🔑
               numero_facture: numeroFacture,
               date_facture: entete.date_facture ? new Date(entete.date_facture) : new Date(),
-
-              // FIX: codes string au lieu d'IDs BigInt (correspond au schéma tenant)
               code_type_facture: codeTypeFacture,
               code_type_facturation: codeTypeFacturation,
               code_mode_paiement: codeModePaiement,
               code_devise: deviseCode,
-
               id_tiers: tiersExistant.id,
               id_information_complementaire: info.id,
-
               total_ht: formatAmount(totalHTBrut, deviseCode),
               total_tva: formatAmount(totalTVAGlobal, deviseCode),
               total_remise: formatAmount(totalRemiseGlobale, deviseCode),
               total_autre_taxe: formatAmount(totalAutresTaxes, deviseCode),
               total_ttc: formatAmount(netAPayer, deviseCode),
-
               point_vente: entete.point_vente || "N/A",
-              etablissement: "N/A", // non présent dans l'Excel, valeur par défaut
-
+              etablissement: "N/A",
               numero_facture_origine: entete.numero_facture_origine || null,
               certifie: 0,
               retour_ncc: "",
               retour_id_facture: "",
               retour_token: "",
               retour_reference: "",
-
               detail_facture: {
                 create: processedItems.map((item) => ({
                   uuid: uuidv4(),
-                  // FIX: code string au lieu de BigInt id
                   code_taux_imposition: item.codeTauxImposition,
                   reference_article: item.reference,
                   designation_article: item.description,
@@ -383,11 +324,9 @@ exports.importInvoicesFromExcel = async (req, res) => {
                   retour_detail: "",
                   ligne_avoir: 0,
                   id_detail_origine_facture: 0n,
-                  // FIX: taxe_details sans uuid
                   taxe_details: { create: item.taxesLigne },
                 })),
               },
-              // FIX: taxe_pieds sans uuid
               taxe_pieds: { create: taxesPiedsFormatted },
             },
           });
@@ -398,7 +337,6 @@ exports.importInvoicesFromExcel = async (req, res) => {
           uuid: result.uuid,
           total_ttc: formatAmount(netAPayer, deviseCode),
           code_tiers: codeTiers,
-          // FIX: variable correcte pour savoir si le tiers a été créé
           tiers_cree: tiersCree,
         });
       } catch (error) {
@@ -425,12 +363,10 @@ exports.importInvoicesFromExcel = async (req, res) => {
   }
 };
 
+// ✅ downloadImportTemplate — aucun changement, pas de DB impliquée
 exports.downloadImportTemplate = async (req, res) => {
   try {
-    const templatePath = path.join(
-      __dirname,
-      "../../../templates/MODELE_IMPORT_FACTURES.xlsx",
-    );
+    const templatePath = path.join(__dirname, "../../../templates/MODELE_IMPORT_FACTURES.xlsx");
 
     if (!fs.existsSync(templatePath)) {
       return res.status(404).json({
@@ -441,9 +377,7 @@ exports.downloadImportTemplate = async (req, res) => {
     res.download(templatePath, "MODELE_IMPORT_FACTURES.xlsx", (err) => {
       if (err) {
         console.error("Erreur téléchargement template:", err);
-        res
-          .status(500)
-          .json({ error: "Erreur lors du téléchargement du modèle" });
+        res.status(500).json({ error: "Erreur lors du téléchargement du modèle" });
       }
     });
   } catch (error) {

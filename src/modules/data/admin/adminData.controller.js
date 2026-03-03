@@ -1,11 +1,11 @@
-const prismaMaster = require("../../../libs/master");
+const prisma = require("../../../libs/master"); // ✅ client unique
 
 exports.getAdminDashboardData = async (req, res) => {
   try {
     const [totalClients, totalUsers, totalLicencesActive] = await Promise.all([
-      prismaMaster.societe.count(),
-      prismaMaster.utilisateur_client.count(),
-      prismaMaster.licence.count({
+      prisma.societe.count(),
+      prisma.utilisateur_client.count(),
+      prisma.licence.count({
         where: { statut_id: 1 },
       }),
     ]);
@@ -29,7 +29,7 @@ exports.getAdminDashboardData = async (req, res) => {
 
 exports.getCompaniesFullData = async (req, res) => {
   try {
-    const clients = await prismaMaster.societe.findMany({
+    const clients = await prisma.societe.findMany({
       include: {
         configuration: true,
         statut: true,
@@ -54,7 +54,7 @@ exports.getCompaniesFullData = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `Liste complète des clients récupérée.`,
+      message: "Liste complète des clients récupérée.",
       data: safeData,
     });
   } catch (e) {

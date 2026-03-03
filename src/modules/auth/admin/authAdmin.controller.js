@@ -1,15 +1,10 @@
 const bcrypt = require("bcrypt");
 const { signAccessToken, signRefreshToken } = require("../../../helpers/token");
-const { randomCode, verifyCode } = require("../../../helpers/otp");
 const { makeToken, hashToken } = require("../../../helpers/token");
 const { sendMail } = require("../../../helpers/mailer");
-const prisma = require("../../../libs/master")
+const prisma = require("../../../libs/master");
 const env = require("../../../configs/env");
-const {
-  bcryptCost,
-  registrationExpiryMinutes,
-  resetExpiryMinutes,
-} = env.otp;
+const { bcryptCost, registrationExpiryMinutes, resetExpiryMinutes } = env.otp;
 const { url } = env.frontend;
 
 const BCRYPT_ROUNDS = parseInt(bcryptCost, 10) || 12;
@@ -20,8 +15,8 @@ exports.loginAdmin = async (req, res) => {
   const cleanBigInt = (obj) => {
     return JSON.parse(
       JSON.stringify(obj, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      )
+        typeof value === "bigint" ? value.toString() : value,
+      ),
     );
   };
 
@@ -40,7 +35,9 @@ exports.loginAdmin = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.mot_de_passe);
     if (!isMatch) {
-      return res.status(401).json({ message: "Mot de passe incorrect. Veuillez réessayer." });
+      return res
+        .status(401)
+        .json({ message: "Mot de passe incorrect. Veuillez réessayer." });
     }
 
     await prisma.utilisateur_admin.update({
@@ -49,7 +46,7 @@ exports.loginAdmin = async (req, res) => {
     });
 
     const payload = {
-      uuid: user.uuid, 
+      uuid: user.uuid,
       email: user.email,
       name: user.nom_complet,
       is_admin: true,
@@ -57,12 +54,12 @@ exports.loginAdmin = async (req, res) => {
     };
     const token = signAccessToken(payload);
     const refreshToken = signRefreshToken(payload);
-    
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     const userResponse = cleanBigInt({
@@ -77,12 +74,11 @@ exports.loginAdmin = async (req, res) => {
       token,
       user: userResponse,
     });
-
   } catch (e) {
     console.error("Erreur loginAdmin:", e);
-    return res.status(500).json({ 
-      message: "Erreur serveur lors de la connexion.", 
-      error: e.message 
+    return res.status(500).json({
+      message: "Erreur serveur lors de la connexion.",
+      error: e.message,
     });
   }
 };
@@ -97,15 +93,16 @@ exports.forgotPasswordAdmin = async (req, res) => {
   try {
     const user = await prisma.utilisateur_admin.findUnique({
       where: { email: email },
-      select: { 
+      select: {
         id: true,
-        uuid: true 
-      }, 
+        uuid: true,
+      },
     });
 
     if (!user) {
       return res.status(200).json({
-        message: "Si cet email existe, un lien de réinitialisation a été envoyé.",
+        message:
+          "Si cet email existe, un lien de réinitialisation a été envoyé.",
       });
     }
 
@@ -157,7 +154,8 @@ exports.resetPasswordAdmin = async (req, res) => {
 
   if (!token || !identifier || !newPassword) {
     return res.status(400).json({
-      message: "Le token, l'identifiant et le nouveau mot de passe sont requis.",
+      message:
+        "Le token, l'identifiant et le nouveau mot de passe sont requis.",
     });
   }
 
@@ -172,7 +170,7 @@ exports.resetPasswordAdmin = async (req, res) => {
 
     const user = await prisma.utilisateur_admin.findFirst({
       where: {
-        uuid: identifier, 
+        uuid: identifier,
         verification_token: tokenHash,
         verification_expiration: {
           gt: new Date(),
@@ -196,18 +194,20 @@ exports.resetPasswordAdmin = async (req, res) => {
         verification_token: null,
         verification_expiration: null,
         tokenVersion: {
-          increment: 1, 
+          increment: 1,
         },
       },
     });
 
     return res.status(200).json({
-      message: "Votre mot de passe Administrateur a été réinitialisé avec succès.",
+      message:
+        "Votre mot de passe Administrateur a été réinitialisé avec succès.",
     });
   } catch (e) {
     console.error("Erreur resetPassword Admin MySQL/Prisma:", e);
     return res.status(500).json({
-      message: "Une erreur est survenue lors de la réinitialisation sur le serveur.",
+      message:
+        "Une erreur est survenue lors de la réinitialisation sur le serveur.",
     });
   }
 };
@@ -217,7 +217,8 @@ exports.registerAdminStep1 = async (req, res) => {
 
   if (!login || !email || !password || !fullname) {
     return res.status(400).json({
-      message: "Les champs login, email, mot de passe et nom complet sont requis.",
+      message:
+        "Les champs login, email, mot de passe et nom complet sont requis.",
     });
   }
 
@@ -272,16 +273,19 @@ exports.registerAdminStep1 = async (req, res) => {
     });
 
     return res.status(202).json({
-      message: "Inscription enregistrée. Veuillez vérifier votre email pour activer votre compte.",
+      message:
+        "Inscription enregistrée. Veuillez vérifier votre email pour activer votre compte.",
     });
   } catch (e) {
     console.error(`Erreur registerAdminStep1 MySQL : ${e.message}`);
-    return res.status(500).json({ message: "Erreur interne lors de l'inscription." });
+    return res
+      .status(500)
+      .json({ message: "Erreur interne lors de l'inscription." });
   }
 };
 
 exports.registerAdminStep2 = async (req, res) => {
-  const { token, identifier } = req.body; 
+  const { token, identifier } = req.body;
 
   if (!token || !identifier) {
     return res.status(400).json({
@@ -309,7 +313,7 @@ exports.registerAdminStep2 = async (req, res) => {
     }
 
     await prisma.utilisateur_admin.update({
-      where: { id: admin.id }, 
+      where: { id: admin.id },
       data: {
         verification_token: null,
         verification_expiration: null,
@@ -321,7 +325,9 @@ exports.registerAdminStep2 = async (req, res) => {
     });
   } catch (e) {
     console.error("Erreur registerAdminStep2 MySQL :", e);
-    return res.status(500).json({ message: "Erreur interne lors de la vérification." });
+    return res
+      .status(500)
+      .json({ message: "Erreur interne lors de la vérification." });
   }
 };
 
@@ -331,28 +337,37 @@ exports.impersonateClient = async (req, res) => {
   try {
     const targetUser = await prisma.utilisateur_client.findUnique({
       where: { uuid: client_uuid },
-      include: { 
-        role: true, 
-        societe: { include: { licence: { include: { plan: true, statut: true } } } } 
-      }
+      include: {
+        role: true,
+        societe: {
+          include: {
+            licences: { include: { plan: true, statut: true } }, 
+          },
+        },
+      },
     });
 
-    if (!targetUser) return res.status(404).json({ message: "Utilisateur client introuvable." });
+    if (!targetUser)
+      return res
+        .status(404)
+        .json({ message: "Utilisateur client introuvable." });
 
     const societeInfo = targetUser.societe;
-    const licenceValide = societeInfo?.licences.find(l => l.statut?.code === 'ACTIF');
+    const licenceValide = societeInfo?.licences.find(
+      (l) => l.statut?.code === "ACTIF",
+    );
 
     const impersonatedPayload = {
       uuid: targetUser.uuid,
       email: targetUser.email,
       role: targetUser.role?.code || "Utilisateur",
       societe_uuid: societeInfo?.uuid,
-      db_name: societeInfo?.bd_name,
+      societe_id: societeInfo?.id,
       plan: {
         code: licenceValide?.plan?.code,
       },
       is_impersonated: true,
-      admin_uuid: req.admin._id 
+      admin_uuid: req.admin.uuid,
     };
 
     const token = signAccessToken(impersonatedPayload);
@@ -363,8 +378,8 @@ exports.impersonateClient = async (req, res) => {
       user: {
         uuid: targetUser.uuid,
         email: targetUser.email,
-        is_impersonated: true
-      }
+        is_impersonated: true,
+      },
     });
   } catch (e) {
     return res.status(500).json({ message: "Erreur lors de l'impersonation." });

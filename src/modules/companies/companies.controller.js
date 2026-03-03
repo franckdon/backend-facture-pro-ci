@@ -1,10 +1,5 @@
-const {
-  executeAdminCommand,
-  executeClientCommand,
-} = require("../../configs/db/db.service");
 const { generateLicenseToken, slugify } = require("../../helpers/params");
-const { SCHEMA_TENANT_SQL } = require("../../helpers/script");
-const prisma = require("../../libs/master");
+const prisma = require("../../libs/master"); // ✅ client unique
 const crypto = require("crypto");
 
 const generateApiToken = () => {
@@ -29,7 +24,6 @@ exports.createCompany = async (req, res) => {
     });
   }
 
-  let db_name = "";
   const slug = slugify(raison_sociale_societe);
 
   try {
@@ -37,19 +31,11 @@ exports.createCompany = async (req, res) => {
       where: { id: parseInt(plan_id) },
     });
     if (!plan)
-      return res
-        .status(404)
-        .json({ message: "Le plan de souscription sélectionné n'existe pas." });
+      return res.status(404).json({ message: "Le plan de souscription sélectionné n'existe pas." });
 
     const uniqueSuffix = Math.floor(1000 + Math.random() * 9000);
-    db_name = `db_${slug}_${uniqueSuffix}`;
-    const db_user = `u_${slug}_${uniqueSuffix}`;
-    const db_pass = crypto.randomBytes(12).toString("hex");
 
-    await executeAdminCommand(`CREATE DATABASE IF NOT EXISTS \`${db_name}\`;`);
-    console.log("DEBUG SCHEMA:", SCHEMA_TENANT_SQL);
-    await executeClientCommand(db_name, SCHEMA_TENANT_SQL);
-
+    // ✅ Plus de création de base de données — tout est dans la BD unique
     const result = await prisma.$transaction(async (tx) => {
       const newSociete = await tx.societe.create({
         data: {
@@ -60,14 +46,11 @@ exports.createCompany = async (req, res) => {
           adresse,
           telephone,
           email,
-          bd_host: process.env.DB_HOST || "localhost",
-          bd_name: db_name, 
-          bd_user: db_user, 
-          bd_pass: db_pass, 
-          bd_port: 3306,
           statut_id: 1,
+          // ✅ bd_host, bd_name, bd_user, bd_pass, bd_port supprimés
         },
       });
+
       const dateExpiration = new Date();
       dateExpiration.setFullYear(dateExpiration.getFullYear() + 1);
 
@@ -99,15 +82,10 @@ exports.createCompany = async (req, res) => {
       data: { code: result.code_societe, licence_cle: "Générée avec succès" },
     });
   } catch (err) {
-    console.error("ERREUR DEPLOIEMENT MYSQL:", err);
-
-    if (db_name) {
-      console.log(`[Rollback] Suppression de la base orpheline : ${db_name}`);
-      await executeAdminCommand(`DROP DATABASE IF EXISTS \`${db_name}\`;`);
-    }
-
+    console.error("ERREUR CREATION SOCIETE:", err);
+    // ✅ Plus de rollback DROP DATABASE à gérer
     return res.status(500).json({
-      message: "Échec du déploiement de la société.",
+      message: "Échec de la création de la société.",
       error: err.message,
     });
   }
@@ -118,9 +96,7 @@ exports.updateCompany = async (req, res) => {
   const data = req.body;
 
   if (!uuid) {
-    return res
-      .status(400)
-      .json({ message: "L'identifiant (UUID) de la société est requis." });
+    return res.status(400).json({ message: "L'identifiant (UUID) de la société est requis." });
   }
 
   try {
@@ -141,14 +117,11 @@ exports.updateCompany = async (req, res) => {
         },
       });
 
-      if (
-        data.token_fne !== undefined ||
-        data.statut_production !== undefined
-      ) {
+      if (data.cle_api_fne !== undefined || data.statut_production !== undefined) {
         await tx.configuration.update({
           where: { societe_id: updatedSociete.id },
           data: {
-            cle_api_fne: data.token_fne,
+            cle_api_fne: data.cle_api_fne,
             production: data.statut_production === true ? 1 : 0,
           },
         });
@@ -163,17 +136,10 @@ exports.updateCompany = async (req, res) => {
     });
   } catch (e) {
     console.error(`Erreur modification société (UUID: ${uuid}):`, e);
-
     if (e.code === "P2025") {
-      return res
-        .status(404)
-        .json({ message: "Société ou configuration non trouvée." });
+      return res.status(404).json({ message: "Société ou configuration non trouvée." });
     }
-
-    res.status(500).json({
-      message: "Erreur lors de la mise à jour.",
-      error: e.message,
-    });
+    res.status(500).json({ message: "Erreur lors de la mise à jour.", error: e.message });
   }
 };
 
@@ -185,49 +151,35 @@ exports.deleteCompany = async (req, res) => {
   try {
     const societe = await prisma.societe.findUnique({
       where: { uuid: uuid },
-      select: { id: true, bd_name: true },
+      select: { id: true },
+      // ✅ bd_name supprimé du select, plus besoin
     });
 
-    if (!societe)
-      return res.status(404).json({ message: "Société non trouvée." });
+    if (!societe) return res.status(404).json({ message: "Société non trouvée." });
 
-    const dbName = societe.bd_name;
-    const sId = societe.id;
+    // ✅ La transaction suffit — le onDelete: Cascade du schéma gère les suppressions
+    //    en cascade automatiquement (licences, configuration, etablissements,
+    //    utilisateurs, ET toutes les données tenant : factures, tiers, produits...)
+    await prisma.societe.delete({ where: { id: societe.id } });
 
-    await prisma.$transaction(async (tx) => {
-      await tx.utilisateur_client.deleteMany({ where: { societe_id: sId } });
-      await tx.licence.deleteMany({ where: { societe_id: sId } });
-      await tx.configuration.deleteMany({ where: { societe_id: sId } });
-      await tx.etablissement.deleteMany({ where: { societe_id: sId } });
-      await tx.societe.delete({ where: { id: sId } });
-    });
-
-    if (dbName) {
-      try {
-        console.log(`[CLEANUP] Suppression de la DB : \`${dbName}\``);
-        await executeAdminCommand(`DROP DATABASE IF EXISTS \`${dbName}\`;`);
-      } catch (dbErr) {
-        console.error(`Erreur DROP DATABASE ${dbName}:`, dbErr.message);
-      }
-    }
+    // ✅ Plus de DROP DATABASE
 
     return res.status(200).json({
-      message: `La société et sa base de données [${dbName}] ont été supprimées.`,
+      message: "La société et toutes ses données ont été supprimées.",
     });
   } catch (e) {
-    console.error(`Erreur critique suppression:`, e);
+    console.error("Erreur critique suppression:", e);
     res.status(500).json({ message: "Erreur serveur.", error: e.message });
   }
 };
 
+// updateCompanyStatusProduction — inchangé ✅
 exports.updateCompanyStatusProduction = async (req, res) => {
   const { in_production, cle_api_fne, societe_uuid } = req.body;
 
   try {
     if (!societe_uuid) {
-      return res
-        .status(400)
-        .json({ message: "L'UUID de la société est requis." });
+      return res.status(400).json({ message: "L'UUID de la société est requis." });
     }
 
     const societe = await prisma.societe.findUnique({
@@ -240,17 +192,11 @@ exports.updateCompanyStatusProduction = async (req, res) => {
     }
 
     const updateData = {};
-    if (in_production !== undefined) {
-      updateData.production = in_production ? 1 : 0;
-    }
-    if (token_fne !== undefined) {
-      updateData.cle_api_fne = cle_api_fne;
-    }
+    if (in_production !== undefined) updateData.production = in_production ? 1 : 0;
+    if (cle_api_fne !== undefined) updateData.cle_api_fne = cle_api_fne;
 
     if (Object.keys(updateData).length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Aucune donnée à mettre à jour." });
+      return res.status(400).json({ message: "Aucune donnée à mettre à jour." });
     }
 
     const config = await prisma.configuration.upsert({
@@ -275,19 +221,16 @@ exports.updateCompanyStatusProduction = async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur updateStatusProduction:", error);
-    return res
-      .status(500)
-      .json({ message: "Erreur serveur.", details: error.message });
+    return res.status(500).json({ message: "Erreur serveur.", details: error.message });
   }
 };
 
+// updateCompanyStatus — inchangé ✅
 exports.updateCompanyStatus = async (req, res) => {
   const { societe_uuid, code_statut } = req.body;
 
   if (!societe_uuid || !code_statut) {
-    return res
-      .status(400)
-      .json({ message: "UUID de société et code statut requis." });
+    return res.status(400).json({ message: "UUID de société et code statut requis." });
   }
 
   try {
@@ -296,17 +239,12 @@ exports.updateCompanyStatus = async (req, res) => {
     });
 
     if (!targetStatus) {
-      return res
-        .status(404)
-        .json({ message: "Le statut spécifié est invalide." });
+      return res.status(404).json({ message: "Le statut spécifié est invalide." });
     }
 
     const updatedSociete = await prisma.societe.update({
       where: { uuid: societe_uuid },
-      data: {
-        statut_id: targetStatus.id,
-        modifie_le: new Date(),
-      },
+      data: { statut_id: targetStatus.id, modifie_le: new Date() },
       select: {
         uuid: true,
         raison_sociale_societe: true,
@@ -324,8 +262,6 @@ exports.updateCompanyStatus = async (req, res) => {
     if (error.code === "P2025") {
       return res.status(404).json({ message: "Société introuvable." });
     }
-    return res
-      .status(500)
-      .json({ message: "Erreur serveur lors du changement de statut." });
+    return res.status(500).json({ message: "Erreur serveur lors du changement de statut." });
   }
 };

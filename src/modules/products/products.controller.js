@@ -1,34 +1,30 @@
-const masterPrisma = require("../../libs/master");
-const { getTenantClient } = require("../../libs/tenant");
+const prisma = require("../../libs/master"); // ✅ client unique
 
-// Fonction utilitaire pour récupérer le client tenant
-const getTenant = async (req) => {
-  const { code_societe } = req.user;
-  const societe = await masterPrisma.societe.findFirst({
-    where: { code_societe },
-  });
-  if (!societe) throw new Error("Société non identifiée.");
-  return getTenantClient(societe);
-};
-
-// Helper pour sérialiser les BigInt (si pas déjà défini globalement)
 const serialize = (data) => JSON.parse(JSON.stringify(data, (key, value) =>
   typeof value === "bigint" ? value.toString() : value
 ));
 
+// ✅ Helper simplifié — plus besoin de récupérer la societe pour getTenantClient
+const getSocieteId = (req) => {
+  const societe_id = req.user?.societe_id;
+  if (!societe_id) throw new Error("Société non identifiée.");
+  return societe_id;
+};
+
 exports.setupDefaultTypesOfProduct = async (req, res) => {
   try {
-    const tenantPrisma = await getTenant(req);
+    const societe_id = getSocieteId(req);
     const types = [
-      { code: 'BIEN', libelle: 'Bien matériel' },
-      { code: 'SERVICE', libelle: 'Prestation de service' }
+      { code: "BIEN", libelle: "Bien matériel" },
+      { code: "SERVICE", libelle: "Prestation de service" },
     ];
 
     for (const t of types) {
-      await tenantPrisma.type_produit.upsert({
-        where: { code: t.code },
+      // ✅ upsert sur [societe_id, code] — contrainte unique du schéma fusionné
+      await prisma.type_produit.upsert({
+        where: { societe_id_code: { societe_id, code: t.code } },
         update: {},
-        create: t,
+        create: { societe_id, ...t }, // 🔑
       });
     }
 
@@ -40,24 +36,25 @@ exports.setupDefaultTypesOfProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
+    const societe_id = getSocieteId(req);
     const { reference, designation, prix_base, description, type_uuid } = req.body;
-    const tenantPrisma = await getTenant(req);
 
-    const typeRef = await tenantPrisma.type_produit.findUnique({
-      where: { uuid: type_uuid }
+    const typeRef = await prisma.type_produit.findFirst({
+      where: { uuid: type_uuid, societe_id }, // 🔑 vérifier l'appartenance
     });
 
     if (!typeRef) return res.status(404).json({ message: "Type de produit invalide." });
 
-    const newProduit = await tenantPrisma.produit.create({
+    const newProduit = await prisma.produit.create({
       data: {
+        societe_id, // 🔑
         reference,
         designation,
         prix_base: prix_base ? parseFloat(prix_base) : 0,
         description,
-        type_produit_id: typeRef.id
+        type_produit_id: typeRef.id,
       },
-      include: { type_produit: true } 
+      include: { type_produit: true },
     });
 
     res.status(201).json({ success: true, data: serialize(newProduit) });
@@ -68,27 +65,32 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
+    const societe_id = getSocieteId(req);
     const { uuid } = req.params;
     const { reference, designation, prix_base, description, type_uuid } = req.body;
-    const tenantPrisma = await getTenant(req);
 
     let updateData = {
       reference,
       designation,
       prix_base: prix_base ? parseFloat(prix_base) : undefined,
-      description
+      description,
     };
 
     if (type_uuid) {
-      const typeRef = await tenantPrisma.type_produit.findUnique({ where: { uuid: type_uuid } });
+      const typeRef = await prisma.type_produit.findFirst({
+        where: { uuid: type_uuid, societe_id }, // 🔑 vérifier l'appartenance
+      });
       if (!typeRef) return res.status(404).json({ message: "Nouveau type invalide." });
       updateData.type_produit_id = typeRef.id;
     }
 
-    const updated = await tenantPrisma.produit.update({
-      where: { uuid },
+    const updated = await prisma.produit.update({
+      where: {
+        uuid,
+        societe_id, // 🔑 Prisma vérifie que le produit appartient bien à cette société
+      },
       data: updateData,
-      include: { type_produit: true }
+      include: { type_produit: true },
     });
 
     res.status(200).json({ success: true, data: serialize(updated) });
@@ -99,10 +101,13 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
+    const societe_id = getSocieteId(req);
     const { uuid } = req.params;
-    const tenantPrisma = await getTenant(req);
-    
-    await tenantPrisma.produit.delete({ where: { uuid } });
+
+    await prisma.produit.delete({
+      where: { uuid, societe_id }, // 🔑
+    });
+
     res.status(200).json({ success: true, message: "Produit supprimé." });
   } catch (error) {
     res.status(500).json({ message: "Erreur suppression.", details: error.message });
@@ -111,15 +116,16 @@ exports.deleteProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const tenantPrisma = await getTenant(req);
-    const produits = await tenantPrisma.produit.findMany({
+    const societe_id = getSocieteId(req);
+
+    const produits = await prisma.produit.findMany({
+      where: { societe_id }, // 🔑
       include: {
-        type_produit: {
-          select: { libelle: true, code: true, uuid: true }
-        }
+        type_produit: { select: { libelle: true, code: true, uuid: true } },
       },
-      orderBy: { designation: 'asc' }
+      orderBy: { designation: "asc" },
     });
+
     res.status(200).json({ success: true, data: serialize(produits) });
   } catch (error) {
     res.status(500).json({ message: "Erreur de chargement.", details: error.message });

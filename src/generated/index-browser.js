@@ -120,9 +120,186 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.SocieteScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code_societe: 'code_societe',
+  raison_sociale_societe: 'raison_sociale_societe',
+  ncc: 'ncc',
+  rccm: 'rccm',
+  regime_imposition: 'regime_imposition',
+  centre_impot: 'centre_impot',
+  ref_bancaire: 'ref_bancaire',
+  adresse: 'adresse',
+  telephone: 'telephone',
+  email: 'email',
+  cree_le: 'cree_le',
+  modifie_le: 'modifie_le',
+  bd_host: 'bd_host',
+  bd_name: 'bd_name',
+  bd_user: 'bd_user',
+  bd_pass: 'bd_pass',
+  bd_port: 'bd_port',
+  logo_url: 'logo_url',
+  statut_id: 'statut_id'
+};
+
+exports.Prisma.EtablissementScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  societe_id: 'societe_id',
+  code_etablissement: 'code_etablissement',
+  libelle_etablissement: 'libelle_etablissement',
+  cree_le: 'cree_le',
+  modifie_le: 'modifie_le'
+};
+
+exports.Prisma.Point_venteScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  etablissement_id: 'etablissement_id',
+  libelle_pdv: 'libelle_pdv',
+  cree_le: 'cree_le'
+};
+
+exports.Prisma.LicenceScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  societe_id: 'societe_id',
+  plan_id: 'plan_id',
+  cle: 'cle',
+  date_expiration: 'date_expiration',
+  statut_id: 'statut_id'
+};
+
+exports.Prisma.Utilisateur_clientScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  email: 'email',
+  login: 'login',
+  mot_de_passe: 'mot_de_passe',
+  nom_complet: 'nom_complet',
+  statut_id: 'statut_id',
+  societe_id: 'societe_id',
+  role_id: 'role_id',
+  cree_le: 'cree_le',
+  dernier_login: 'dernier_login',
+  otp_secret: 'otp_secret',
+  otp_expiration: 'otp_expiration',
+  tokenVersion: 'tokenVersion',
+  verification_token: 'verification_token',
+  verification_expiration: 'verification_expiration'
+};
+
+exports.Prisma.Mode_paiementScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code_mode_paiement: 'code_mode_paiement',
+  libelle_mode_paiement: 'libelle_mode_paiement'
+};
+
+exports.Prisma.Taux_impositionScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code: 'code',
+  pourcentage: 'pourcentage',
+  description: 'description'
+};
+
+exports.Prisma.Type_factureScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code_type_facture: 'code_type_facture',
+  libelle_type_facture: 'libelle_type_facture'
+};
+
+exports.Prisma.DeviseScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code_devise: 'code_devise',
+  taux_devise: 'taux_devise',
+  description: 'description'
+};
+
+exports.Prisma.Type_facturationScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code_type_facturaction: 'code_type_facturaction',
+  libelle_type_facturation: 'libelle_type_facturation'
+};
+
+exports.Prisma.StickerScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  societe_id: 'societe_id',
+  balance_sticker: 'balance_sticker',
+  date_maj: 'date_maj'
+};
+
+exports.Prisma.ConfigurationScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  societe_id: 'societe_id',
+  cle_api_fne: 'cle_api_fne',
+  cle_api_locale: 'cle_api_locale',
+  production: 'production'
+};
+
+exports.Prisma.StatutScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.Utilisateur_adminScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  email: 'email',
+  login: 'login',
+  mot_de_passe: 'mot_de_passe',
+  nom_complet: 'nom_complet',
+  cree_le: 'cree_le',
+  dernier_login: 'dernier_login',
+  otp_secret: 'otp_secret',
+  otp_expiration: 'otp_expiration',
+  tokenVersion: 'tokenVersion',
+  verification_token: 'verification_token',
+  verification_expiration: 'verification_expiration'
+};
+
+exports.Prisma.PlanScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  libelle: 'libelle',
+  code: 'code',
+  prix_annuel: 'prix_annuel',
+  limite_utilisateurs: 'limite_utilisateurs',
+  description: 'description'
+};
+
+exports.Prisma.FaqScalarFieldEnum = {
+  id: 'id',
+  uuid: 'uuid',
+  question: 'question',
+  reponse: 'reponse',
+  ordre: 'ordre',
+  est_actif: 'est_actif',
+  cree_le: 'cree_le',
+  modifie_le: 'modifie_le'
+};
+
 exports.Prisma.Entete_factureScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
+  societe_id: 'societe_id',
   numero_facture: 'numero_facture',
   date_facture: 'date_facture',
   code_type_facture: 'code_type_facture',
@@ -185,6 +362,7 @@ exports.Prisma.Taxe_piedsScalarFieldEnum = {
 exports.Prisma.TiersScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
+  societe_id: 'societe_id',
   code_tiers: 'code_tiers',
   raison_sociale_tiers: 'raison_sociale_tiers',
   ncc_tiers: 'ncc_tiers',
@@ -195,6 +373,7 @@ exports.Prisma.TiersScalarFieldEnum = {
 exports.Prisma.Information_complementaireScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
+  societe_id: 'societe_id',
   pied_de_page: 'pied_de_page',
   nom_commercial: 'nom_commercial',
   autre_mention: 'autre_mention',
@@ -204,6 +383,7 @@ exports.Prisma.Information_complementaireScalarFieldEnum = {
 exports.Prisma.Type_produitScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
+  societe_id: 'societe_id',
   code: 'code',
   libelle: 'libelle'
 };
@@ -211,6 +391,7 @@ exports.Prisma.Type_produitScalarFieldEnum = {
 exports.Prisma.ProduitScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
+  societe_id: 'societe_id',
   reference: 'reference',
   designation: 'designation',
   prix_base: 'prix_base',
@@ -228,6 +409,127 @@ exports.Prisma.SortOrder = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.societeOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_societe: 'code_societe',
+  raison_sociale_societe: 'raison_sociale_societe',
+  ncc: 'ncc',
+  rccm: 'rccm',
+  regime_imposition: 'regime_imposition',
+  centre_impot: 'centre_impot',
+  ref_bancaire: 'ref_bancaire',
+  adresse: 'adresse',
+  telephone: 'telephone',
+  email: 'email',
+  bd_host: 'bd_host',
+  bd_name: 'bd_name',
+  bd_user: 'bd_user',
+  bd_pass: 'bd_pass',
+  logo_url: 'logo_url'
+};
+
+exports.Prisma.etablissementOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_etablissement: 'code_etablissement',
+  libelle_etablissement: 'libelle_etablissement'
+};
+
+exports.Prisma.point_venteOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  libelle_pdv: 'libelle_pdv'
+};
+
+exports.Prisma.licenceOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  cle: 'cle'
+};
+
+exports.Prisma.utilisateur_clientOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  email: 'email',
+  login: 'login',
+  mot_de_passe: 'mot_de_passe',
+  nom_complet: 'nom_complet',
+  otp_secret: 'otp_secret',
+  verification_token: 'verification_token'
+};
+
+exports.Prisma.mode_paiementOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_mode_paiement: 'code_mode_paiement',
+  libelle_mode_paiement: 'libelle_mode_paiement'
+};
+
+exports.Prisma.taux_impositionOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.type_factureOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_type_facture: 'code_type_facture',
+  libelle_type_facture: 'libelle_type_facture'
+};
+
+exports.Prisma.deviseOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_devise: 'code_devise',
+  taux_devise: 'taux_devise',
+  description: 'description'
+};
+
+exports.Prisma.type_facturationOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code_type_facturaction: 'code_type_facturaction',
+  libelle_type_facturation: 'libelle_type_facturation'
+};
+
+exports.Prisma.stickerOrderByRelevanceFieldEnum = {
+  uuid: 'uuid'
+};
+
+exports.Prisma.configurationOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  cle_api_fne: 'cle_api_fne',
+  cle_api_locale: 'cle_api_locale'
+};
+
+exports.Prisma.statutOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.roleOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.utilisateur_adminOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  email: 'email',
+  login: 'login',
+  mot_de_passe: 'mot_de_passe',
+  nom_complet: 'nom_complet',
+  otp_secret: 'otp_secret',
+  verification_token: 'verification_token'
+};
+
+exports.Prisma.planOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  libelle: 'libelle',
+  code: 'code',
+  description: 'description'
+};
+
+exports.Prisma.faqOrderByRelevanceFieldEnum = {
+  uuid: 'uuid',
+  question: 'question',
+  reponse: 'reponse'
 };
 
 exports.Prisma.entete_factureOrderByRelevanceFieldEnum = {
@@ -295,6 +597,23 @@ exports.Prisma.produitOrderByRelevanceFieldEnum = {
 
 
 exports.Prisma.ModelName = {
+  societe: 'societe',
+  etablissement: 'etablissement',
+  point_vente: 'point_vente',
+  licence: 'licence',
+  utilisateur_client: 'utilisateur_client',
+  mode_paiement: 'mode_paiement',
+  taux_imposition: 'taux_imposition',
+  type_facture: 'type_facture',
+  devise: 'devise',
+  type_facturation: 'type_facturation',
+  sticker: 'sticker',
+  configuration: 'configuration',
+  statut: 'statut',
+  role: 'role',
+  utilisateur_admin: 'utilisateur_admin',
+  plan: 'plan',
+  faq: 'faq',
   entete_facture: 'entete_facture',
   detail_facture: 'detail_facture',
   taxe_details: 'taxe_details',

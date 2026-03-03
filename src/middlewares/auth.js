@@ -1,4 +1,4 @@
-const prismaMaster = require("../libs/master");
+const prisma = require("../libs/master"); // ✅ client unique
 const { verifyToken } = require("../helpers/token");
 
 exports.verifyAdminToken = async (req, res, next) => {
@@ -16,7 +16,7 @@ exports.verifyAdminToken = async (req, res, next) => {
 
     if (!adminUUID) throw new Error("UUID absent du token");
 
-    const admin = await prismaMaster.utilisateur_admin.findUnique({
+    const admin = await prisma.utilisateur_admin.findUnique({
       where: { uuid: adminUUID },
     });
 
@@ -29,13 +29,13 @@ exports.verifyAdminToken = async (req, res, next) => {
     }
 
     req.admin = {
-      _id: admin.uuid,
+      uuid: admin.uuid, // ✅ corrigé : _id → uuid (cohérent avec impersonateClient)
       email: admin.email,
       login: admin.login,
       name: admin.nom_complet,
       statut: admin.statut_id,
-      double_auth: !!admin.double_auth,
     };
+    // ✅ double_auth supprimé — champ inexistant dans le schéma utilisateur_admin
 
     next();
   } catch (e) {
@@ -43,6 +43,7 @@ exports.verifyAdminToken = async (req, res, next) => {
     return res.status(401).json({ message: "Session invalide ou expirée." });
   }
 };
+
 exports.verifyClientToken = async (req, res, next) => {
   if (req.method === "OPTIONS") return next();
 
@@ -56,24 +57,30 @@ exports.verifyClientToken = async (req, res, next) => {
     return res.status(401).json({ message: "Token client manquant." });
   }
 
- try {
+  try {
     const payload = verifyToken(token);
     const clientUUID = payload.uuid || payload.sub;
 
-    const client = await prismaMaster.utilisateur_client.findUnique({
+    const client = await prisma.utilisateur_client.findUnique({
       where: { uuid: clientUUID },
-      include: { role: true, societe: true }
+      include: { role: true, societe: true },
     });
 
     if (!client) return res.status(401).json({ message: "Utilisateur non trouvé." });
 
+    if ((client.tokenVersion || 0) > (payload.tokenVersion || 0)) {
+      return res.status(401).json({ message: "Token révoqué." }); // ✅ vérification tokenVersion manquante dans l'original
+    }
+
     req.user = {
       uuid: client.uuid,
       email: client.email,
-      role: client.role?.code, 
+      role: client.role?.code,
       societe_uuid: client.societe?.uuid,
+      societe_id: client.societe?.id,        // ✅ ajout — clé de filtrage tenant dans tous les controllers
+      code_societe: client.societe?.code_societe, // ✅ ajout — utilisé dans importInvoicesFromExcel
       is_impersonated: payload.is_impersonated || false,
-      admin_origin: payload.admin_uuid || null
+      admin_origin: payload.admin_uuid || null,
     };
 
     next();

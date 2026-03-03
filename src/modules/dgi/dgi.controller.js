@@ -1,88 +1,75 @@
-const masterPrisma = require("../../libs/master");
-const { getTenantClient } = require("../../libs/tenant");
+const prisma = require("../../libs/master"); // ✅ client unique
 const axios = require("axios");
 
 exports.certifyInvoice = async (req, res) => {
   const { invoiceUuid } = req.body;
-  const societeId = req.user?.societeId;
+  const societeId = req.user?.societe_id; // ✅ corrigé : societeId → societe_id (cohérent avec le token)
 
   try {
     if (!invoiceUuid || !societeId) {
       return res.status(400).json({ message: "UUID ou Société manquante." });
     }
 
-    const societe = await masterPrisma.societe.findUnique({
+    const societe = await prisma.societe.findUnique({
       where: { id: Number(societeId) },
       include: { configuration: true },
     });
 
-    if (!societe)
-      return res.status(404).json({ message: "Société introuvable." });
+    if (!societe) return res.status(404).json({ message: "Société introuvable." });
 
-    const tenantPrisma = getTenantClient(societe);
-
-    const facture = await tenantPrisma.entete_facture.findUnique({
-      where: { uuid: invoiceUuid },
+    // ✅ Plus de getTenantClient — on filtre par societe_id directement
+    const facture = await prisma.entete_facture.findFirst({
+      where: {
+        uuid: invoiceUuid,
+        societe_id: societe.id, // 🔑 sécurité : vérifier que la facture appartient bien à cette société
+      },
       include: {
-        detail_facture: {
-          include: { taxe_details: true }, 
-        },
+        detail_facture: { include: { taxe_details: true } },
         taxe_pieds: true,
         tiers: true,
-
-    },
+      },
     });
 
-    if (!facture)
-      return res.status(404).json({ message: "Facture introuvable." });
+    if (!facture) return res.status(404).json({ message: "Facture introuvable." });
 
     let exchangeRate = 1;
-    if (facture.code_devise && facture.code_devise.toUpperCase() !== 'XOF') {
-      const deviseMaster = await masterPrisma.devise.findFirst({
-        where: { code_devise: facture.code_devise }
+    if (facture.code_devise && facture.code_devise.toUpperCase() !== "XOF") {
+      const deviseMaster = await prisma.devise.findFirst({
+        where: { code_devise: facture.code_devise },
       });
-      
       if (deviseMaster) {
         exchangeRate = parseFloat(deviseMaster.taux_devise);
       }
     }
 
-
     const invoiceType =
       facture.code_type_facture.toLowerCase() === "vente" ? "sale" : "purchase";
 
     const payload = {
-      invoiceType: invoiceType,
+      invoiceType,
       paymentMethod: facture.code_mode_paiement.toLowerCase(),
       template: facture.code_type_facturation,
       clientNcc: facture.tiers.ncc_tiers || "0000000X",
       clientCompanyName: facture.tiers.raison_sociale_tiers,
-      clientPhone:
-        facture.tiers.telephone_tiers?.replace(/\D/g, "") || "00000000",
+      clientPhone: facture.tiers.telephone_tiers?.replace(/\D/g, "") || "00000000",
       clientEmail: facture.tiers.email_tiers || "",
-      pointOfSale: facture.point_vente || "Caisse Principale", 
-      establishment: facture.etablissement || "Siège Social", 
+      pointOfSale: facture.point_vente || "Caisse Principale",
+      establishment: facture.etablissement || "Siège Social",
       foreignCurrency: facture.code_devise || "XOF",
       foreignCurrencyRate: exchangeRate,
-
-      items: facture.detail_facture.map((item) => {
-        return {
-          reference: item.reference_article,
-          description: item.designation_article,
-          quantity: item.quantite,
-          amount: parseFloat(item.prix),
-          discount: item.remise,
-          measurementUnit: item.unite_vente,
-          taxes:
-            invoiceType === "sale"
-              ? [item.code_taux_imposition.split("_")[0]]
-              : [],
-          customTaxes: item.taxe_details.map((td) => ({
-            name: td.libelle_taxe_details,
-            amount: parseFloat(td.taux_taxe_details),
-          })),
-        };
-      }),
+      items: facture.detail_facture.map((item) => ({
+        reference: item.reference_article,
+        description: item.designation_article,
+        quantity: item.quantite,
+        amount: parseFloat(item.prix),
+        discount: item.remise,
+        measurementUnit: item.unite_vente,
+        taxes: invoiceType === "sale" ? [item.code_taux_imposition.split("_")[0]] : [],
+        customTaxes: item.taxe_details.map((td) => ({
+          name: td.libelle_taxe_details,
+          amount: parseFloat(td.taux_taxe_details),
+        })),
+      })),
       customTaxes: facture.taxe_pieds.map((tp) => ({
         name: tp.libelle_taxe_pieds,
         amount: parseFloat(tp.taux_taxe_pieds),
@@ -91,25 +78,19 @@ exports.certifyInvoice = async (req, res) => {
     };
 
     const isProd = societe.configuration?.production === 1;
-    const baseUrl = isProd
-      ? process.env.API_CERTIF_PROD_URL
-      : process.env.API_CERTIF_TEST_URL;
-    const tokenFne = societe.configuration?.cle_api_fne || societe.cle_api_fne;
+    const baseUrl = isProd ? process.env.API_CERTIF_PROD_URL : process.env.API_CERTIF_TEST_URL;
+    const tokenFne = societe.configuration?.cle_api_fne;
 
     const response = await axios.post(
       `${baseUrl}/ws/external/invoices/sign`,
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${tokenFne}`,
-          "Content-Type": "application/json",
-        },
-      },
+      { headers: { Authorization: `Bearer ${tokenFne}`, "Content-Type": "application/json" } }
     );
 
     const result = response.data;
 
-    await tenantPrisma.$transaction(async (tx) => {
+    // ✅ Une seule transaction sur le client unique
+    await prisma.$transaction(async (tx) => {
       await tx.entete_facture.update({
         where: { id: facture.id },
         data: {
@@ -118,7 +99,7 @@ exports.certifyInvoice = async (req, res) => {
           retour_token: result.token,
           retour_ncc: result.ncc || "",
           retour_reference: result.reference,
-          retour_sticker: String(result.balance_sticker || ""),
+          // ✅ retour_sticker supprimé — champ inexistant dans le schéma
         },
       });
 
@@ -130,22 +111,16 @@ exports.certifyInvoice = async (req, res) => {
           });
         }
       }
+
+      // ✅ sticker.upsert intégré dans la transaction — atomique avec la mise à jour facture
+      if (result.balance_sticker !== undefined) {
+        await tx.sticker.upsert({
+          where: { societe_id: societe.id },
+          update: { balance_sticker: Number(result.balance_sticker), date_maj: new Date() },
+          create: { societe_id: societe.id, balance_sticker: Number(result.balance_sticker) },
+        });
+      }
     });
-
-
-    if (result.balance_sticker !== undefined) {
-      await masterPrisma.sticker.upsert({
-        where: { societe_id: societe.id },
-        update: {
-          balance_sticker: Number(result.balance_sticker),
-          date_maj: new Date()
-        },
-        create: {
-          societe_id: societe.id,
-          balance_sticker: Number(result.balance_sticker),
-        },
-      });
-    }
 
     return res.status(200).json({ success: true, reference: result.reference });
   } catch (error) {
@@ -161,7 +136,6 @@ exports.certifyInvoice = async (req, res) => {
     }
 
     console.error("Erreur Certification:", JSON.stringify(apiData, null, 2));
-
     return res.status(500).json({
       error: "Échec API DGI",
       message: apiData?.message || "Erreur de validation",
@@ -172,24 +146,25 @@ exports.certifyInvoice = async (req, res) => {
 
 exports.refundInvoice = async (req, res) => {
   const { invoiceUuid } = req.body;
-  const societeId = req.user?.societeId;
+  const societeId = req.user?.societe_id; // ✅ corrigé : societeId → societe_id
 
   try {
     if (!invoiceUuid || !societeId) {
       return res.status(400).json({ message: "UUID ou Société manquante." });
     }
 
-    const societe = await masterPrisma.societe.findUnique({
+    const societe = await prisma.societe.findUnique({
       where: { id: Number(societeId) },
       include: { configuration: true },
     });
 
     if (!societe) return res.status(404).json({ message: "Société introuvable." });
 
-    const tenantPrisma = getTenantClient(societe);
-
-    const avoir = await tenantPrisma.entete_facture.findUnique({
-      where: { uuid: invoiceUuid },
+    const avoir = await prisma.entete_facture.findFirst({
+      where: {
+        uuid: invoiceUuid,
+        societe_id: societe.id, // 🔑 vérification d'appartenance
+      },
       include: { detail_facture: true },
     });
 
@@ -197,8 +172,11 @@ exports.refundInvoice = async (req, res) => {
     if (!avoir.numero_facture_origine)
       return res.status(400).json({ message: "Lien avec la facture d'origine manquant." });
 
-    const factureOrigine = await tenantPrisma.entete_facture.findFirst({
-      where: { numero_facture: avoir.numero_facture_origine },
+    const factureOrigine = await prisma.entete_facture.findFirst({
+      where: {
+        numero_facture: avoir.numero_facture_origine,
+        societe_id: societe.id, // 🔑 même société obligatoirement
+      },
       include: { detail_facture: true },
     });
 
@@ -225,22 +203,17 @@ exports.refundInvoice = async (req, res) => {
 
     const isProd = societe.configuration?.production === 1;
     const baseUrl = isProd ? process.env.API_CERTIF_PROD_URL : process.env.API_CERTIF_TEST_URL;
-    const tokenFne = societe.configuration?.cle_api_fne || societe.cle_api_fne;
+    const tokenFne = societe.configuration?.cle_api_fne;
 
     const response = await axios.post(
       `${baseUrl}/ws/external/invoices/${factureOrigine.retour_id_facture}/refund`,
       { items: itemsPayload },
-      {
-        headers: {
-          Authorization: `Bearer ${tokenFne}`,
-          "Content-Type": "application/json",
-        },
-      }
+      { headers: { Authorization: `Bearer ${tokenFne}`, "Content-Type": "application/json" } }
     );
 
     const result = response.data;
 
-    await tenantPrisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       await tx.entete_facture.update({
         where: { id: avoir.id },
         data: {
@@ -249,7 +222,7 @@ exports.refundInvoice = async (req, res) => {
           retour_token: result.token,
           retour_ncc: result.ncc || "",
           retour_reference: result.reference,
-          retour_sticker: String(result.balance_sticker || ""),
+          // ✅ retour_sticker supprimé
         },
       });
 
@@ -261,28 +234,21 @@ exports.refundInvoice = async (req, res) => {
           });
         }
       }
+
+      // ✅ sticker intégré dans la transaction
+      if (result.balance_sticker !== undefined) {
+        await tx.sticker.upsert({
+          where: { societe_id: societe.id },
+          update: { balance_sticker: Number(result.balance_sticker), date_maj: new Date() },
+          create: { societe_id: societe.id, balance_sticker: Number(result.balance_sticker) },
+        });
+      }
     });
 
-    if (result.balance_sticker !== undefined) {
-      await masterPrisma.sticker.upsert({
-        where: { societe_id: societe.id },
-        update: {
-          balance_sticker: Number(result.balance_sticker),
-          date_maj: new Date(),
-        },
-        create: {
-          societe_id: societe.id,
-          balance_sticker: Number(result.balance_sticker),
-        },
-      });
-    }
-
     return res.status(201).json({ success: true, reference: result.reference });
-
   } catch (error) {
     const apiData = error.response?.data;
     console.error("Erreur Refund DGI:", JSON.stringify(apiData, null, 2));
-
     return res.status(500).json({
       error: "Échec certification Avoir",
       message: apiData?.message || "Erreur de validation DGI",

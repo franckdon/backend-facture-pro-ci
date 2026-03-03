@@ -6,6 +6,7 @@ adminRouter.use("/auth", require("../modules/auth/admin/authAdmin.routes"));
 adminRouter.use("/companies", require("../modules/companies/companies.routes"));
 adminRouter.use("/data", require("../modules/data/admin/adminData.routes"));
 adminRouter.use("/faqs",require("../modules/faqs/adminFaqs.routes"))
+adminRouter.use("/licenses",require("../modules/licenses/licenses.routes"))
 adminRouter.use("/master-data",require("../modules/masterData/adminMasterData.routes"))
 adminRouter.use("/plans",require("../modules/plan/adminPlan.routes"))
 adminRouter.use("/products",require("../modules/products/adminProducts.routes"))

@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const cron = require('node-cron');
+const licenseController = require('./src/modules/licenses/licenses.controller');
 const { development } = env.port;
 
 const apiRoutes = require("./src/routes/index"); 
@@ -21,6 +23,11 @@ app.use(helmet({ contentSecurityPolicy: false }));
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
+
+cron.schedule('0 0 * * *', () => {
+  console.log('--- Lancement de la vérification nocturne des licences ---');
+  licenseController.checkAndDeactivateExpiredLicenses();
+});
 
 app.use("/api", apiRoutes);
 
