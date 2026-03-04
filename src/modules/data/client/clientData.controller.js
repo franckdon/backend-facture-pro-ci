@@ -8,7 +8,7 @@ const serializeBigInt = (obj) =>
 
 exports.getAllClientsFNEData = async (req, res) => {
   try {
-    const { uuid: userUuid, societe_uuid, societe_id } = req.user; // ✅ societe_id extrait du token
+    const { uuid: userUuid, societe_uuid, societe_id } = req.user; 
 
     if (!societe_uuid || !societe_id) {
       return res.status(403).json({ message: "Accès refusé : aucune société rattachée." });
@@ -53,7 +53,12 @@ exports.getAllClientsFNEData = async (req, res) => {
           nom: societeConfig.raison_sociale_societe,
           ncc: societeConfig.ncc,
           rccm: societeConfig.rccm,
+          ref_bancaire: societeConfig.ref_bancaire,
+          regime_imposition: societeConfig.regime_imposition,
+          centre_impot: societeConfig.centre_impot,
           adresse: societeConfig.adresse,
+          email:societeConfig.email,
+          telephone:societeConfig.telephone,
           logo: societeConfig.logo_url,
           cle_api_locale: societeConfig.configuration?.cle_api_locale || "",
           cle_api_fne: societeConfig.configuration?.cle_api_fne || "",
@@ -193,6 +198,33 @@ exports.getCompanyClientFullData = async (req, res) => {
     console.error("Erreur GetFullSocieteInfo:", error);
     return res.status(500).json({
       message: "Erreur lors de la récupération des données de la société.",
+      details: error.message,
+    });
+  }
+};
+
+exports.getAllTiersData = async (req, res) => {
+  try {
+    const { societe_id } = req.user; 
+
+    if (!societe_id) {
+      return res.status(403).json({ message: "Configuration tenant introuvable." });
+    }
+
+    const tiers = await prisma.tiers.findMany({
+      where: { societe_id }, // 🔑
+      orderBy: { raison_sociale_tiers: "asc" },
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: tiers.length,
+      data: serializeBigInt(tiers),
+    });
+  } catch (error) {
+    console.error("Erreur getAllTiersData:", error);
+    return res.status(500).json({
+      message: "Erreur lors de la récupération des tiers.",
       details: error.message,
     });
   }

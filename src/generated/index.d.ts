@@ -30070,12 +30070,12 @@ export namespace Prisma {
   export type mode_paiementWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code_mode_paiement?: string
     AND?: mode_paiementWhereInput | mode_paiementWhereInput[]
     OR?: mode_paiementWhereInput[]
     NOT?: mode_paiementWhereInput | mode_paiementWhereInput[]
-    code_mode_paiement?: StringFilter<"mode_paiement"> | string
     libelle_mode_paiement?: StringFilter<"mode_paiement"> | string
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code_mode_paiement">
 
   export type mode_paiementOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30122,13 +30122,13 @@ export namespace Prisma {
   export type taux_impositionWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code?: string
     AND?: taux_impositionWhereInput | taux_impositionWhereInput[]
     OR?: taux_impositionWhereInput[]
     NOT?: taux_impositionWhereInput | taux_impositionWhereInput[]
-    code?: StringFilter<"taux_imposition"> | string
     pourcentage?: FloatFilter<"taux_imposition"> | number
     description?: StringFilter<"taux_imposition"> | string
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code">
 
   export type taux_impositionOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30175,12 +30175,12 @@ export namespace Prisma {
   export type type_factureWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code_type_facture?: string
     AND?: type_factureWhereInput | type_factureWhereInput[]
     OR?: type_factureWhereInput[]
     NOT?: type_factureWhereInput | type_factureWhereInput[]
-    code_type_facture?: StringFilter<"type_facture"> | string
     libelle_type_facture?: StringFilter<"type_facture"> | string
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code_type_facture">
 
   export type type_factureOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30227,13 +30227,13 @@ export namespace Prisma {
   export type deviseWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code_devise?: string
     AND?: deviseWhereInput | deviseWhereInput[]
     OR?: deviseWhereInput[]
     NOT?: deviseWhereInput | deviseWhereInput[]
-    code_devise?: StringFilter<"devise"> | string
     taux_devise?: StringFilter<"devise"> | string
     description?: StringFilter<"devise"> | string
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code_devise">
 
   export type deviseOrderByWithAggregationInput = {
     id?: SortOrder
@@ -30280,12 +30280,12 @@ export namespace Prisma {
   export type type_facturationWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
+    code_type_facturaction?: string
     AND?: type_facturationWhereInput | type_facturationWhereInput[]
     OR?: type_facturationWhereInput[]
     NOT?: type_facturationWhereInput | type_facturationWhereInput[]
-    code_type_facturaction?: StringFilter<"type_facturation"> | string
     libelle_type_facturation?: StringFilter<"type_facturation"> | string
-  }, "id" | "uuid">
+  }, "id" | "uuid" | "code_type_facturaction">
 
   export type type_facturationOrderByWithAggregationInput = {
     id?: SortOrder

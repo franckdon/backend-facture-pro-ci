@@ -57,7 +57,7 @@ exports.loginClient = async (req, res) => {
         role: true,
         societe: {
           include: {
-            licences: {           // ✅ corrigé : "licence" → "licences"
+            licences: {          
               include: {
                 plan: true,
                 statut: true,
@@ -92,7 +92,8 @@ exports.loginClient = async (req, res) => {
       email: userData.email,
       role: roleName,
       societe_uuid: societeInfo?.uuid,
-      societe_id: societeInfo?.id,  // ✅ ajouté — remplace db_name, sert de filtre tenant
+      societe_id: societeInfo?.id,
+      tokenVersion: userData.tokenVersion || 0,
       plan: {
         code: currentPlan?.code,
         limite_utilisateurs: currentPlan?.limite_utilisateurs,
@@ -101,6 +102,9 @@ exports.loginClient = async (req, res) => {
 
     const token = signAccessToken(userForToken);
     const refreshToken = signRefreshToken(userForToken);
+
+    console.log("token :", token)
+    console.log(refreshToken)
 
     return res.status(200).json(
       cleanBigInt({

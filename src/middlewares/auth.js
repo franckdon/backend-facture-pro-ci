@@ -29,13 +29,12 @@ exports.verifyAdminToken = async (req, res, next) => {
     }
 
     req.admin = {
-      uuid: admin.uuid, // ✅ corrigé : _id → uuid (cohérent avec impersonateClient)
+      uuid: admin.uuid,
       email: admin.email,
       login: admin.login,
       name: admin.nom_complet,
       statut: admin.statut_id,
     };
-    // ✅ double_auth supprimé — champ inexistant dans le schéma utilisateur_admin
 
     next();
   } catch (e) {
@@ -59,6 +58,13 @@ exports.verifyClientToken = async (req, res, next) => {
 
   try {
     const payload = verifyToken(token);
+
+    if (payload.is_admin === true) {
+      return res
+        .status(401)
+        .json({ message: "Token invalide pour cet accès." });
+    }
+
     const clientUUID = payload.uuid || payload.sub;
 
     const client = await prisma.utilisateur_client.findUnique({
@@ -66,10 +72,11 @@ exports.verifyClientToken = async (req, res, next) => {
       include: { role: true, societe: true },
     });
 
-    if (!client) return res.status(401).json({ message: "Utilisateur non trouvé." });
+    if (!client)
+      return res.status(401).json({ message: "Utilisateur non trouvé." });
 
     if ((client.tokenVersion || 0) > (payload.tokenVersion || 0)) {
-      return res.status(401).json({ message: "Token révoqué." }); // ✅ vérification tokenVersion manquante dans l'original
+      return res.status(401).json({ message: "Token révoqué." });
     }
 
     req.user = {
@@ -77,11 +84,10 @@ exports.verifyClientToken = async (req, res, next) => {
       email: client.email,
       role: client.role?.code,
       societe_uuid: client.societe?.uuid,
-      societe_id: client.societe?.id,        // ✅ ajout — clé de filtrage tenant dans tous les controllers
-      code_societe: client.societe?.code_societe, // ✅ ajout — utilisé dans importInvoicesFromExcel
+      societe_id: client.societe?.id,
+      code_societe: client.societe?.code_societe,
       is_impersonated: payload.is_impersonated || false,
-      admin_origin: payload.admin_uuid || null,
-    };
+        };
 
     next();
   } catch (e) {

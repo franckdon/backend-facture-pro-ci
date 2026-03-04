@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const path = require('path')
 const cron = require("node-cron");
 const licenseController = require("./src/modules/licenses/licenses.controller");
 const { development } = env.port;
@@ -31,6 +32,12 @@ cron.schedule("0 0 * * *", () => {
   console.log("--- Lancement de la vérification nocturne des licences ---");
   licenseController.checkAndDeactivateExpiredLicenses();
 });
+
+app.use("/uploads", (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+}, express.static(path.join(__dirname, "src/uploads")));
 
 app.use("/api", apiRoutes);
 

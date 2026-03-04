@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const prisma = require("../../../libs/master");
+const prisma = require("../../../libs/master"); 
 const fs = require("fs");
 const path = require("path");
 
@@ -28,7 +28,7 @@ exports.createUser = async (req, res) => {
     const societe = await prisma.societe.findUnique({
       where: { uuid: societe_uuid },
       include: {
-        licence: {
+        licences: {                           // ✅ corrigé : "licence" → "licences"
           where: { statut: { code: "ACTIF" } },
           include: { plan: true },
         },
@@ -39,24 +39,17 @@ exports.createUser = async (req, res) => {
     if (!societe)
       return res.status(404).json({ message: "Société introuvable." });
 
-    // 2. Vérification du quota du Plan
-    const activeLicence = societe.licence;
+    const activeLicence = societe.licences?.[0]; // ✅ corrigé : c'est un tableau
     if (!activeLicence) {
-      return res
-        .status(403)
-        .json({ message: "La société n'a pas de licence active." });
+      return res.status(403).json({ message: "La société n'a pas de licence active." });
     }
 
-    if (
-      societe._count.utilisateur_client >=
-      activeLicence.plan.limite_utilisateurs
-    ) {
+    if (societe._count.utilisateur_client >= activeLicence.plan.limite_utilisateurs) {
       return res.status(403).json({
         message: `Quota atteint. Limite : ${activeLicence.plan.limite_utilisateurs} utilisateurs.`,
       });
     }
 
-    // 3. Création
     const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
     const newUser = await prisma.utilisateur_client.create({
       data: {
@@ -64,17 +57,15 @@ exports.createUser = async (req, res) => {
         login: login.trim(),
         mot_de_passe: hashedPassword,
         nom_complet: nom_complet || "",
-        telephone: telephone || null,
         role_id: BigInt(role_id),
-        statut_id: Number(statut_id),
+        statut_id: statut_id ? Number(statut_id) : 1,
         societe_id: societe.id,
         tokenVersion: 1,
+        // ✅ telephone supprimé — champ inexistant dans le schéma utilisateur_client
       },
     });
 
-    return res
-      .status(201)
-      .json({ message: "Utilisateur créé.", user: serialize(newUser) });
+    return res.status(201).json({ message: "Utilisateur créé.", user: serialize(newUser) });
   } catch (e) {
     if (e.code === "P2002")
       return res.status(409).json({ message: "Email ou Login déjà utilisé." });
@@ -84,7 +75,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   const { uuid } = req.params;
-  const { email, login, nom_complet, telephone, role_id, statut_id } = req.body;
+  const { email, login, nom_complet, role_id, statut_id } = req.body;
 
   try {
     const updatedUser = await prisma.utilisateur_client.update({
@@ -93,18 +84,12 @@ exports.updateUser = async (req, res) => {
         email,
         login,
         nom_complet,
-        telephone,
         role_id: role_id !== undefined ? BigInt(role_id) : undefined,
         statut_id: statut_id !== undefined ? Number(statut_id) : undefined,
       },
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Utilisateur mis à jour.",
-        user: serialize(updatedUser),
-      });
+    res.status(200).json({ message: "Utilisateur mis à jour.", user: serialize(updatedUser) });
   } catch (e) {
     if (e.code === "P2025")
       return res.status(404).json({ message: "Utilisateur introuvable." });
@@ -124,18 +109,15 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.updateSociete = async (req, res) => {
+exports.updateCompany = async (req, res) => {
   const { uuid } = req.params;
   const { societe_uuid: session_societe_uuid } = req.user;
   const logoFile = req.file;
 
   if (uuid !== session_societe_uuid) {
-    return res
-      .status(403)
-      .json({
-        message:
-          "Accès refusé : vous ne pouvez modifier que votre propre société.",
-      });
+    return res.status(403).json({
+      message: "Accès refusé : vous ne pouvez modifier que votre propre société.",
+    });
   }
 
   try {
@@ -173,32 +155,24 @@ exports.updateSociete = async (req, res) => {
       if (existingSociete.logo_url) {
         const oldPath = path.join(__dirname, "../..", existingSociete.logo_url);
         fs.unlink(oldPath, (err) => {
-          if (err)
-            console.warn("Impossible de supprimer l'ancien logo:", err.message);
+          if (err) console.warn("Impossible de supprimer l'ancien logo:", err.message);
         });
       }
     }
 
     const updatedSociete = await prisma.societe.update({
-      where: { uuid: uuid },
+      where: { uuid },
       data: updateData,
     });
 
     return res.status(200).json({
       success: true,
       message: "Société mise à jour avec succès.",
-      data: serializeBigInt(updatedSociete),
+      data: serialize(updatedSociete), 
     });
   } catch (e) {
-    console.error(`Erreur updateSociete:`, e);
-
-    if (logoFile) {
-      fs.unlink(logoFile.path, () => {});
-    }
-
-    return res.status(500).json({
-      message: "Erreur lors de la mise à jour.",
-      details: e.message,
-    });
+    console.error("Erreur updateSociete:", e);
+    if (logoFile) fs.unlink(logoFile.path, () => {});
+    return res.status(500).json({ message: "Erreur lors de la mise à jour.", details: e.message });
   }
 };
