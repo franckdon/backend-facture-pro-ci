@@ -3,7 +3,7 @@ const planRouter = express.Router();
 const controller = require("./plan.controller");
 const { verifyAdminToken } = require("../../middlewares/auth");
 
-planRouter.get("/", verifyAdminToken, controller.getAllPlans);
+planRouter.get("/", controller.getAllPlans);
 planRouter.post("/setup-plans", verifyAdminToken, controller.setupDefaultPlans);
 planRouter.post("/create-plan", verifyAdminToken, controller.createPlan);
 planRouter.put("/update-plan/:uuid", verifyAdminToken, controller.updatePlan);

@@ -48,7 +48,6 @@ model societe {
   tiers                      tiers[]
   information_complementaire information_complementaire[]
   produit                    produit[]
-  type_produit               type_produit[]
 }
 
 model etablissement {
@@ -251,6 +250,7 @@ model entete_facture {
   etablissement String @db.VarChar(150)
 
   certifie               Int     @default(0) @db.TinyInt
+  est_rne                Int     @default(0) @db.TinyInt
   retour_ncc             String? @db.VarChar(200)
   retour_id_facture      String? @db.VarChar(200)
   retour_token           String? @db.VarChar(200)
@@ -343,23 +343,18 @@ model information_complementaire {
 }
 
 model type_produit {
-  id         BigInt @id @default(autoincrement())
-  uuid       String @unique @default(uuid()) @db.Char(36)
-  societe_id Int // 🔑 isolation par société
-  code       String @db.VarChar(50)
-  libelle    String @db.VarChar(100)
+  id      BigInt @id @default(autoincrement())
+  uuid    String @unique @default(uuid()) @db.Char(36)
+  code    String @unique @db.VarChar(50) // Unique globalement maintenant
+  libelle String @db.VarChar(100)
 
-  societe  societe   @relation(fields: [societe_id], references: [id], onDelete: Cascade)
   produits produit[]
-
-  @@unique([societe_id, code]) // était @unique global, maintenant unique PAR société
-  @@index([societe_id])
 }
 
 model produit {
   id              BigInt       @id @default(autoincrement())
   uuid            String       @unique @default(uuid()) @db.Char(36)
-  societe_id      Int // 🔑 isolation par société
+  societe_id      Int
   reference       String       @db.VarChar(150)
   designation     String       @db.VarChar(150)
   prix_base       Decimal      @default(0.0000) @db.Decimal(19, 4)

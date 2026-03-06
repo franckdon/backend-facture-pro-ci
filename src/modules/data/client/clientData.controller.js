@@ -102,25 +102,24 @@ exports.getAllClientsFNEData = async (req, res) => {
 
 exports.getAllInvoicesData = async (req, res) => {
   try {
-    const { societe_id } = req.user; // ✅ societe_id au lieu de societe_uuid
+    const { societe_id } = req.user;
 
     if (!societe_id) {
       return res.status(403).json({ message: "Accès refusé : session incomplète." });
     }
 
-    // ✅ Plus de lookup societe pour récupérer bd_name — on filtre directement
     const invoices = await prisma.entete_facture.findMany({
-      where: { societe_id }, // 🔑 filtre tenant
+      where: { societe_id }, 
       include: {
-        tiers: { select: { raison_sociale_tiers: true, ncc_tiers: true } },
-        detail_facture: false, // on utilise _count uniquement
+        tiers: { select: { raison_sociale_tiers: true, ncc_tiers: true, code_tiers : true, telephone_tiers : true, email_tiers:true } },
+        detail_facture: true, 
+        information_complementaire : true,
         _count: { select: { detail_facture: true } },
       },
       orderBy: { date_facture: "desc" },
     });
 
-    // ✅ type_facture, type_facturation, mode_paiement, devise sont des codes string
-    //    dans le schéma fusionné — plus de relations à inclure
+
     const formattedInvoices = invoices.map((invoice) => ({
       ...invoice,
       nb_lignes: invoice._count?.detail_facture || 0,

@@ -371,6 +371,7 @@ exports.getAllInvoiceTypes = async (req, res) => {
 };
 
 exports.createInvoiceType = async (req, res) => {
+  console.log("Données reçues dans le body :", req.body); // <-- AJOUTE CECI
   const { code_type_facture, libelle_type_facture } = req.body;
   try {
     const result = await prisma.type_facture.create({

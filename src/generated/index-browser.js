@@ -314,6 +314,7 @@ exports.Prisma.Entete_factureScalarFieldEnum = {
   point_vente: 'point_vente',
   etablissement: 'etablissement',
   certifie: 'certifie',
+  est_rne: 'est_rne',
   retour_ncc: 'retour_ncc',
   retour_id_facture: 'retour_id_facture',
   retour_token: 'retour_token',
@@ -383,7 +384,6 @@ exports.Prisma.Information_complementaireScalarFieldEnum = {
 exports.Prisma.Type_produitScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
-  societe_id: 'societe_id',
   code: 'code',
   libelle: 'libelle'
 };

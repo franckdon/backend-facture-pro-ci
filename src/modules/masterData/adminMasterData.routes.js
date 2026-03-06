@@ -7,7 +7,7 @@ masterDataRouter.post("/setup-master-data", verifyAdminToken, controller.setupMa
 masterDataRouter.get("/tax-rates", verifyClientToken, controller.getAllTaxRates);
 masterDataRouter.get("/payment-modes", verifyClientToken, controller.getAllPaymentModes);
 masterDataRouter.get("/currencies", verifyClientToken, controller.getAllCurrencies);
-masterDataRouter.get("/invoice-types", verifyClientToken, controller.getAllInvoiceTypes);
+masterDataRouter.get("/invoice-types", controller.getAllInvoiceTypes);
 masterDataRouter.get("/billing-types", verifyClientToken, controller.getAllBillingTypes);
 masterDataRouter.post("/create-tax-rate", verifyAdminToken, controller.createTaxRate);
 masterDataRouter.post("/create-payment-mode", verifyAdminToken, controller.createPaymentMode);

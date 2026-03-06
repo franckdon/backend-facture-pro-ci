@@ -2854,7 +2854,6 @@ export namespace Prisma {
     tiers: number
     information_complementaire: number
     produit: number
-    type_produit: number
   }
 
   export type SocieteCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2866,7 +2865,6 @@ export namespace Prisma {
     tiers?: boolean | SocieteCountOutputTypeCountTiersArgs
     information_complementaire?: boolean | SocieteCountOutputTypeCountInformation_complementaireArgs
     produit?: boolean | SocieteCountOutputTypeCountProduitArgs
-    type_produit?: boolean | SocieteCountOutputTypeCountType_produitArgs
   }
 
   // Custom InputTypes
@@ -2934,13 +2932,6 @@ export namespace Prisma {
    */
   export type SocieteCountOutputTypeCountProduitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: produitWhereInput
-  }
-
-  /**
-   * SocieteCountOutputType without action
-   */
-  export type SocieteCountOutputTypeCountType_produitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: type_produitWhereInput
   }
 
 
@@ -3598,7 +3589,6 @@ export namespace Prisma {
     tiers?: boolean | societe$tiersArgs<ExtArgs>
     information_complementaire?: boolean | societe$information_complementaireArgs<ExtArgs>
     produit?: boolean | societe$produitArgs<ExtArgs>
-    type_produit?: boolean | societe$type_produitArgs<ExtArgs>
     _count?: boolean | SocieteCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["societe"]>
 
@@ -3640,7 +3630,6 @@ export namespace Prisma {
     tiers?: boolean | societe$tiersArgs<ExtArgs>
     information_complementaire?: boolean | societe$information_complementaireArgs<ExtArgs>
     produit?: boolean | societe$produitArgs<ExtArgs>
-    type_produit?: boolean | societe$type_produitArgs<ExtArgs>
     _count?: boolean | SocieteCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3657,7 +3646,6 @@ export namespace Prisma {
       tiers: Prisma.$tiersPayload<ExtArgs>[]
       information_complementaire: Prisma.$information_complementairePayload<ExtArgs>[]
       produit: Prisma.$produitPayload<ExtArgs>[]
-      type_produit: Prisma.$type_produitPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4031,7 +4019,6 @@ export namespace Prisma {
     tiers<T extends societe$tiersArgs<ExtArgs> = {}>(args?: Subset<T, societe$tiersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$tiersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     information_complementaire<T extends societe$information_complementaireArgs<ExtArgs> = {}>(args?: Subset<T, societe$information_complementaireArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$information_complementairePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     produit<T extends societe$produitArgs<ExtArgs> = {}>(args?: Subset<T, societe$produitArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$produitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    type_produit<T extends societe$type_produitArgs<ExtArgs> = {}>(args?: Subset<T, societe$type_produitArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$type_produitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4652,30 +4639,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProduitScalarFieldEnum | ProduitScalarFieldEnum[]
-  }
-
-  /**
-   * societe.type_produit
-   */
-  export type societe$type_produitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the type_produit
-     */
-    select?: type_produitSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the type_produit
-     */
-    omit?: type_produitOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: type_produitInclude<ExtArgs> | null
-    where?: type_produitWhereInput
-    orderBy?: type_produitOrderByWithRelationInput | type_produitOrderByWithRelationInput[]
-    cursor?: type_produitWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Type_produitScalarFieldEnum | Type_produitScalarFieldEnum[]
   }
 
   /**
@@ -20389,6 +20352,7 @@ export namespace Prisma {
     total_autre_taxe: Decimal | null
     total_ttc: Decimal | null
     certifie: number | null
+    est_rne: number | null
     id_tiers: number | null
     id_information_complementaire: number | null
   }
@@ -20402,6 +20366,7 @@ export namespace Prisma {
     total_autre_taxe: Decimal | null
     total_ttc: Decimal | null
     certifie: number | null
+    est_rne: number | null
     id_tiers: bigint | null
     id_information_complementaire: bigint | null
   }
@@ -20424,6 +20389,7 @@ export namespace Prisma {
     point_vente: string | null
     etablissement: string | null
     certifie: number | null
+    est_rne: number | null
     retour_ncc: string | null
     retour_id_facture: string | null
     retour_token: string | null
@@ -20451,6 +20417,7 @@ export namespace Prisma {
     point_vente: string | null
     etablissement: string | null
     certifie: number | null
+    est_rne: number | null
     retour_ncc: string | null
     retour_id_facture: string | null
     retour_token: string | null
@@ -20478,6 +20445,7 @@ export namespace Prisma {
     point_vente: number
     etablissement: number
     certifie: number
+    est_rne: number
     retour_ncc: number
     retour_id_facture: number
     retour_token: number
@@ -20498,6 +20466,7 @@ export namespace Prisma {
     total_autre_taxe?: true
     total_ttc?: true
     certifie?: true
+    est_rne?: true
     id_tiers?: true
     id_information_complementaire?: true
   }
@@ -20511,6 +20480,7 @@ export namespace Prisma {
     total_autre_taxe?: true
     total_ttc?: true
     certifie?: true
+    est_rne?: true
     id_tiers?: true
     id_information_complementaire?: true
   }
@@ -20533,6 +20503,7 @@ export namespace Prisma {
     point_vente?: true
     etablissement?: true
     certifie?: true
+    est_rne?: true
     retour_ncc?: true
     retour_id_facture?: true
     retour_token?: true
@@ -20560,6 +20531,7 @@ export namespace Prisma {
     point_vente?: true
     etablissement?: true
     certifie?: true
+    est_rne?: true
     retour_ncc?: true
     retour_id_facture?: true
     retour_token?: true
@@ -20587,6 +20559,7 @@ export namespace Prisma {
     point_vente?: true
     etablissement?: true
     certifie?: true
+    est_rne?: true
     retour_ncc?: true
     retour_id_facture?: true
     retour_token?: true
@@ -20701,6 +20674,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie: number
+    est_rne: number
     retour_ncc: string | null
     retour_id_facture: string | null
     retour_token: string | null
@@ -20747,6 +20721,7 @@ export namespace Prisma {
     point_vente?: boolean
     etablissement?: boolean
     certifie?: boolean
+    est_rne?: boolean
     retour_ncc?: boolean
     retour_id_facture?: boolean
     retour_token?: boolean
@@ -20782,6 +20757,7 @@ export namespace Prisma {
     point_vente?: boolean
     etablissement?: boolean
     certifie?: boolean
+    est_rne?: boolean
     retour_ncc?: boolean
     retour_id_facture?: boolean
     retour_token?: boolean
@@ -20791,7 +20767,7 @@ export namespace Prisma {
     id_information_complementaire?: boolean
   }
 
-  export type entete_factureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "numero_facture" | "date_facture" | "code_type_facture" | "code_type_facturation" | "code_mode_paiement" | "code_devise" | "total_ht" | "total_tva" | "total_remise" | "total_autre_taxe" | "total_ttc" | "point_vente" | "etablissement" | "certifie" | "retour_ncc" | "retour_id_facture" | "retour_token" | "retour_reference" | "numero_facture_origine" | "id_tiers" | "id_information_complementaire", ExtArgs["result"]["entete_facture"]>
+  export type entete_factureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "numero_facture" | "date_facture" | "code_type_facture" | "code_type_facturation" | "code_mode_paiement" | "code_devise" | "total_ht" | "total_tva" | "total_remise" | "total_autre_taxe" | "total_ttc" | "point_vente" | "etablissement" | "certifie" | "est_rne" | "retour_ncc" | "retour_id_facture" | "retour_token" | "retour_reference" | "numero_facture_origine" | "id_tiers" | "id_information_complementaire", ExtArgs["result"]["entete_facture"]>
   export type entete_factureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     societe?: boolean | societeDefaultArgs<ExtArgs>
     tiers?: boolean | tiersDefaultArgs<ExtArgs>
@@ -20828,6 +20804,7 @@ export namespace Prisma {
       point_vente: string
       etablissement: string
       certifie: number
+      est_rne: number
       retour_ncc: string | null
       retour_id_facture: string | null
       retour_token: string | null
@@ -21226,6 +21203,7 @@ export namespace Prisma {
     readonly point_vente: FieldRef<"entete_facture", 'String'>
     readonly etablissement: FieldRef<"entete_facture", 'String'>
     readonly certifie: FieldRef<"entete_facture", 'Int'>
+    readonly est_rne: FieldRef<"entete_facture", 'Int'>
     readonly retour_ncc: FieldRef<"entete_facture", 'String'>
     readonly retour_id_facture: FieldRef<"entete_facture", 'String'>
     readonly retour_token: FieldRef<"entete_facture", 'String'>
@@ -26839,18 +26817,15 @@ export namespace Prisma {
 
   export type Type_produitAvgAggregateOutputType = {
     id: number | null
-    societe_id: number | null
   }
 
   export type Type_produitSumAggregateOutputType = {
     id: bigint | null
-    societe_id: number | null
   }
 
   export type Type_produitMinAggregateOutputType = {
     id: bigint | null
     uuid: string | null
-    societe_id: number | null
     code: string | null
     libelle: string | null
   }
@@ -26858,7 +26833,6 @@ export namespace Prisma {
   export type Type_produitMaxAggregateOutputType = {
     id: bigint | null
     uuid: string | null
-    societe_id: number | null
     code: string | null
     libelle: string | null
   }
@@ -26866,7 +26840,6 @@ export namespace Prisma {
   export type Type_produitCountAggregateOutputType = {
     id: number
     uuid: number
-    societe_id: number
     code: number
     libelle: number
     _all: number
@@ -26875,18 +26848,15 @@ export namespace Prisma {
 
   export type Type_produitAvgAggregateInputType = {
     id?: true
-    societe_id?: true
   }
 
   export type Type_produitSumAggregateInputType = {
     id?: true
-    societe_id?: true
   }
 
   export type Type_produitMinAggregateInputType = {
     id?: true
     uuid?: true
-    societe_id?: true
     code?: true
     libelle?: true
   }
@@ -26894,7 +26864,6 @@ export namespace Prisma {
   export type Type_produitMaxAggregateInputType = {
     id?: true
     uuid?: true
-    societe_id?: true
     code?: true
     libelle?: true
   }
@@ -26902,7 +26871,6 @@ export namespace Prisma {
   export type Type_produitCountAggregateInputType = {
     id?: true
     uuid?: true
-    societe_id?: true
     code?: true
     libelle?: true
     _all?: true
@@ -26997,7 +26965,6 @@ export namespace Prisma {
   export type Type_produitGroupByOutputType = {
     id: bigint
     uuid: string
-    societe_id: number
     code: string
     libelle: string
     _count: Type_produitCountAggregateOutputType | null
@@ -27024,10 +26991,8 @@ export namespace Prisma {
   export type type_produitSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     uuid?: boolean
-    societe_id?: boolean
     code?: boolean
     libelle?: boolean
-    societe?: boolean | societeDefaultArgs<ExtArgs>
     produits?: boolean | type_produit$produitsArgs<ExtArgs>
     _count?: boolean | Type_produitCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["type_produit"]>
@@ -27037,14 +27002,12 @@ export namespace Prisma {
   export type type_produitSelectScalar = {
     id?: boolean
     uuid?: boolean
-    societe_id?: boolean
     code?: boolean
     libelle?: boolean
   }
 
-  export type type_produitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "societe_id" | "code" | "libelle", ExtArgs["result"]["type_produit"]>
+  export type type_produitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "uuid" | "code" | "libelle", ExtArgs["result"]["type_produit"]>
   export type type_produitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    societe?: boolean | societeDefaultArgs<ExtArgs>
     produits?: boolean | type_produit$produitsArgs<ExtArgs>
     _count?: boolean | Type_produitCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -27052,13 +27015,11 @@ export namespace Prisma {
   export type $type_produitPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "type_produit"
     objects: {
-      societe: Prisma.$societePayload<ExtArgs>
       produits: Prisma.$produitPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
       uuid: string
-      societe_id: number
       code: string
       libelle: string
     }, ExtArgs["result"]["type_produit"]>
@@ -27401,7 +27362,6 @@ export namespace Prisma {
    */
   export interface Prisma__type_produitClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    societe<T extends societeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, societeDefaultArgs<ExtArgs>>): Prisma__societeClient<$Result.GetResult<Prisma.$societePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     produits<T extends type_produit$produitsArgs<ExtArgs> = {}>(args?: Subset<T, type_produit$produitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$produitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -27434,7 +27394,6 @@ export namespace Prisma {
   interface type_produitFieldRefs {
     readonly id: FieldRef<"type_produit", 'BigInt'>
     readonly uuid: FieldRef<"type_produit", 'String'>
-    readonly societe_id: FieldRef<"type_produit", 'Int'>
     readonly code: FieldRef<"type_produit", 'String'>
     readonly libelle: FieldRef<"type_produit", 'String'>
   }
@@ -29115,6 +29074,7 @@ export namespace Prisma {
     point_vente: 'point_vente',
     etablissement: 'etablissement',
     certifie: 'certifie',
+    est_rne: 'est_rne',
     retour_ncc: 'retour_ncc',
     retour_id_facture: 'retour_id_facture',
     retour_token: 'retour_token',
@@ -29202,7 +29162,6 @@ export namespace Prisma {
   export const Type_produitScalarFieldEnum: {
     id: 'id',
     uuid: 'uuid',
-    societe_id: 'societe_id',
     code: 'code',
     libelle: 'libelle'
   };
@@ -29593,7 +29552,6 @@ export namespace Prisma {
     tiers?: TiersListRelationFilter
     information_complementaire?: Information_complementaireListRelationFilter
     produit?: ProduitListRelationFilter
-    type_produit?: Type_produitListRelationFilter
   }
 
   export type societeOrderByWithRelationInput = {
@@ -29628,7 +29586,6 @@ export namespace Prisma {
     tiers?: tiersOrderByRelationAggregateInput
     information_complementaire?: information_complementaireOrderByRelationAggregateInput
     produit?: produitOrderByRelationAggregateInput
-    type_produit?: type_produitOrderByRelationAggregateInput
     _relevance?: societeOrderByRelevanceInput
   }
 
@@ -29667,7 +29624,6 @@ export namespace Prisma {
     tiers?: TiersListRelationFilter
     information_complementaire?: Information_complementaireListRelationFilter
     produit?: ProduitListRelationFilter
-    type_produit?: Type_produitListRelationFilter
   }, "id" | "uuid" | "code_societe">
 
   export type societeOrderByWithAggregationInput = {
@@ -30796,6 +30752,7 @@ export namespace Prisma {
     point_vente?: StringFilter<"entete_facture"> | string
     etablissement?: StringFilter<"entete_facture"> | string
     certifie?: IntFilter<"entete_facture"> | number
+    est_rne?: IntFilter<"entete_facture"> | number
     retour_ncc?: StringNullableFilter<"entete_facture"> | string | null
     retour_id_facture?: StringNullableFilter<"entete_facture"> | string | null
     retour_token?: StringNullableFilter<"entete_facture"> | string | null
@@ -30828,6 +30785,7 @@ export namespace Prisma {
     point_vente?: SortOrder
     etablissement?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     retour_ncc?: SortOrderInput | SortOrder
     retour_id_facture?: SortOrderInput | SortOrder
     retour_token?: SortOrderInput | SortOrder
@@ -30864,6 +30822,7 @@ export namespace Prisma {
     point_vente?: StringFilter<"entete_facture"> | string
     etablissement?: StringFilter<"entete_facture"> | string
     certifie?: IntFilter<"entete_facture"> | number
+    est_rne?: IntFilter<"entete_facture"> | number
     retour_ncc?: StringNullableFilter<"entete_facture"> | string | null
     retour_id_facture?: StringNullableFilter<"entete_facture"> | string | null
     retour_token?: StringNullableFilter<"entete_facture"> | string | null
@@ -30896,6 +30855,7 @@ export namespace Prisma {
     point_vente?: SortOrder
     etablissement?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     retour_ncc?: SortOrderInput | SortOrder
     retour_id_facture?: SortOrderInput | SortOrder
     retour_token?: SortOrderInput | SortOrder
@@ -30931,6 +30891,7 @@ export namespace Prisma {
     point_vente?: StringWithAggregatesFilter<"entete_facture"> | string
     etablissement?: StringWithAggregatesFilter<"entete_facture"> | string
     certifie?: IntWithAggregatesFilter<"entete_facture"> | number
+    est_rne?: IntWithAggregatesFilter<"entete_facture"> | number
     retour_ncc?: StringNullableWithAggregatesFilter<"entete_facture"> | string | null
     retour_id_facture?: StringNullableWithAggregatesFilter<"entete_facture"> | string | null
     retour_token?: StringNullableWithAggregatesFilter<"entete_facture"> | string | null
@@ -31331,20 +31292,16 @@ export namespace Prisma {
     NOT?: type_produitWhereInput | type_produitWhereInput[]
     id?: BigIntFilter<"type_produit"> | bigint | number
     uuid?: StringFilter<"type_produit"> | string
-    societe_id?: IntFilter<"type_produit"> | number
     code?: StringFilter<"type_produit"> | string
     libelle?: StringFilter<"type_produit"> | string
-    societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
     produits?: ProduitListRelationFilter
   }
 
   export type type_produitOrderByWithRelationInput = {
     id?: SortOrder
     uuid?: SortOrder
-    societe_id?: SortOrder
     code?: SortOrder
     libelle?: SortOrder
-    societe?: societeOrderByWithRelationInput
     produits?: produitOrderByRelationAggregateInput
     _relevance?: type_produitOrderByRelevanceInput
   }
@@ -31352,21 +31309,17 @@ export namespace Prisma {
   export type type_produitWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     uuid?: string
-    societe_id_code?: type_produitSociete_idCodeCompoundUniqueInput
+    code?: string
     AND?: type_produitWhereInput | type_produitWhereInput[]
     OR?: type_produitWhereInput[]
     NOT?: type_produitWhereInput | type_produitWhereInput[]
-    societe_id?: IntFilter<"type_produit"> | number
-    code?: StringFilter<"type_produit"> | string
     libelle?: StringFilter<"type_produit"> | string
-    societe?: XOR<SocieteScalarRelationFilter, societeWhereInput>
     produits?: ProduitListRelationFilter
-  }, "id" | "uuid" | "societe_id_code">
+  }, "id" | "uuid" | "code">
 
   export type type_produitOrderByWithAggregationInput = {
     id?: SortOrder
     uuid?: SortOrder
-    societe_id?: SortOrder
     code?: SortOrder
     libelle?: SortOrder
     _count?: type_produitCountOrderByAggregateInput
@@ -31382,7 +31335,6 @@ export namespace Prisma {
     NOT?: type_produitScalarWhereWithAggregatesInput | type_produitScalarWhereWithAggregatesInput[]
     id?: BigIntWithAggregatesFilter<"type_produit"> | bigint | number
     uuid?: StringWithAggregatesFilter<"type_produit"> | string
-    societe_id?: IntWithAggregatesFilter<"type_produit"> | number
     code?: StringWithAggregatesFilter<"type_produit"> | string
     libelle?: StringWithAggregatesFilter<"type_produit"> | string
   }
@@ -31503,7 +31455,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateInput = {
@@ -31537,7 +31488,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUpdateInput = {
@@ -31570,7 +31520,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateInput = {
@@ -31604,7 +31553,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeCreateManyInput = {
@@ -32748,6 +32696,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -32778,6 +32727,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -32806,6 +32756,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32836,6 +32787,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32865,6 +32817,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -32891,6 +32844,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32916,6 +32870,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33336,14 +33291,12 @@ export namespace Prisma {
     uuid?: string
     code: string
     libelle: string
-    societe: societeCreateNestedOneWithoutType_produitInput
     produits?: produitCreateNestedManyWithoutType_produitInput
   }
 
   export type type_produitUncheckedCreateInput = {
     id?: bigint | number
     uuid?: string
-    societe_id: number
     code: string
     libelle: string
     produits?: produitUncheckedCreateNestedManyWithoutType_produitInput
@@ -33354,14 +33307,12 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     libelle?: StringFieldUpdateOperationsInput | string
-    societe?: societeUpdateOneRequiredWithoutType_produitNestedInput
     produits?: produitUpdateManyWithoutType_produitNestedInput
   }
 
   export type type_produitUncheckedUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     uuid?: StringFieldUpdateOperationsInput | string
-    societe_id?: IntFieldUpdateOperationsInput | number
     code?: StringFieldUpdateOperationsInput | string
     libelle?: StringFieldUpdateOperationsInput | string
     produits?: produitUncheckedUpdateManyWithoutType_produitNestedInput
@@ -33370,7 +33321,6 @@ export namespace Prisma {
   export type type_produitCreateManyInput = {
     id?: bigint | number
     uuid?: string
-    societe_id: number
     code: string
     libelle: string
   }
@@ -33385,7 +33335,6 @@ export namespace Prisma {
   export type type_produitUncheckedUpdateManyInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     uuid?: StringFieldUpdateOperationsInput | string
-    societe_id?: IntFieldUpdateOperationsInput | number
     code?: StringFieldUpdateOperationsInput | string
     libelle?: StringFieldUpdateOperationsInput | string
   }
@@ -33600,12 +33549,6 @@ export namespace Prisma {
     none?: produitWhereInput
   }
 
-  export type Type_produitListRelationFilter = {
-    every?: type_produitWhereInput
-    some?: type_produitWhereInput
-    none?: type_produitWhereInput
-  }
-
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -33640,10 +33583,6 @@ export namespace Prisma {
   }
 
   export type produitOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type type_produitOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34790,6 +34729,7 @@ export namespace Prisma {
     point_vente?: SortOrder
     etablissement?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     retour_ncc?: SortOrder
     retour_id_facture?: SortOrder
     retour_token?: SortOrder
@@ -34808,6 +34748,7 @@ export namespace Prisma {
     total_autre_taxe?: SortOrder
     total_ttc?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     id_tiers?: SortOrder
     id_information_complementaire?: SortOrder
   }
@@ -34830,6 +34771,7 @@ export namespace Prisma {
     point_vente?: SortOrder
     etablissement?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     retour_ncc?: SortOrder
     retour_id_facture?: SortOrder
     retour_token?: SortOrder
@@ -34857,6 +34799,7 @@ export namespace Prisma {
     point_vente?: SortOrder
     etablissement?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     retour_ncc?: SortOrder
     retour_id_facture?: SortOrder
     retour_token?: SortOrder
@@ -34875,6 +34818,7 @@ export namespace Prisma {
     total_autre_taxe?: SortOrder
     total_ttc?: SortOrder
     certifie?: SortOrder
+    est_rne?: SortOrder
     id_tiers?: SortOrder
     id_information_complementaire?: SortOrder
   }
@@ -35187,28 +35131,20 @@ export namespace Prisma {
     search: string
   }
 
-  export type type_produitSociete_idCodeCompoundUniqueInput = {
-    societe_id: number
-    code: string
-  }
-
   export type type_produitCountOrderByAggregateInput = {
     id?: SortOrder
     uuid?: SortOrder
-    societe_id?: SortOrder
     code?: SortOrder
     libelle?: SortOrder
   }
 
   export type type_produitAvgOrderByAggregateInput = {
     id?: SortOrder
-    societe_id?: SortOrder
   }
 
   export type type_produitMaxOrderByAggregateInput = {
     id?: SortOrder
     uuid?: SortOrder
-    societe_id?: SortOrder
     code?: SortOrder
     libelle?: SortOrder
   }
@@ -35216,14 +35152,12 @@ export namespace Prisma {
   export type type_produitMinOrderByAggregateInput = {
     id?: SortOrder
     uuid?: SortOrder
-    societe_id?: SortOrder
     code?: SortOrder
     libelle?: SortOrder
   }
 
   export type type_produitSumOrderByAggregateInput = {
     id?: SortOrder
-    societe_id?: SortOrder
   }
 
   export type Type_produitScalarRelationFilter = {
@@ -35358,13 +35292,6 @@ export namespace Prisma {
     connect?: produitWhereUniqueInput | produitWhereUniqueInput[]
   }
 
-  export type type_produitCreateNestedManyWithoutSocieteInput = {
-    create?: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput> | type_produitCreateWithoutSocieteInput[] | type_produitUncheckedCreateWithoutSocieteInput[]
-    connectOrCreate?: type_produitCreateOrConnectWithoutSocieteInput | type_produitCreateOrConnectWithoutSocieteInput[]
-    createMany?: type_produitCreateManySocieteInputEnvelope
-    connect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-  }
-
   export type configurationUncheckedCreateNestedOneWithoutSocieteInput = {
     create?: XOR<configurationCreateWithoutSocieteInput, configurationUncheckedCreateWithoutSocieteInput>
     connectOrCreate?: configurationCreateOrConnectWithoutSocieteInput
@@ -35425,13 +35352,6 @@ export namespace Prisma {
     connectOrCreate?: produitCreateOrConnectWithoutSocieteInput | produitCreateOrConnectWithoutSocieteInput[]
     createMany?: produitCreateManySocieteInputEnvelope
     connect?: produitWhereUniqueInput | produitWhereUniqueInput[]
-  }
-
-  export type type_produitUncheckedCreateNestedManyWithoutSocieteInput = {
-    create?: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput> | type_produitCreateWithoutSocieteInput[] | type_produitUncheckedCreateWithoutSocieteInput[]
-    connectOrCreate?: type_produitCreateOrConnectWithoutSocieteInput | type_produitCreateOrConnectWithoutSocieteInput[]
-    createMany?: type_produitCreateManySocieteInputEnvelope
-    connect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -35586,20 +35506,6 @@ export namespace Prisma {
     deleteMany?: produitScalarWhereInput | produitScalarWhereInput[]
   }
 
-  export type type_produitUpdateManyWithoutSocieteNestedInput = {
-    create?: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput> | type_produitCreateWithoutSocieteInput[] | type_produitUncheckedCreateWithoutSocieteInput[]
-    connectOrCreate?: type_produitCreateOrConnectWithoutSocieteInput | type_produitCreateOrConnectWithoutSocieteInput[]
-    upsert?: type_produitUpsertWithWhereUniqueWithoutSocieteInput | type_produitUpsertWithWhereUniqueWithoutSocieteInput[]
-    createMany?: type_produitCreateManySocieteInputEnvelope
-    set?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    disconnect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    delete?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    connect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    update?: type_produitUpdateWithWhereUniqueWithoutSocieteInput | type_produitUpdateWithWhereUniqueWithoutSocieteInput[]
-    updateMany?: type_produitUpdateManyWithWhereWithoutSocieteInput | type_produitUpdateManyWithWhereWithoutSocieteInput[]
-    deleteMany?: type_produitScalarWhereInput | type_produitScalarWhereInput[]
-  }
-
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -35728,20 +35634,6 @@ export namespace Prisma {
     update?: produitUpdateWithWhereUniqueWithoutSocieteInput | produitUpdateWithWhereUniqueWithoutSocieteInput[]
     updateMany?: produitUpdateManyWithWhereWithoutSocieteInput | produitUpdateManyWithWhereWithoutSocieteInput[]
     deleteMany?: produitScalarWhereInput | produitScalarWhereInput[]
-  }
-
-  export type type_produitUncheckedUpdateManyWithoutSocieteNestedInput = {
-    create?: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput> | type_produitCreateWithoutSocieteInput[] | type_produitUncheckedCreateWithoutSocieteInput[]
-    connectOrCreate?: type_produitCreateOrConnectWithoutSocieteInput | type_produitCreateOrConnectWithoutSocieteInput[]
-    upsert?: type_produitUpsertWithWhereUniqueWithoutSocieteInput | type_produitUpsertWithWhereUniqueWithoutSocieteInput[]
-    createMany?: type_produitCreateManySocieteInputEnvelope
-    set?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    disconnect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    delete?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    connect?: type_produitWhereUniqueInput | type_produitWhereUniqueInput[]
-    update?: type_produitUpdateWithWhereUniqueWithoutSocieteInput | type_produitUpdateWithWhereUniqueWithoutSocieteInput[]
-    updateMany?: type_produitUpdateManyWithWhereWithoutSocieteInput | type_produitUpdateManyWithWhereWithoutSocieteInput[]
-    deleteMany?: type_produitScalarWhereInput | type_produitScalarWhereInput[]
   }
 
   export type societeCreateNestedOneWithoutEtablissementInput = {
@@ -36508,12 +36400,6 @@ export namespace Prisma {
     deleteMany?: entete_factureScalarWhereInput | entete_factureScalarWhereInput[]
   }
 
-  export type societeCreateNestedOneWithoutType_produitInput = {
-    create?: XOR<societeCreateWithoutType_produitInput, societeUncheckedCreateWithoutType_produitInput>
-    connectOrCreate?: societeCreateOrConnectWithoutType_produitInput
-    connect?: societeWhereUniqueInput
-  }
-
   export type produitCreateNestedManyWithoutType_produitInput = {
     create?: XOR<produitCreateWithoutType_produitInput, produitUncheckedCreateWithoutType_produitInput> | produitCreateWithoutType_produitInput[] | produitUncheckedCreateWithoutType_produitInput[]
     connectOrCreate?: produitCreateOrConnectWithoutType_produitInput | produitCreateOrConnectWithoutType_produitInput[]
@@ -36526,14 +36412,6 @@ export namespace Prisma {
     connectOrCreate?: produitCreateOrConnectWithoutType_produitInput | produitCreateOrConnectWithoutType_produitInput[]
     createMany?: produitCreateManyType_produitInputEnvelope
     connect?: produitWhereUniqueInput | produitWhereUniqueInput[]
-  }
-
-  export type societeUpdateOneRequiredWithoutType_produitNestedInput = {
-    create?: XOR<societeCreateWithoutType_produitInput, societeUncheckedCreateWithoutType_produitInput>
-    connectOrCreate?: societeCreateOrConnectWithoutType_produitInput
-    upsert?: societeUpsertWithoutType_produitInput
-    connect?: societeWhereUniqueInput
-    update?: XOR<XOR<societeUpdateToOneWithWhereWithoutType_produitInput, societeUpdateWithoutType_produitInput>, societeUncheckedUpdateWithoutType_produitInput>
   }
 
   export type produitUpdateManyWithoutType_produitNestedInput = {
@@ -37078,6 +36956,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -37106,6 +36985,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -37220,32 +37100,6 @@ export namespace Prisma {
 
   export type produitCreateManySocieteInputEnvelope = {
     data: produitCreateManySocieteInput | produitCreateManySocieteInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type type_produitCreateWithoutSocieteInput = {
-    id?: bigint | number
-    uuid?: string
-    code: string
-    libelle: string
-    produits?: produitCreateNestedManyWithoutType_produitInput
-  }
-
-  export type type_produitUncheckedCreateWithoutSocieteInput = {
-    id?: bigint | number
-    uuid?: string
-    code: string
-    libelle: string
-    produits?: produitUncheckedCreateNestedManyWithoutType_produitInput
-  }
-
-  export type type_produitCreateOrConnectWithoutSocieteInput = {
-    where: type_produitWhereUniqueInput
-    create: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput>
-  }
-
-  export type type_produitCreateManySocieteInputEnvelope = {
-    data: type_produitCreateManySocieteInput | type_produitCreateManySocieteInput[]
     skipDuplicates?: boolean
   }
 
@@ -37463,6 +37317,7 @@ export namespace Prisma {
     point_vente?: StringFilter<"entete_facture"> | string
     etablissement?: StringFilter<"entete_facture"> | string
     certifie?: IntFilter<"entete_facture"> | number
+    est_rne?: IntFilter<"entete_facture"> | number
     retour_ncc?: StringNullableFilter<"entete_facture"> | string | null
     retour_id_facture?: StringNullableFilter<"entete_facture"> | string | null
     retour_token?: StringNullableFilter<"entete_facture"> | string | null
@@ -37563,33 +37418,6 @@ export namespace Prisma {
     modifie_le?: DateTimeFilter<"produit"> | Date | string
   }
 
-  export type type_produitUpsertWithWhereUniqueWithoutSocieteInput = {
-    where: type_produitWhereUniqueInput
-    update: XOR<type_produitUpdateWithoutSocieteInput, type_produitUncheckedUpdateWithoutSocieteInput>
-    create: XOR<type_produitCreateWithoutSocieteInput, type_produitUncheckedCreateWithoutSocieteInput>
-  }
-
-  export type type_produitUpdateWithWhereUniqueWithoutSocieteInput = {
-    where: type_produitWhereUniqueInput
-    data: XOR<type_produitUpdateWithoutSocieteInput, type_produitUncheckedUpdateWithoutSocieteInput>
-  }
-
-  export type type_produitUpdateManyWithWhereWithoutSocieteInput = {
-    where: type_produitScalarWhereInput
-    data: XOR<type_produitUpdateManyMutationInput, type_produitUncheckedUpdateManyWithoutSocieteInput>
-  }
-
-  export type type_produitScalarWhereInput = {
-    AND?: type_produitScalarWhereInput | type_produitScalarWhereInput[]
-    OR?: type_produitScalarWhereInput[]
-    NOT?: type_produitScalarWhereInput | type_produitScalarWhereInput[]
-    id?: BigIntFilter<"type_produit"> | bigint | number
-    uuid?: StringFilter<"type_produit"> | string
-    societe_id?: IntFilter<"type_produit"> | number
-    code?: StringFilter<"type_produit"> | string
-    libelle?: StringFilter<"type_produit"> | string
-  }
-
   export type societeCreateWithoutEtablissementInput = {
     uuid?: string
     code_societe?: string | null
@@ -37619,7 +37447,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutEtablissementInput = {
@@ -37652,7 +37479,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutEtablissementInput = {
@@ -37723,7 +37549,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutEtablissementInput = {
@@ -37756,7 +37581,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type point_venteUpsertWithWhereUniqueWithoutEtablissementInput = {
@@ -37869,7 +37693,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutLicencesInput = {
@@ -37902,7 +37725,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutLicencesInput = {
@@ -37996,7 +37818,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutLicencesInput = {
@@ -38029,7 +37850,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type planUpsertWithoutLicencesInput = {
@@ -38138,7 +37958,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutUtilisateur_clientInput = {
@@ -38171,7 +37990,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutUtilisateur_clientInput = {
@@ -38266,7 +38084,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutUtilisateur_clientInput = {
@@ -38299,7 +38116,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type statutUpsertWithoutUtilisateur_clientInput = {
@@ -38359,7 +38175,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutStickersInput = {
@@ -38392,7 +38207,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutStickersInput = {
@@ -38440,7 +38254,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutStickersInput = {
@@ -38473,7 +38286,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeCreateWithoutConfigurationInput = {
@@ -38505,7 +38317,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutConfigurationInput = {
@@ -38538,7 +38349,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutConfigurationInput = {
@@ -38586,7 +38396,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutConfigurationInput = {
@@ -38619,7 +38428,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeCreateWithoutStatutInput = {
@@ -38651,7 +38459,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutStatutInput = {
@@ -38684,7 +38491,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutStatutInput = {
@@ -38979,7 +38785,6 @@ export namespace Prisma {
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutEntete_factureInput = {
@@ -39012,7 +38817,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutEntete_factureInput = {
@@ -39186,7 +38990,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutEntete_factureInput = {
@@ -39219,7 +39022,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type tiersUpsertWithoutEntete_factureInput = {
@@ -39369,6 +39171,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39398,6 +39201,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39465,6 +39269,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39494,6 +39299,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39644,6 +39450,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39673,6 +39480,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39716,6 +39524,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39745,6 +39554,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39784,7 +39594,6 @@ export namespace Prisma {
     entete_facture?: entete_factureCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutTiersInput = {
@@ -39817,7 +39626,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutTiersInput = {
@@ -39842,6 +39650,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39871,6 +39680,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -39931,7 +39741,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutTiersInput = {
@@ -39964,7 +39773,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type entete_factureUpsertWithWhereUniqueWithoutTiersInput = {
@@ -40012,7 +39820,6 @@ export namespace Prisma {
     entete_facture?: entete_factureCreateNestedManyWithoutSocieteInput
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     produit?: produitCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutInformation_complementaireInput = {
@@ -40045,7 +39852,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedCreateNestedManyWithoutSocieteInput
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutInformation_complementaireInput = {
@@ -40070,6 +39876,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -40099,6 +39906,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -40159,7 +39967,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUpdateManyWithoutSocieteNestedInput
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutInformation_complementaireInput = {
@@ -40192,7 +39999,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedUpdateManyWithoutSocieteNestedInput
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type entete_factureUpsertWithWhereUniqueWithoutInformation_complementaireInput = {
@@ -40209,76 +40015,6 @@ export namespace Prisma {
   export type entete_factureUpdateManyWithWhereWithoutInformation_complementaireInput = {
     where: entete_factureScalarWhereInput
     data: XOR<entete_factureUpdateManyMutationInput, entete_factureUncheckedUpdateManyWithoutInformation_complementaireInput>
-  }
-
-  export type societeCreateWithoutType_produitInput = {
-    uuid?: string
-    code_societe?: string | null
-    raison_sociale_societe?: string | null
-    ncc?: string | null
-    rccm?: string | null
-    regime_imposition?: string | null
-    centre_impot?: string | null
-    ref_bancaire?: string | null
-    adresse?: string | null
-    telephone?: string | null
-    email?: string | null
-    cree_le?: Date | string | null
-    modifie_le?: Date | string | null
-    bd_host?: string | null
-    bd_name?: string | null
-    bd_user?: string | null
-    bd_pass?: string | null
-    bd_port?: number | null
-    logo_url?: string | null
-    statut?: statutCreateNestedOneWithoutSocietesInput
-    configuration?: configurationCreateNestedOneWithoutSocieteInput
-    etablissement?: etablissementCreateNestedManyWithoutSocieteInput
-    utilisateur_client?: utilisateur_clientCreateNestedManyWithoutSocieteInput
-    licences?: licenceCreateNestedManyWithoutSocieteInput
-    stickers?: stickerCreateNestedManyWithoutSocieteInput
-    entete_facture?: entete_factureCreateNestedManyWithoutSocieteInput
-    tiers?: tiersCreateNestedManyWithoutSocieteInput
-    information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
-    produit?: produitCreateNestedManyWithoutSocieteInput
-  }
-
-  export type societeUncheckedCreateWithoutType_produitInput = {
-    id?: number
-    uuid?: string
-    code_societe?: string | null
-    raison_sociale_societe?: string | null
-    ncc?: string | null
-    rccm?: string | null
-    regime_imposition?: string | null
-    centre_impot?: string | null
-    ref_bancaire?: string | null
-    adresse?: string | null
-    telephone?: string | null
-    email?: string | null
-    cree_le?: Date | string | null
-    modifie_le?: Date | string | null
-    bd_host?: string | null
-    bd_name?: string | null
-    bd_user?: string | null
-    bd_pass?: string | null
-    bd_port?: number | null
-    logo_url?: string | null
-    statut_id?: number | null
-    configuration?: configurationUncheckedCreateNestedOneWithoutSocieteInput
-    etablissement?: etablissementUncheckedCreateNestedManyWithoutSocieteInput
-    utilisateur_client?: utilisateur_clientUncheckedCreateNestedManyWithoutSocieteInput
-    licences?: licenceUncheckedCreateNestedManyWithoutSocieteInput
-    stickers?: stickerUncheckedCreateNestedManyWithoutSocieteInput
-    entete_facture?: entete_factureUncheckedCreateNestedManyWithoutSocieteInput
-    tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
-    information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
-    produit?: produitUncheckedCreateNestedManyWithoutSocieteInput
-  }
-
-  export type societeCreateOrConnectWithoutType_produitInput = {
-    where: societeWhereUniqueInput
-    create: XOR<societeCreateWithoutType_produitInput, societeUncheckedCreateWithoutType_produitInput>
   }
 
   export type produitCreateWithoutType_produitInput = {
@@ -40315,82 +40051,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type societeUpsertWithoutType_produitInput = {
-    update: XOR<societeUpdateWithoutType_produitInput, societeUncheckedUpdateWithoutType_produitInput>
-    create: XOR<societeCreateWithoutType_produitInput, societeUncheckedCreateWithoutType_produitInput>
-    where?: societeWhereInput
-  }
-
-  export type societeUpdateToOneWithWhereWithoutType_produitInput = {
-    where?: societeWhereInput
-    data: XOR<societeUpdateWithoutType_produitInput, societeUncheckedUpdateWithoutType_produitInput>
-  }
-
-  export type societeUpdateWithoutType_produitInput = {
-    uuid?: StringFieldUpdateOperationsInput | string
-    code_societe?: NullableStringFieldUpdateOperationsInput | string | null
-    raison_sociale_societe?: NullableStringFieldUpdateOperationsInput | string | null
-    ncc?: NullableStringFieldUpdateOperationsInput | string | null
-    rccm?: NullableStringFieldUpdateOperationsInput | string | null
-    regime_imposition?: NullableStringFieldUpdateOperationsInput | string | null
-    centre_impot?: NullableStringFieldUpdateOperationsInput | string | null
-    ref_bancaire?: NullableStringFieldUpdateOperationsInput | string | null
-    adresse?: NullableStringFieldUpdateOperationsInput | string | null
-    telephone?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    cree_le?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    modifie_le?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bd_host?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_name?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_user?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_pass?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_port?: NullableIntFieldUpdateOperationsInput | number | null
-    logo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    statut?: statutUpdateOneWithoutSocietesNestedInput
-    configuration?: configurationUpdateOneWithoutSocieteNestedInput
-    etablissement?: etablissementUpdateManyWithoutSocieteNestedInput
-    utilisateur_client?: utilisateur_clientUpdateManyWithoutSocieteNestedInput
-    licences?: licenceUpdateManyWithoutSocieteNestedInput
-    stickers?: stickerUpdateManyWithoutSocieteNestedInput
-    entete_facture?: entete_factureUpdateManyWithoutSocieteNestedInput
-    tiers?: tiersUpdateManyWithoutSocieteNestedInput
-    information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
-    produit?: produitUpdateManyWithoutSocieteNestedInput
-  }
-
-  export type societeUncheckedUpdateWithoutType_produitInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    uuid?: StringFieldUpdateOperationsInput | string
-    code_societe?: NullableStringFieldUpdateOperationsInput | string | null
-    raison_sociale_societe?: NullableStringFieldUpdateOperationsInput | string | null
-    ncc?: NullableStringFieldUpdateOperationsInput | string | null
-    rccm?: NullableStringFieldUpdateOperationsInput | string | null
-    regime_imposition?: NullableStringFieldUpdateOperationsInput | string | null
-    centre_impot?: NullableStringFieldUpdateOperationsInput | string | null
-    ref_bancaire?: NullableStringFieldUpdateOperationsInput | string | null
-    adresse?: NullableStringFieldUpdateOperationsInput | string | null
-    telephone?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    cree_le?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    modifie_le?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bd_host?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_name?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_user?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_pass?: NullableStringFieldUpdateOperationsInput | string | null
-    bd_port?: NullableIntFieldUpdateOperationsInput | number | null
-    logo_url?: NullableStringFieldUpdateOperationsInput | string | null
-    statut_id?: NullableIntFieldUpdateOperationsInput | number | null
-    configuration?: configurationUncheckedUpdateOneWithoutSocieteNestedInput
-    etablissement?: etablissementUncheckedUpdateManyWithoutSocieteNestedInput
-    utilisateur_client?: utilisateur_clientUncheckedUpdateManyWithoutSocieteNestedInput
-    licences?: licenceUncheckedUpdateManyWithoutSocieteNestedInput
-    stickers?: stickerUncheckedUpdateManyWithoutSocieteNestedInput
-    entete_facture?: entete_factureUncheckedUpdateManyWithoutSocieteNestedInput
-    tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
-    information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
-    produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-  }
-
   export type produitUpsertWithWhereUniqueWithoutType_produitInput = {
     where: produitWhereUniqueInput
     update: XOR<produitUpdateWithoutType_produitInput, produitUncheckedUpdateWithoutType_produitInput>
@@ -40412,13 +40072,11 @@ export namespace Prisma {
     uuid?: string
     code: string
     libelle: string
-    societe: societeCreateNestedOneWithoutType_produitInput
   }
 
   export type type_produitUncheckedCreateWithoutProduitsInput = {
     id?: bigint | number
     uuid?: string
-    societe_id: number
     code: string
     libelle: string
   }
@@ -40457,7 +40115,6 @@ export namespace Prisma {
     entete_facture?: entete_factureCreateNestedManyWithoutSocieteInput
     tiers?: tiersCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitCreateNestedManyWithoutSocieteInput
   }
 
   export type societeUncheckedCreateWithoutProduitInput = {
@@ -40490,7 +40147,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedCreateNestedManyWithoutSocieteInput
     tiers?: tiersUncheckedCreateNestedManyWithoutSocieteInput
     information_complementaire?: information_complementaireUncheckedCreateNestedManyWithoutSocieteInput
-    type_produit?: type_produitUncheckedCreateNestedManyWithoutSocieteInput
   }
 
   export type societeCreateOrConnectWithoutProduitInput = {
@@ -40514,13 +40170,11 @@ export namespace Prisma {
     uuid?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     libelle?: StringFieldUpdateOperationsInput | string
-    societe?: societeUpdateOneRequiredWithoutType_produitNestedInput
   }
 
   export type type_produitUncheckedUpdateWithoutProduitsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     uuid?: StringFieldUpdateOperationsInput | string
-    societe_id?: IntFieldUpdateOperationsInput | number
     code?: StringFieldUpdateOperationsInput | string
     libelle?: StringFieldUpdateOperationsInput | string
   }
@@ -40565,7 +40219,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUpdateManyWithoutSocieteNestedInput
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutProduitInput = {
@@ -40598,7 +40251,6 @@ export namespace Prisma {
     entete_facture?: entete_factureUncheckedUpdateManyWithoutSocieteNestedInput
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type etablissementCreateManySocieteInput = {
@@ -40661,6 +40313,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -40699,13 +40352,6 @@ export namespace Prisma {
     type_produit_id: bigint | number
     cree_le?: Date | string
     modifie_le?: Date | string
-  }
-
-  export type type_produitCreateManySocieteInput = {
-    id?: bigint | number
-    uuid?: string
-    code: string
-    libelle: string
   }
 
   export type etablissementUpdateWithoutSocieteInput = {
@@ -40853,6 +40499,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40881,6 +40528,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40909,6 +40557,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41013,29 +40662,6 @@ export namespace Prisma {
     type_produit_id?: BigIntFieldUpdateOperationsInput | bigint | number
     cree_le?: DateTimeFieldUpdateOperationsInput | Date | string
     modifie_le?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type type_produitUpdateWithoutSocieteInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    uuid?: StringFieldUpdateOperationsInput | string
-    code?: StringFieldUpdateOperationsInput | string
-    libelle?: StringFieldUpdateOperationsInput | string
-    produits?: produitUpdateManyWithoutType_produitNestedInput
-  }
-
-  export type type_produitUncheckedUpdateWithoutSocieteInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    uuid?: StringFieldUpdateOperationsInput | string
-    code?: StringFieldUpdateOperationsInput | string
-    libelle?: StringFieldUpdateOperationsInput | string
-    produits?: produitUncheckedUpdateManyWithoutType_produitNestedInput
-  }
-
-  export type type_produitUncheckedUpdateManyWithoutSocieteInput = {
-    id?: BigIntFieldUpdateOperationsInput | bigint | number
-    uuid?: StringFieldUpdateOperationsInput | string
-    code?: StringFieldUpdateOperationsInput | string
-    libelle?: StringFieldUpdateOperationsInput | string
   }
 
   export type point_venteCreateManyEtablissementInput = {
@@ -41144,7 +40770,6 @@ export namespace Prisma {
     tiers?: tiersUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUpdateManyWithoutSocieteNestedInput
     produit?: produitUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateWithoutStatutInput = {
@@ -41177,7 +40802,6 @@ export namespace Prisma {
     tiers?: tiersUncheckedUpdateManyWithoutSocieteNestedInput
     information_complementaire?: information_complementaireUncheckedUpdateManyWithoutSocieteNestedInput
     produit?: produitUncheckedUpdateManyWithoutSocieteNestedInput
-    type_produit?: type_produitUncheckedUpdateManyWithoutSocieteNestedInput
   }
 
   export type societeUncheckedUpdateManyWithoutStatutInput = {
@@ -41542,6 +41166,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -41567,6 +41192,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41596,6 +41222,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41624,6 +41251,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41650,6 +41278,7 @@ export namespace Prisma {
     point_vente: string
     etablissement: string
     certifie?: number
+    est_rne?: number
     retour_ncc?: string | null
     retour_id_facture?: string | null
     retour_token?: string | null
@@ -41675,6 +41304,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41704,6 +41334,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41732,6 +41363,7 @@ export namespace Prisma {
     point_vente?: StringFieldUpdateOperationsInput | string
     etablissement?: StringFieldUpdateOperationsInput | string
     certifie?: IntFieldUpdateOperationsInput | number
+    est_rne?: IntFieldUpdateOperationsInput | number
     retour_ncc?: NullableStringFieldUpdateOperationsInput | string | null
     retour_id_facture?: NullableStringFieldUpdateOperationsInput | string | null
     retour_token?: NullableStringFieldUpdateOperationsInput | string | null

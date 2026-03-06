@@ -1,4 +1,4 @@
-const prisma = require("../../libs/master"); // ✅ client unique
+const prisma = require("../../libs/master");
 const { v4: uuidv4 } = require("uuid");
 
 const formatAmount = (amount, deviseCode) => {
@@ -7,40 +7,77 @@ const formatAmount = (amount, deviseCode) => {
 };
 
 const serialize = (obj) =>
-  JSON.parse(JSON.stringify(obj, (key, value) =>
-    typeof value === "bigint" ? value.toString() : value
-  ));
+  JSON.parse(
+    JSON.stringify(obj, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+  );
 
-// Helper partagé : authentifier la société via sa clé API locale
-const authenticateSociete = async (code_societe, apiKeyClient) => {
+const authenticateSociete = async (req) => {
+  const apiKey = req.headers["x-api-key"];
+  const isErpMode = !!apiKey;
+
+  // ── Résolution du code_societe selon le mode ──────────────────────────────
+  let code_societe;
+
+  if (isErpMode) {
+    code_societe = req.body?.code_societe;
+    if (!code_societe || typeof code_societe !== "string" || !code_societe.trim()) {
+      return { error: "Mode ERP : code_societe manquant dans le body.", status: 400 };
+    }
+  } else {
+    if (!req.user) {
+      return { error: "Non authentifié : token JWT manquant ou invalide.", status: 401 };
+    }
+    code_societe = req.user.code_societe;
+    if (!code_societe) {
+      return { error: "Token invalide : code_societe absent du JWT.", status: 401 };
+    }
+  }
+
+  // ── Récupération de la société ────────────────────────────────────────────
   const societe = await prisma.societe.findUnique({
-    where: { code_societe },
+    where: { code_societe: code_societe.trim() },
     include: { configuration: true },
   });
-  if (!societe) return { error: "Société non identifiée.", status: 404 };
-  const storedApiKey = societe.configuration?.cle_api_locale;
-  if (!storedApiKey || apiKeyClient !== storedApiKey)
-    return { error: "Accès non autorisé : Clé API locale invalide.", status: 401 };
-  return { societe };
+
+  if (!societe) {
+    return { error: "Société non identifiée.", status: 404 };
+  }
+
+  // ── Vérification selon le mode ────────────────────────────────────────────
+  if (isErpMode) {
+    const storedApiKey = societe.configuration?.cle_api_locale;
+    if (!storedApiKey || apiKey !== storedApiKey) {
+      return { error: "Accès non autorisé : clé API locale invalide.", status: 401 };
+    }
+  } else {
+    // Défense en profondeur : s'assure que la société du JWT n'a pas été altérée
+    if (societe.code_societe !== req.user.code_societe) {
+      return { error: "Accès non autorisé : société non liée à votre compte.", status: 403 };
+    }
+  }
+
+  return { societe, isErpMode };
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 exports.upsertTiers = async (req, res) => {
-  const apiKeyClient = req.headers["x-api-key"] || req.body.cle_api_locale;
-  const { code_societe, tiersData } = req.body;
+  const { tiersData } = req.body;
 
   try {
-    if (!code_societe || !tiersData?.code_tiers) {
-      return res.status(400).json({ error: "Données manquantes (code_societe ou code_tiers)." });
+    if (!tiersData?.code_tiers) {
+      return res.status(400).json({ error: "Données manquantes : code_tiers requis." });
     }
 
-    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    const auth = await authenticateSociete(req);
     if (auth.error) return res.status(auth.status).json({ error: auth.error });
     const { societe } = auth;
 
-    // ✅ upsert sur [societe_id, code_tiers] — contrainte unique du schéma fusionné
     const tiers = await prisma.tiers.upsert({
       where: {
-        societe_id_code_tiers: { // ✅ nom de la contrainte @@unique générée par Prisma
+        societe_id_code_tiers: {
           societe_id: societe.id,
           code_tiers: tiersData.code_tiers,
         },
@@ -53,7 +90,7 @@ exports.upsertTiers = async (req, res) => {
       },
       create: {
         uuid: uuidv4(),
-        societe_id: societe.id, // 🔑
+        societe_id: societe.id,
         code_tiers: tiersData.code_tiers,
         ncc_tiers: tiersData.ncc_tiers || "",
         raison_sociale_tiers: tiersData.raison_sociale_tiers || "CLIENT DIVERS",
@@ -68,20 +105,32 @@ exports.upsertTiers = async (req, res) => {
       uuid: tiers.uuid,
     });
   } catch (error) {
-    console.error("Erreur Upsert Tiers:", error);
-    return res.status(500).json({ error: "Erreur lors de la synchronisation du tiers.", message: error.message });
+    console.error("Erreur upsertTiers:", error);
+    return res.status(500).json({
+      error: "Erreur lors de la synchronisation du tiers.",
+      message: error.message,
+    });
   }
 };
 
 exports.storeFullInvoice = async (req, res) => {
-  const apiKeyClient = req.headers["x-api-key"] || req.body.cle_api_locale;
-  const { code_societe, invoiceData } = req.body;
+  const { invoiceData } = req.body;
 
   try {
-    const auth = await authenticateSociete(code_societe, apiKeyClient);
+    // ── Validation du payload ─────────────────────────────────────────────
+    if (!invoiceData) {
+      return res.status(400).json({ error: "invoiceData est requis dans le body." });
+    }
+    if (!invoiceData.items || invoiceData.items.length === 0) {
+      return res.status(400).json({ error: "La facture doit contenir au moins une ligne." });
+    }
+
+    // ── Authentification dual-mode ────────────────────────────────────────
+    const auth = await authenticateSociete(req);
     if (auth.error) return res.status(auth.status).json({ error: auth.error });
     const { societe } = auth;
 
+    // ── Calculs ───────────────────────────────────────────────────────────
     const deviseCode = invoiceData.code_devise || "XOF";
 
     let totalHTBrut = 0;
@@ -106,7 +155,8 @@ exports.storeFullInvoice = async (req, res) => {
     const processedItems = itemsCalculated.map((item) => {
       const taxCode = item.taxes[0] || "TVA_18";
       const tauxTVA = parseFloat(taxCode.split("_")[1]) || 18;
-      const baseHTLigne = (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
+      const baseHTLigne =
+        (item.brutLigne - item.montantRemiseLigne) * (1 - remisePiedsPct / 100);
       const tvaLigneArrondie = formatAmount(baseHTLigne * (tauxTVA / 100), deviseCode);
 
       const taxesLigne = (item.customTaxes || []).map((ct) => ({
@@ -114,11 +164,14 @@ exports.storeFullInvoice = async (req, res) => {
         taux_taxe_details: parseFloat(ct.rate),
         montant_taxe_details: formatAmount(
           (baseHTLigne + tvaLigneArrondie) * (parseFloat(ct.rate) / 100),
-          deviseCode,
+          deviseCode
         ),
       }));
 
-      const totalTaxesLigneSomme = taxesLigne.reduce((acc, t) => acc + t.montant_taxe_details, 0);
+      const totalTaxesLigneSomme = taxesLigne.reduce(
+        (acc, t) => acc + t.montant_taxe_details,
+        0
+      );
 
       return {
         ...item,
@@ -126,24 +179,62 @@ exports.storeFullInvoice = async (req, res) => {
         baseHTLigne: formatAmount(baseHTLigne, deviseCode),
         tvaLigne: tvaLigneArrondie,
         taxesLigne,
-        ttcLigne: formatAmount(baseHTLigne, deviseCode) + tvaLigneArrondie + totalTaxesLigneSomme,
+        ttcLigne:
+          formatAmount(baseHTLigne, deviseCode) + tvaLigneArrondie + totalTaxesLigneSomme,
       };
     });
 
     const totalTVAFinal = processedItems.reduce((acc, item) => acc + item.tvaLigne, 0);
     const totalAutresTaxesFinal =
       processedItems.reduce(
-        (acc, i) => acc + i.taxesLigne.reduce((s, t) => s + t.montant_taxe_details, 0), 0,
+        (acc, i) =>
+          acc + i.taxesLigne.reduce((s, t) => s + t.montant_taxe_details, 0),
+        0
       ) +
       (invoiceData.taxesPieds || []).reduce(
-        (acc, tp) => acc + formatAmount((netHTGlobal + totalTVAFinal) * (parseFloat(tp.taux) / 100), deviseCode), 0,
+        (acc, tp) =>
+          acc +
+          formatAmount(
+            (netHTGlobal + totalTVAFinal) * (parseFloat(tp.taux) / 100),
+            deviseCode
+          ),
+        0
       );
 
+    const codeTiers = invoiceData.code_tiers?.trim();
+    if (!codeTiers) {
+      return res.status(400).json({ error: "code_tiers est requis pour créer ou identifier le tiers." });
+    }
+
+    const tiers = await prisma.tiers.upsert({
+      where: {
+        societe_id_code_tiers: {
+          societe_id: societe.id,
+          code_tiers: codeTiers,
+        },
+      },
+      update: {
+        raison_sociale_tiers: invoiceData.raison_sociale_tiers ?? undefined,
+        ncc_tiers: invoiceData.ncc_tiers ?? undefined,
+        telephone_tiers: invoiceData.telephone_tiers || null,
+        email_tiers: invoiceData.email_tiers || null,
+      },
+      create: {
+        uuid: uuidv4(),
+        societe_id: societe.id,
+        code_tiers: codeTiers,
+        raison_sociale_tiers: invoiceData.raison_sociale_tiers,
+        ncc_tiers: invoiceData.ncc_tiers,
+        telephone_tiers: invoiceData.telephone_tiers || null,
+        email_tiers: invoiceData.email_tiers || null,
+      },
+    });
+
+    // ── Transaction Prisma ────────────────────────────────────────────────
     const result = await prisma.$transaction(async (tx) => {
-      // ✅ societe_id ajouté sur information_complementaire
       const info = await tx.information_complementaire.create({
         data: {
-          societe_id: societe.id, // 🔑
+          societe_id: societe.id,
           nom_commercial: invoiceData.clientCompanyName || "",
           autre_mention: invoiceData.commercialMessage || "",
           pied_de_page: invoiceData.footer || "",
@@ -152,20 +243,21 @@ exports.storeFullInvoice = async (req, res) => {
 
       return await tx.entete_facture.create({
         data: {
-          societe_id: societe.id, // 🔑
+          societe_id: societe.id,
           numero_facture: invoiceData.numero_facture || `FAC-${Date.now()}`,
           date_facture: new Date(),
           code_type_facture: invoiceData.code_type_facture || "VENTE",
           code_type_facturation: invoiceData.code_type_facturation || "STANDARD",
           code_mode_paiement: invoiceData.code_mode_paiement || "ESPECE",
           code_devise: deviseCode,
-          id_tiers: BigInt(invoiceData.id_tiers || 1),
+          id_tiers: tiers.id, 
           id_information_complementaire: info.id,
           total_ht: formatAmount(totalHTBrut, deviseCode),
           total_tva: totalTVAFinal,
           total_remise: formatAmount(totalRemiseGlobale, deviseCode),
           total_autre_taxe: totalAutresTaxesFinal,
-          total_ttc: formatAmount(netHTGlobal, deviseCode) + totalTVAFinal + totalAutresTaxesFinal,
+          total_ttc:
+            formatAmount(netHTGlobal, deviseCode) + totalTVAFinal + totalAutresTaxesFinal,
           point_vente: invoiceData.pointOfSale || "Caisse 1",
           etablissement: invoiceData.establishment || "Siège",
           detail_facture: {
@@ -193,7 +285,7 @@ exports.storeFullInvoice = async (req, res) => {
               taux_taxe_pieds: parseFloat(tp.taux),
               montant_taxe_pieds: formatAmount(
                 (netHTGlobal + totalTVAFinal) * (parseFloat(tp.taux) / 100),
-                deviseCode,
+                deviseCode
               ),
             })),
           },
@@ -201,7 +293,7 @@ exports.storeFullInvoice = async (req, res) => {
       });
     });
 
-    res.status(201).json({ success: true, uuid: result.uuid });
+    res.status(201).json(serialize({ success: true, uuid: result.uuid }));
   } catch (error) {
     console.error("ERREUR storeFullInvoice:", error);
     res.status(500).json({ error: error.message });
@@ -220,7 +312,7 @@ exports.storeRefundInvoice = async (req, res) => {
     const factureOrigine = await prisma.entete_facture.findFirst({
       where: {
         numero_facture: invoiceData.numero_facture_origine,
-        societe_id: societe.id, // 🔑
+        societe_id: societe.id, 
       },
       include: {
         detail_facture: { include: { taxe_details: true } },
@@ -309,7 +401,7 @@ exports.storeRefundInvoice = async (req, res) => {
 
       return await tx.entete_facture.create({
         data: {
-          societe_id: societe.id, // 🔑
+          societe_id: societe.id, 
           numero_facture: invoiceData.numero_facture,
           date_facture: new Date(),
           numero_facture_origine: factureOrigine.numero_facture,
@@ -357,7 +449,6 @@ exports.storeRefundInvoice = async (req, res) => {
   }
 };
 
-// ✅ deleteInvoice — bug de double définition corrigé, fonction unique et propre
 exports.deleteInvoice = async (req, res) => {
   const apiKeyClient = req.headers["x-api-key"] || req.body.cle_api_locale;
   const { code_societe, numero_facture } = req.body;
@@ -382,9 +473,6 @@ exports.deleteInvoice = async (req, res) => {
         error: "ACTION REFUSÉE : Cette facture est déjà certifiée par la DGI. Vous devez émettre une facture d'avoir pour l'annuler.",
       });
     }
-
-    // ✅ Le onDelete: Cascade sur detail_facture et taxe_pieds supprime automatiquement
-    //    les lignes et taxes — seule information_complementaire nécessite une suppression manuelle
     await prisma.$transaction(async (tx) => {
       await tx.entete_facture.delete({ where: { id: facture.id } });
 
